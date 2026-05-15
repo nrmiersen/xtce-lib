@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xtce-lib"
+version = "0.1.0a1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 88
+[tool.ruff.lint]
+select = [
+    "D", # pydocstyle
+    "I", # isort
+    "F", # pyflakes
+]
+ignore = [
+    "D203", # Conflicts with D211
+    "D213", # Conflicts with D212
+]
+[tool.ruff.lint.isort]
+known-first-party = ["xtce_lib"]
+
+[dependency-groups]
+dev = ["pytest>=9.0.3"]
