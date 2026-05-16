@@ -122,10 +122,6 @@ class XtcePath:
         base_parts = base_path.parts
         return self._parts[: len(base_parts)] == base_parts
 
-    def as_posix(self) -> str:
-        """Return the POSIX-style path string."""
-        return str(self)
-
     def __str__(self) -> str:
         """Return the normalized XTCE path string."""
         if self._is_absolute:

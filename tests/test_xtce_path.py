@@ -40,7 +40,7 @@ def test_joinpath_appends_child_segment() -> None:
 
     result = base.joinpath("COMMAND_ARGUMENT_Type")
 
-    assert result.as_posix() == "/ConkSat-1/BUS/COMMAND_ARGUMENT_Type"
+    assert result == "/ConkSat-1/BUS/COMMAND_ARGUMENT_Type"
 
 
 def test_relative_to_reports_expected_suffix() -> None:
