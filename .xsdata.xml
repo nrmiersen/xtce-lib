@@ -2,11 +2,11 @@
 <Config xmlns="http://pypi.org/project/xsdata" version="26.2">
   <Output maxLineLength="88" genericCollections="false">
     <Package>generated</Package>
-    <Format repr="true" eq="true" order="false" unsafeHash="false" frozen="false" slots="false">dataclasses</Format>
+    <Format repr="true" eq="true" order="false" unsafeHash="false" frozen="false" slots="false" kwOnly="true">dataclasses</Format>
     <Structure>single-package</Structure>
     <DocstringStyle>Google</DocstringStyle>
     <RelativeImports>false</RelativeImports>
-    <CompoundFields defaultName="choice" useSubstitutionGroups="false" forceDefaultName="false" maxNameParts="3">false</CompoundFields>
+    <CompoundFields defaultName="choice" useSubstitutionGroups="false" forceDefaultName="false" maxNameParts="3">true</CompoundFields>
     <WrapperFields>false</WrapperFields>
     <UnnestClasses>false</UnnestClasses>
     <IgnorePatterns>false</IgnorePatterns>

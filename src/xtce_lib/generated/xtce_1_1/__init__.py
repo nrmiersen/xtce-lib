@@ -1,4 +1,4 @@
-from src.xtce_lib.generated.xtce_1_1.models import (
+from xtce_lib.generated.xtce_1_1.models import (
     AbsoluteTimeDataType,
     AggregateDataType,
     AlarmConditionsType,

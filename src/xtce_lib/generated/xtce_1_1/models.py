@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from decimal import Decimal
 from enum import Enum
+from typing import ForwardRef
 
 from xsdata.models.datatype import XmlDate, XmlDateTime, XmlDuration
 
@@ -10,7 +11,9 @@ __NAMESPACE__ = "http://www.omg.org/space/xtce"
 
 
 class AlarmLevels(Enum):
-    """An enumerated list of the possible alarm levels."""
+    """
+    An enumerated list of the possible alarm levels.
+    """
 
     NORMAL = "normal"
     WATCH = "watch"
@@ -22,7 +25,8 @@ class AlarmLevels(Enum):
 
 @dataclass(kw_only=True)
 class AliasSetType:
-    """Contains an unordered collection of Alias's.
+    """
+    Contains an unordered collection of Alias's.
 
     Attributes:
         alias: Used to contain an alias (alternate) name or ID for the object.
@@ -32,7 +36,6 @@ class AliasSetType:
             severe naming restrictions on parameters (e.g., names must less then
             12 characters, single case or integral id's only); their alias's
             provide a means of capturing each name in a "nameSpace".
-
     """
 
     alias: list[AliasSetType.Alias] = field(
@@ -62,7 +65,8 @@ class AliasSetType:
 
 @dataclass(kw_only=True)
 class ByteOrderType:
-    """An ordered list of bytes where the order of the bytes is in stream order.
+    """
+    An ordered list of bytes where the order of the bytes is in stream order.
 
     Each byte has an attribute giving its significance.
     """
@@ -108,7 +112,9 @@ class CheckWindowTimeWindowIsRelativeTo(Enum):
 
 
 class ComparisonOperatorsType(Enum):
-    """Operators to use when testing a boolean condition for a validity check."""
+    """
+    Operators to use when testing a boolean condition for a validity check.
+    """
 
     EQUALS_SIGN_EQUALS_SIGN = "=="
     EXCLAMATION_MARK_EQUALS_SIGN = "!="
@@ -120,11 +126,11 @@ class ComparisonOperatorsType(Enum):
 
 @dataclass(kw_only=True)
 class ContainerRefType:
-    """Holds a reference to a container.
+    """
+    Holds a reference to a container.
 
     Attributes:
         container_ref: name of container
-
     """
 
     container_ref: str = field(
@@ -168,7 +174,8 @@ class FloatDataTypeSizeInBits(Enum):
 
 @dataclass(kw_only=True)
 class FloatRangeType:
-    """A range of numbers. "minInclusive", "minExclusive", "maxInclusive" and
+    """
+    A range of numbers. "minInclusive", "minExclusive", "maxInclusive" and
     "maxExclusive" attributes are borrowed from the W3C schema language.
     """
 
@@ -223,7 +230,9 @@ class IntegerDataEncodingTypeEncoding(Enum):
 
 @dataclass(kw_only=True)
 class IntegerRangeType:
-    """An integral range of numbers. "min", and "max"."""
+    """
+    An integral range of numbers. "min", and "max".
+    """
 
     min_inclusive: None | int | str = field(
         default=None,
@@ -251,7 +260,9 @@ class LocationInContainerInBitsReferenceLocation(Enum):
 
 
 class MathOperatorsType(Enum):
-    """Mathematical operators."""
+    """
+    Mathematical operators.
+    """
 
     PLUS_SIGN = "+"
     HYPHEN_MINUS = "-"
@@ -282,11 +293,11 @@ class MathOperatorsType(Enum):
 
 @dataclass(kw_only=True)
 class MessageRefType:
-    """Holds a reference to a message.
+    """
+    Holds a reference to a message.
 
     Attributes:
         message_ref: name of message
-
     """
 
     message_ref: str = field(
@@ -321,7 +332,8 @@ class ParameterPropertiesTypeDataSource(Enum):
 
 @dataclass(kw_only=True)
 class ParameterRefType:
-    """A reference to a Parameter.
+    """
+    A reference to a Parameter.
 
     Uses Unix ‘like’ naming across the SpaceSystem Tree (e.g.,
     SimpleSat/Bus/EPDS/BatteryOne/Voltage). To reference an individual member of an
@@ -349,7 +361,8 @@ class ParityType(Enum):
 
 @dataclass(kw_only=True)
 class PhysicalAddressType:
-    """When it's important to know the physical address(s) on the spacecraft that this
+    """
+    When it's important to know the physical address(s) on the spacecraft that this
     parameter may be collected from, use this.
     """
 
@@ -379,13 +392,13 @@ class PhysicalAddressType:
 
 @dataclass(kw_only=True)
 class PolynomialType:
-    """A polynomial expression.
+    """
+    A polynomial expression.
 
     For example: 3 + 2x.
 
     Attributes:
         term: A term in a polynomial expression.
-
     """
 
     term: list[PolynomialType.Term] = field(
@@ -413,7 +426,9 @@ class PolynomialType:
 
 
 class RadixType(Enum):
-    """Specifies the number base."""
+    """
+    Specifies the number base.
+    """
 
     DECIMAL = "Decimal"
     HEXADECIMAL = "Hexadecimal"
@@ -428,7 +443,9 @@ class RateInStreamTypeBasis(Enum):
 
 @dataclass(kw_only=True)
 class ServiceRefType:
-    """A reference to a Service."""
+    """
+    A reference to a Service.
+    """
 
     value: str = field(default="")
     service_ref: str = field(
@@ -450,7 +467,8 @@ class SignificanceTypeConsequenceLevel(Enum):
 
 @dataclass(kw_only=True)
 class SplinePointType:
-    """a spline is a set on points from which a curve may be drawn to interpolate raw
+    """
+    a spline is a set on points from which a curve may be drawn to interpolate raw
     to calibrated values.
     """
 
@@ -474,11 +492,11 @@ class SplinePointType:
 
 @dataclass(kw_only=True)
 class StreamRefType:
-    """Holds a reference to a stream.
+    """
+    Holds a reference to a stream.
 
     Attributes:
         stream_ref: name of reference stream
-
     """
 
     stream_ref: str = field(
@@ -500,7 +518,8 @@ class StringDataTypeCharacterWidth(Enum):
 
 
 class TimeUnits(Enum):
-    """base time units. days, months, years have obvoius ambiguity and should be
+    """
+    base time units. days, months, years have obvoius ambiguity and should be
     avoided.
     """
 
@@ -513,45 +532,38 @@ class TimeUnits(Enum):
 
 @dataclass(kw_only=True)
 class TriggerSetType:
-    """A trigger is used to initiate the processing of some algorithm.
+    """
+    A trigger is used to initiate the processing of some algorithm.
 
     A trigger may be based on an update of a Parameter or on a time basis. Triggers
     may also have a rate that limits their firing to a 1/rate basis.
-
-    Attributes:
-        on_parameter_update_trigger: Names a parameter that upon change will
-            start the execution of the algorithm.  Holds a parameter reference
-            name for a parameter that when it changes, will cause this algorithm
-            to be executed.
-        on_container_update_trigger:
-        on_periodic_rate_trigger:
-        name:
-        trigger_rate:
-
     """
 
-    on_parameter_update_trigger: list[TriggerSetType.OnParameterUpdateTrigger] = field(
+    on_parameter_update_trigger_or_on_container_update_trigger_or_on_periodic_rate_trigger: list[
+        TriggerSetType.OnParameterUpdateTrigger
+        | TriggerSetType.OnContainerUpdateTrigger
+        | TriggerSetType.OnPeriodicRateTrigger
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "OnParameterUpdateTrigger",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    on_container_update_trigger: list[TriggerSetType.OnContainerUpdateTrigger] = field(
-        default_factory=list,
-        metadata={
-            "name": "OnContainerUpdateTrigger",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    on_periodic_rate_trigger: list[TriggerSetType.OnPeriodicRateTrigger] = field(
-        default_factory=list,
-        metadata={
-            "name": "OnPeriodicRateTrigger",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "OnParameterUpdateTrigger",
+                    "type": ForwardRef("TriggerSetType.OnParameterUpdateTrigger"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "OnContainerUpdateTrigger",
+                    "type": ForwardRef("TriggerSetType.OnContainerUpdateTrigger"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "OnPeriodicRateTrigger",
+                    "type": ForwardRef("TriggerSetType.OnPeriodicRateTrigger"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
     name: None | str = field(
@@ -598,7 +610,9 @@ class TriggerSetType:
 
 @dataclass(kw_only=True)
 class UnitType:
-    """Used to hold the unit(s) plus possibly the exponent and factor for the units."""
+    """
+    Used to hold the unit(s) plus possibly the exponent and factor for the units.
+    """
 
     power: Decimal = field(
         default=Decimal("1"),
@@ -630,7 +644,9 @@ class UnitType:
 
 @dataclass(kw_only=True)
 class ValueEnumerationType:
-    """Contains a value and an associated string label."""
+    """
+    Contains a value and an associated string label.
+    """
 
     value: int = field(
         metadata={
@@ -645,7 +661,9 @@ class ValueEnumerationType:
 
 
 class VerifierEnumerationType(Enum):
-    """An enumerated list of verifier types."""
+    """
+    An enumerated list of verifier types.
+    """
 
     RELEASE = "release"
     TRANSFERRED_TO_RANGE = "transferredToRange"
@@ -660,7 +678,8 @@ class VerifierEnumerationType(Enum):
 
 @dataclass(kw_only=True)
 class AlarmRangesType:
-    """Contains five ranges: Watch, Warning, Distress, Critical, and Severe each in
+    """
+    Contains five ranges: Watch, Warning, Distress, Critical, and Severe each in
     increasing severity.
 
     Normally, only the Warning and Critical ranges are used and the color yellow is
@@ -716,7 +735,8 @@ class AlarmRangesType:
 
 @dataclass(kw_only=True)
 class DescriptionType:
-    """An abstract type definition used as the base for NameDescriptionType or
+    """
+    An abstract type definition used as the base for NameDescriptionType or
     OptionalNameDescriptionType.
 
     The short description is intended to be used for quick "memory jogger"
@@ -730,7 +750,6 @@ class DescriptionType:
         ancillary_data_set:
         short_description: It is strongly recommended that the short description
             be kept under 80 characters in length
-
     """
 
     long_description: None | str = field(
@@ -767,12 +786,12 @@ class DescriptionType:
 
     @dataclass(kw_only=True)
     class AncillaryDataSet:
-        """Attributes:
-        ancillary_data: Use for any other data associated with each named
-            object.  May be used to include administrative data (e.g.,
-            version, CM or tags) or potentially any MIME type.  Data may be
-            included  or given as an href.
-
+        """
+        Attributes:
+            ancillary_data: Use for any other data associated with each named
+                object.  May be used to include administrative data (e.g.,
+                version, CM or tags) or potentially any MIME type.  Data may be
+                included  or given as an href.
         """
 
         ancillary_data: list[DescriptionType.AncillaryDataSet.AncillaryData] = field(
@@ -810,31 +829,30 @@ class DescriptionType:
 
 @dataclass(kw_only=True)
 class ErrorDetectCorrectType:
-    """A simple element that provides for simple, but common error checking and
+    """
+    A simple element that provides for simple, but common error checking and
     detection.
-
-    Attributes:
-        parity: Bit position starts with 'zero'.
-        crc: Cyclic Redundancy Check (CRC) definition. Legal values for
-            coefficient's are 0 or 1. Exponents must be integer values.
-
     """
 
-    parity: None | ErrorDetectCorrectType.Parity = field(
-        default=None,
-        metadata={
-            "name": "Parity",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    crc: None | ErrorDetectCorrectType.Crc = field(
-        default=None,
-        metadata={
-            "name": "CRC",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
+    parity_or_crc: None | ErrorDetectCorrectType.Parity | ErrorDetectCorrectType.Crc = (
+        field(
+            default=None,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Parity",
+                        "type": ForwardRef("ErrorDetectCorrectType.Parity"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "CRC",
+                        "type": ForwardRef("ErrorDetectCorrectType.Crc"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+            },
+        )
     )
 
     @dataclass(kw_only=True)
@@ -884,7 +902,8 @@ class ErrorDetectCorrectType:
 
 @dataclass(kw_only=True)
 class HeaderType:
-    """Schema for a Header record.
+    """
+    Schema for a Header record.
 
     A header contains general information about the system or subsystem.
     """
@@ -981,7 +1000,8 @@ class HeaderType:
 
 @dataclass(kw_only=True)
 class ParameterInstanceRefType(ParameterRefType):
-    """A reference to an instance of a Parameter.
+    """
+    A reference to an instance of a Parameter.
 
     Used when the value of a parameter is required for a calculation or as an index
     value. A positive value for instance is forward in time, a negative value for
@@ -1006,7 +1026,8 @@ class ParameterInstanceRefType(ParameterRefType):
 
 @dataclass(kw_only=True)
 class RateInStreamType:
-    """Used in packaging to define the expected rate that any individual container will
+    """
+    Used in packaging to define the expected rate that any individual container will
     be in a Stream.
     """
 
@@ -1034,7 +1055,8 @@ class RateInStreamType:
 
 @dataclass(kw_only=True)
 class SignificanceType:
-    """Significance provides some cautionary information about the potential
+    """
+    Significance provides some cautionary information about the potential
     consequence of each MetaCommand.
 
     Attributes:
@@ -1043,7 +1065,6 @@ class SignificanceType:
         reason_for_warning:
         consequence_level: No specific meanings have been assigned to these
             different levels, but they mirror the Alarm levels of Telemetry.
-
     """
 
     space_system_at_risk: None | str = field(
@@ -1071,32 +1092,37 @@ class SignificanceType:
 
 @dataclass(kw_only=True)
 class ComparisonCheckType:
-    """A ParameterInstanceRef to a value or another parameter instance.
+    """
+    A ParameterInstanceRef to a value or another parameter instance.
 
     Attributes:
-        parameter_instance_ref:
-        comparison_operator:
+        parameter_instance_ref_or_comparison_operator:
         value: Value is assumed to be of the same type as the comparison
             Parameter
-
     """
 
-    parameter_instance_ref: list[ParameterInstanceRefType] = field(
+    parameter_instance_ref_or_comparison_operator: list[
+        ParameterInstanceRefType | ComparisonOperatorsType
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "ParameterInstanceRef",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "min_occurs": 1,
-            "max_occurs": 2,
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ParameterInstanceRef",
+                    "type": ParameterInstanceRefType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                    "max_occurs": 2,
+                },
+                {
+                    "name": "ComparisonOperator",
+                    "type": ComparisonOperatorsType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
+            "min_occurs": 2,
+            "max_occurs": 3,
         },
-    )
-    comparison_operator: ComparisonOperatorsType = field(
-        metadata={
-            "name": "ComparisonOperator",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        }
     )
     value: None | str = field(
         default=None,
@@ -1110,7 +1136,8 @@ class ComparisonCheckType:
 
 @dataclass(kw_only=True)
 class ComparisonType(ParameterInstanceRefType):
-    """A simple ParameterInstanceRef to value comparison.
+    """
+    A simple ParameterInstanceRef to value comparison.
 
     The string supplied in the value attribute needs to be converted to a type
     matching the Parameter being compared to. Numerical values are assumed to be
@@ -1135,7 +1162,8 @@ class ComparisonType(ParameterInstanceRefType):
 
 @dataclass(kw_only=True)
 class DataEncodingType:
-    """Describes how a particular piece of data is sent or received from some
+    """
+    Describes how a particular piece of data is sent or received from some
     non-native, off-platform device. (e.g. a spacecraft).
 
     Attributes:
@@ -1146,7 +1174,6 @@ class DataEncodingType:
             included, it is assumed that the most significant byte is first,
             least significant byte last.
         bit_order:
-
     """
 
     error_detect_correct: None | ErrorDetectCorrectType = field(
@@ -1176,42 +1203,39 @@ class DataEncodingType:
 
 @dataclass(kw_only=True)
 class DecimalValueType:
-    """Contains a Numeric value; value may be provided directly or via the value in a
+    """
+    Contains a Numeric value; value may be provided directly or via the value in a
     parameter.
-
-    Attributes:
-        fixed_value:
-        dynamic_value: Uses a parameter instance to obtain the value.  The
-            parameter value may be optionally adjusted by a Linear function or
-            use a series of boolean expressions to lookup the value.  Anything
-            more complex and a DynamicValue with a CustomAlgorithm may be used
-
     """
 
-    fixed_value: None | Decimal = field(
-        default=None,
-        metadata={
-            "name": "FixedValue",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    dynamic_value: None | DecimalValueType.DynamicValue = field(
-        default=None,
-        metadata={
-            "name": "DynamicValue",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
+    fixed_value_or_dynamic_value: None | Decimal | DecimalValueType.DynamicValue = (
+        field(
+            default=None,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "FixedValue",
+                        "type": Decimal,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "DynamicValue",
+                        "type": ForwardRef("DecimalValueType.DynamicValue"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+            },
+        )
     )
 
     @dataclass(kw_only=True)
     class DynamicValue:
-        """Attributes:
-        parameter_instance_ref:
-        linear_adjustment: A slope and intercept may be applied to scale or
-            shift the value of the parameter in the dynamic value
-
+        """
+        Attributes:
+            parameter_instance_ref:
+            linear_adjustment: A slope and intercept may be applied to scale or
+                shift the value of the parameter in the dynamic value
         """
 
         parameter_instance_ref: ParameterInstanceRefType = field(
@@ -1250,7 +1274,8 @@ class DecimalValueType:
 
 @dataclass(kw_only=True)
 class MathOperationType:
-    """Postfix (aka Reverse Polish Notation (RPN)) notation is used to describe
+    """
+    Postfix (aka Reverse Polish Notation (RPN)) notation is used to describe
     mathmatical equations.
 
     It uses a stack where operands (either fixed values or ParameterInstances) are
@@ -1259,60 +1284,42 @@ class MathOperationType:
     back onto the stack. In this case postfix is used to avoid having to specify
     parenthesis. To convert from infix to postfix, use Dijkstra's "shunting yard"
     algorithm.
-
-    Attributes:
-        value_operand: Use a constant in the calculation
-        this_parameter_operand: Use the value of this parameter in the
-            calculation
-        parameter_instance_ref_operand: Use the value of another Parameter in the
-            calculation
-        operator: Binary operators: +, -, *, /, %, ^ operate on the top two
-            values in the stack, leaving the result on the top of the stack.
-            Unary operators: 1/x, x!, e^x, ln, log, and trigonometric operators
-            operate on the top member of the stack also leaving the result on the
-            top of the stack.  'ln' is a natural log where 'log' is a base 10
-            logarithm.  Trigonometric operators use degrees.  'swap' swaps the
-            top two members of the stack.
-
     """
 
-    value_operand: list[float] = field(
+    choice: list[float | object | ParameterInstanceRefType | MathOperatorsType] = field(
         default_factory=list,
         metadata={
-            "name": "ValueOperand",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    this_parameter_operand: list[object] = field(
-        default_factory=list,
-        metadata={
-            "name": "ThisParameterOperand",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    parameter_instance_ref_operand: list[ParameterInstanceRefType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ParameterInstanceRefOperand",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    operator: list[MathOperatorsType] = field(
-        default_factory=list,
-        metadata={
-            "name": "Operator",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ValueOperand",
+                    "type": float,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ThisParameterOperand",
+                    "type": object,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ParameterInstanceRefOperand",
+                    "type": ParameterInstanceRefType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "Operator",
+                    "type": MathOperatorsType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
 
 @dataclass(kw_only=True)
 class NameDescriptionType(DescriptionType):
-    """The type definition used by most elements that require a name with optional
+    """
+    The type definition used by most elements that require a name with optional
     descriptions.
     """
 
@@ -1326,7 +1333,8 @@ class NameDescriptionType(DescriptionType):
 
 @dataclass(kw_only=True)
 class OptionalNameDescriptionType(DescriptionType):
-    """The type definition used by most elements that have an optional name with
+    """
+    The type definition used by most elements that have an optional name with
     optional descriptions.
     """
 
@@ -1341,7 +1349,8 @@ class OptionalNameDescriptionType(DescriptionType):
 
 @dataclass(kw_only=True)
 class ReferenceTimeType:
-    """Most time values are relative to another time e.g. seconds are relative to
+    """
+    Most time values are relative to another time e.g. seconds are relative to
     minutes, minutes are relative to hours.
 
     This type is used to describe this relationship starting with the least
@@ -1349,27 +1358,32 @@ class ReferenceTimeType:
     parameter.
     """
 
-    offset_from: None | ParameterInstanceRefType = field(
-        default=None,
-        metadata={
-            "name": "OffsetFrom",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    epoch: None | XmlDate | EpochTypeValue = field(
-        default=None,
-        metadata={
-            "name": "Epoch",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
+    offset_from_or_epoch: None | ParameterInstanceRefType | XmlDate | EpochTypeValue = (
+        field(
+            default=None,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "OffsetFrom",
+                        "type": ParameterInstanceRefType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "Epoch",
+                        "type": XmlDate | EpochTypeValue,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+            },
+        )
     )
 
 
 @dataclass(kw_only=True)
 class TimeAssociationType(ParameterInstanceRefType):
-    """Telemetry parameter instances are oftentimes "time-tagged" with a timing signal
+    """
+    Telemetry parameter instances are oftentimes "time-tagged" with a timing signal
     either provided on the ground or on the space system.
 
     This data element allows one to specify which of possibly many
@@ -1383,7 +1397,6 @@ class TimeAssociationType(ParameterInstanceRefType):
             parameter.
         offset: The offset is used to supply a relative time offset from the time
             association and to this parameter
-
     """
 
     interpolate_time: bool = field(
@@ -1403,7 +1416,8 @@ class TimeAssociationType(ParameterInstanceRefType):
 
 @dataclass(kw_only=True)
 class AndedConditionsType:
-    """A list of boolean comparisons, or boolean groups that are logically ANDed
+    """
+    A list of boolean comparisons, or boolean groups that are logically ANDed
     together.
 
     Any ORed conditions in the list are evaluated first.
@@ -1412,36 +1426,39 @@ class AndedConditionsType:
     class Meta:
         name = "ANDedConditionsType"
 
-    condition: list[ComparisonCheckType] = field(
-        default_factory=list,
-        metadata={
-            "name": "Condition",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "min_occurs": 2,
-        },
-    )
-    ored_conditions: list[OredConditionsType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ORedConditions",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "min_occurs": 2,
-        },
+    condition_or_ored_conditions: list[ComparisonCheckType | OredConditionsType] = (
+        field(
+            default_factory=list,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Condition",
+                        "type": ComparisonCheckType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "ORedConditions",
+                        "type": ForwardRef("OredConditionsType"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+                "min_occurs": 2,
+            },
+        )
     )
 
 
 @dataclass(kw_only=True)
 class AggregateDataType(NameDescriptionType):
-    """Contains multiple values (as members) of any type.
+    """
+    Contains multiple values (as members) of any type.
 
     Attributes:
         member_list: Order is important only if the name of the
             AggregateParameter or Aggregate Argument is directly referenced in
             SequenceContainers.  In this case the members are assued to be added
             sequentially (in the order listed here) into the Container.
-
     """
 
     member_list: AggregateDataType.MemberList = field(
@@ -1454,11 +1471,11 @@ class AggregateDataType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class MemberList:
-        """Attributes:
-        member: Each member of the Aggregate Data has a name and a reference
-            to another DataType.  The other DataType may be any other
-            DataType.  Circular references are not allowed.
-
+        """
+        Attributes:
+            member: Each member of the Aggregate Data has a name and a reference
+                to another DataType.  The other DataType may be any other
+                DataType.  Circular references are not allowed.
         """
 
         member: list[AggregateDataType.MemberList.Member] = field(
@@ -1489,7 +1506,8 @@ class AggregateDataType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class ArrayDataTypeType(NameDescriptionType):
-    """An array of values of the type referenced in 'arrayTypeRef' and have the number
+    """
+    An array of values of the type referenced in 'arrayTypeRef' and have the number
     of array dimensions as specified in 'numberOfDimensions'.
     """
 
@@ -1509,47 +1527,34 @@ class ArrayDataTypeType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class CalibratorType(OptionalNameDescriptionType):
-    """Calibrators are normally used to convert to and from bit compacted numerical
+    """
+    Calibrators are normally used to convert to and from bit compacted numerical
     data.
-
-    Attributes:
-        spline_calibrator: A calibration type where a segmented line in a raw vs
-            calibrated plane is described using a set of points.  Raw values are
-            converted to calibrated values by finding a position on the line
-            corresponding  to the raw value. The algorithm triggers on the input
-            parameter.
-        polynomial_calibrator: A calibration type where a curve in a raw vs
-            calibrated plane is described using a set of polynomial coefficients.
-            Raw values are converted to calibrated values by finding a position
-            on the curve corresponding to the raw value. The first coefficient
-            belongs with the X^0 term, the next coefficient belongs to the X^1
-            term and so on.
-        math_operation_calibrator:
-
     """
 
-    spline_calibrator: None | CalibratorType.SplineCalibrator = field(
+    spline_calibrator_or_polynomial_calibrator_or_math_operation_calibrator: (
+        None | CalibratorType.SplineCalibrator | PolynomialType | MathOperationType
+    ) = field(
         default=None,
         metadata={
-            "name": "SplineCalibrator",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    polynomial_calibrator: None | PolynomialType = field(
-        default=None,
-        metadata={
-            "name": "PolynomialCalibrator",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    math_operation_calibrator: None | MathOperationType = field(
-        default=None,
-        metadata={
-            "name": "MathOperationCalibrator",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "SplineCalibrator",
+                    "type": ForwardRef("CalibratorType.SplineCalibrator"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "PolynomialCalibrator",
+                    "type": PolynomialType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "MathOperationCalibrator",
+                    "type": MathOperationType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -1580,7 +1585,9 @@ class CalibratorType(OptionalNameDescriptionType):
 
 @dataclass(kw_only=True)
 class MathAlgorithmType(NameDescriptionType):
-    """A simple mathematical operation."""
+    """
+    A simple mathematical operation.
+    """
 
     math_operation: MathAlgorithmType.MathOperation = field(
         metadata={
@@ -1609,40 +1616,36 @@ class MathAlgorithmType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class NumberToStringType(OptionalNameDescriptionType):
-    """There are two ways numeric data can be changed to string data: using a Java
+    """
+    There are two ways numeric data can be changed to string data: using a Java
     style NumberFormat, or using an enumerated list.
 
     Enumerated lists can be assigned to a single value or a value range.
-
-    Attributes:
-        value_enumeration: A number or range assigned to a string.
-        range_enumeration: A string value associated with a numerical range.
-        number_format:
-
     """
 
-    value_enumeration: list[ValueEnumerationType] = field(
+    value_enumeration_or_range_enumeration_or_number_format: list[
+        ValueEnumerationType | FloatRangeType | NumberToStringType.NumberFormat
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "ValueEnumeration",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    range_enumeration: list[FloatRangeType] = field(
-        default_factory=list,
-        metadata={
-            "name": "RangeEnumeration",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    number_format: None | NumberToStringType.NumberFormat = field(
-        default=None,
-        metadata={
-            "name": "NumberFormat",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ValueEnumeration",
+                    "type": ValueEnumerationType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "RangeEnumeration",
+                    "type": FloatRangeType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "NumberFormat",
+                    "type": ForwardRef("NumberToStringType.NumberFormat"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -1728,7 +1731,8 @@ class NumberToStringType(OptionalNameDescriptionType):
 
 @dataclass(kw_only=True)
 class PcmstreamType(NameDescriptionType):
-    """A PCM Stream Type is the high level definition for all Pulse Code Modulated
+    """
+    A PCM Stream Type is the high level definition for all Pulse Code Modulated
     (PCM) (i.e., binary) streams.
     """
 
@@ -1759,7 +1763,8 @@ class PcmstreamType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class ParameterToSetType:
-    """Used by Meta Command to indicate ground Parameters that should be set after
+    """
+    Used by Meta Command to indicate ground Parameters that should be set after
     completion of a command.
     """
 
@@ -1781,22 +1786,28 @@ class ParameterToSetType:
 
 @dataclass(kw_only=True)
 class ServiceType(NameDescriptionType):
-    """Holds a set of services, logical groups of containers OR messages (not both)."""
+    """
+    Holds a set of services, logical groups of containers OR messages (not both).
+    """
 
-    message_ref_set: None | ServiceType.MessageRefSet = field(
+    message_ref_set_or_container_ref_set: (
+        None | ServiceType.MessageRefSet | ServiceType.ContainerRefSet
+    ) = field(
         default=None,
         metadata={
-            "name": "MessageRefSet",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    container_ref_set: None | ServiceType.ContainerRefSet = field(
-        default=None,
-        metadata={
-            "name": "ContainerRefSet",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "MessageRefSet",
+                    "type": ForwardRef("ServiceType.MessageRefSet"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerRefSet",
+                    "type": ForwardRef("ServiceType.ContainerRefSet"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -1827,7 +1838,8 @@ class ServiceType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class SimpleAlgorithmType(NameDescriptionType):
-    """The simplest form of algorithm, a SimpleAlgorithmType contains an area for a
+    """
+    The simplest form of algorithm, a SimpleAlgorithmType contains an area for a
     free-form pseudo code description of the algorithm plus a Set of references to
     external algorithms.
 
@@ -1840,7 +1852,6 @@ class SimpleAlgorithmType(NameDescriptionType):
             actual code for the algorithm.  The language for the algorithm is
             specified with the language attribute
         external_algorithm_set:
-
     """
 
     algorithm_text: None | SimpleAlgorithmType.AlgorithmText = field(
@@ -1872,11 +1883,11 @@ class SimpleAlgorithmType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class ExternalAlgorithmSet:
-        """Attributes:
-        external_algorithm: This is the external algorithm.  Multiple entries
-            are provided so that the same database may be used for multiple
-            implementation s
-
+        """
+        Attributes:
+            external_algorithm: This is the external algorithm.  Multiple entries
+                are provided so that the same database may be used for multiple
+                implementation s
         """
 
         external_algorithm: list[
@@ -1909,32 +1920,31 @@ class SimpleAlgorithmType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class FrameStreamType(PcmstreamType):
-    """The top level type definition for all data streams that are frame based.
+    """
+    The top level type definition for all data streams that are frame based.
 
     Attributes:
-        container_ref: This Container (usually abstract) is the container that is
-            in the fixed frame stream.  Normally, this is a general container
-            type from which many specific containers are inherited.
-        service_ref:
+        container_ref_or_service_ref:
         stream_ref: This is a reference to a connecting stream - say a custom
             stream.
-
     """
 
-    container_ref: None | ContainerRefType = field(
+    container_ref_or_service_ref: None | ContainerRefType | ServiceRefType = field(
         default=None,
         metadata={
-            "name": "ContainerRef",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    service_ref: None | ServiceRefType = field(
-        default=None,
-        metadata={
-            "name": "ServiceRef",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ContainerRef",
+                    "type": ContainerRefType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ServiceRef",
+                    "type": ServiceRefType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
     stream_ref: None | StreamRefType = field(
@@ -1949,7 +1959,9 @@ class FrameStreamType(PcmstreamType):
 
 @dataclass(kw_only=True)
 class InputAlgorithmType(SimpleAlgorithmType):
-    """A set of labeled inputs is added to the SimpleAlgorithmType."""
+    """
+    A set of labeled inputs is added to the SimpleAlgorithmType.
+    """
 
     input_set: None | InputAlgorithmType.InputSet = field(
         default=None,
@@ -1962,35 +1974,27 @@ class InputAlgorithmType(SimpleAlgorithmType):
 
     @dataclass(kw_only=True)
     class InputSet:
-        """Attributes:
-        parameter_instance_ref: Names an input parameter to the algorithm.
-            There are two attributes to InputParm, inputName and
-            parameterName. parameterName is a parameter reference name for a
-            parameter that will be used in this algorithm.  inputName is an
-            optional "friendly" name for the input parameter.
-        constant: Names and provides a value for a constant input to the
-            algorithm.  There are two attributes to Constant, constantName
-            and value.  constantName is a variable name in the algorithm to
-            be executed.  value is the value of the constant to be used.
-
-        """
-
-        parameter_instance_ref: list[
+        parameter_instance_ref_or_constant: list[
             InputAlgorithmType.InputSet.ParameterInstanceRef
+            | InputAlgorithmType.InputSet.Constant
         ] = field(
             default_factory=list,
             metadata={
-                "name": "ParameterInstanceRef",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        constant: list[InputAlgorithmType.InputSet.Constant] = field(
-            default_factory=list,
-            metadata={
-                "name": "Constant",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "ParameterInstanceRef",
+                        "type": ForwardRef(
+                            "InputAlgorithmType.InputSet.ParameterInstanceRef"
+                        ),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "Constant",
+                        "type": ForwardRef("InputAlgorithmType.InputSet.Constant"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
             },
         )
 
@@ -2022,7 +2026,8 @@ class InputAlgorithmType(SimpleAlgorithmType):
 
 @dataclass(kw_only=True)
 class OredConditionsType:
-    """A list of boolean comparisons, or boolean groups that are logically ORed
+    """
+    A list of boolean comparisons, or boolean groups that are logically ORed
     together.
 
     Any ANDed conditions in the list are evaluated first.
@@ -2031,59 +2036,67 @@ class OredConditionsType:
     class Meta:
         name = "ORedConditionsType"
 
-    condition: list[ComparisonCheckType] = field(
-        default_factory=list,
-        metadata={
-            "name": "Condition",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "min_occurs": 2,
-        },
-    )
-    anded_conditions: list[AndedConditionsType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ANDedConditions",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "min_occurs": 2,
-        },
+    condition_or_anded_conditions: list[ComparisonCheckType | AndedConditionsType] = (
+        field(
+            default_factory=list,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Condition",
+                        "type": ComparisonCheckType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "ANDedConditions",
+                        "type": AndedConditionsType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+                "min_occurs": 2,
+            },
+        )
     )
 
 
 @dataclass(kw_only=True)
 class BooleanExpressionType:
-    """Holds an arbitrarily complex boolean expression."""
+    """
+    Holds an arbitrarily complex boolean expression.
+    """
 
-    condition: None | ComparisonCheckType = field(
+    condition_or_anded_conditions_or_ored_conditions: (
+        None | ComparisonCheckType | AndedConditionsType | OredConditionsType
+    ) = field(
         default=None,
         metadata={
-            "name": "Condition",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    anded_conditions: None | AndedConditionsType = field(
-        default=None,
-        metadata={
-            "name": "ANDedConditions",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    ored_conditions: None | OredConditionsType = field(
-        default=None,
-        metadata={
-            "name": "ORedConditions",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "Condition",
+                    "type": ComparisonCheckType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ANDedConditions",
+                    "type": AndedConditionsType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ORedConditions",
+                    "type": OredConditionsType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
 
 @dataclass(kw_only=True)
 class InputOutputAlgorithmType(InputAlgorithmType):
-    """A set of labeled outputs are added to the SimpleInputAlgorithmType."""
+    """
+    A set of labeled outputs are added to the SimpleInputAlgorithmType.
+    """
 
     output_set: None | InputOutputAlgorithmType.OutputSet = field(
         default=None,
@@ -2102,13 +2115,13 @@ class InputOutputAlgorithmType(InputAlgorithmType):
 
     @dataclass(kw_only=True)
     class OutputSet:
-        """Attributes:
-        output_parameter_ref: Names an output parameter to the algorithm.
-            There are two attributes to OutputParm, outputName and
-            parameterName. parameterName is a parameter reference name for a
-            parameter that will be updated by this algorithm.  outputName is
-            an optional "friendly" name for the output parameter.
-
+        """
+        Attributes:
+            output_parameter_ref: Names an output parameter to the algorithm.
+                There are two attributes to OutputParm, outputName and
+                parameterName. parameterName is a parameter reference name for a
+                parameter that will be updated by this algorithm.  outputName is
+                an optional "friendly" name for the output parameter.
         """
 
         output_parameter_ref: list[
@@ -2136,7 +2149,8 @@ class InputOutputAlgorithmType(InputAlgorithmType):
 
 @dataclass(kw_only=True)
 class SyncStrategyType:
-    """A Sync Strategy specifies the strategy on how to find frames within a stream of
+    """
+    A Sync Strategy specifies the strategy on how to find frames within a stream of
     PCM data.
 
     The sync strategy is based upon a state machine that begins in the 'Search'
@@ -2157,7 +2171,6 @@ class SyncStrategyType:
         check_to_lock_good_frames:
         max_bit_errors_in_sync_pattern: Maximum number of bit errors in the sync
             pattern (marker).
-
     """
 
     auto_invert: None | SyncStrategyType.AutoInvert = field(
@@ -2211,89 +2224,81 @@ class SyncStrategyType:
 
 @dataclass(kw_only=True)
 class CommandVerifierType(OptionalNameDescriptionType):
-    """A command verifier is used to check that the command has been successfully
+    """
+    A command verifier is used to check that the command has been successfully
     executed.
 
     Command Verifiers may be either a Custom Algorithm or a Boolean Check or the
     presence of a Container for a relative change in the value of a Parameter. The
     CheckWindow is a time period where the verification must test true to pass.
-
-    Attributes:
-        comparison_list: All comparisons must be true
-        container_ref: When verification is a new instance the referenced
-            Container
-        parameter_value_change: Used to look for relative change in a Parameter
-            value.  Only useful for numeric Parameters
-        custom_algorithm:
-        boolean_expression:
-        comparison:
-        check_window:
-        check_window_algorithms: Used when times must be calculated
-
     """
 
-    comparison_list: None | CommandVerifierType.ComparisonList = field(
+    choice: (
+        None
+        | CommandVerifierType.ComparisonList
+        | ContainerRefType
+        | CommandVerifierType.ParameterValueChange
+        | InputAlgorithmType
+        | BooleanExpressionType
+        | ComparisonType
+    ) = field(
         default=None,
         metadata={
-            "name": "ComparisonList",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ComparisonList",
+                    "type": ForwardRef("CommandVerifierType.ComparisonList"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerRef",
+                    "type": ContainerRefType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ParameterValueChange",
+                    "type": ForwardRef("CommandVerifierType.ParameterValueChange"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "CustomAlgorithm",
+                    "type": InputAlgorithmType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BooleanExpression",
+                    "type": BooleanExpressionType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "Comparison",
+                    "type": ComparisonType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
-    container_ref: None | ContainerRefType = field(
+    check_window_or_check_window_algorithms: (
+        None
+        | CommandVerifierType.CheckWindow
+        | CommandVerifierType.CheckWindowAlgorithms
+    ) = field(
         default=None,
         metadata={
-            "name": "ContainerRef",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    parameter_value_change: None | CommandVerifierType.ParameterValueChange = field(
-        default=None,
-        metadata={
-            "name": "ParameterValueChange",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    custom_algorithm: None | InputAlgorithmType = field(
-        default=None,
-        metadata={
-            "name": "CustomAlgorithm",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    boolean_expression: None | BooleanExpressionType = field(
-        default=None,
-        metadata={
-            "name": "BooleanExpression",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    comparison: None | ComparisonType = field(
-        default=None,
-        metadata={
-            "name": "Comparison",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    check_window: None | CommandVerifierType.CheckWindow = field(
-        default=None,
-        metadata={
-            "name": "CheckWindow",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    check_window_algorithms: None | CommandVerifierType.CheckWindowAlgorithms = field(
-        default=None,
-        metadata={
-            "name": "CheckWindowAlgorithms",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "CheckWindow",
+                    "type": ForwardRef("CommandVerifierType.CheckWindow"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "CheckWindowAlgorithms",
+                    "type": ForwardRef("CommandVerifierType.CheckWindowAlgorithms"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -2377,7 +2382,8 @@ class CommandVerifierType(OptionalNameDescriptionType):
 
 @dataclass(kw_only=True)
 class CustomStreamType(PcmstreamType):
-    """A stream type where some level of custom processing (e.g. convolutional,
+    """
+    A stream type where some level of custom processing (e.g. convolutional,
     encryption, compression) is performed.
 
     Has a reference to external algorithms for encoding and decoding algorithms.
@@ -2388,7 +2394,6 @@ class CustomStreamType(PcmstreamType):
             parameters.
         encoded_stream_ref:
         decoded_stream_ref:
-
     """
 
     encoding_algorithm: InputAlgorithmType = field(
@@ -2421,7 +2426,8 @@ class CustomStreamType(PcmstreamType):
 
 @dataclass(kw_only=True)
 class FixedFrameStreamType(FrameStreamType):
-    """For streams that contain a series of frames with a fixed frame length where the
+    """
+    For streams that contain a series of frames with a fixed frame length where the
     frames are found by looking for a marker in the data.
 
     This marker is sometimes called the frame sync pattern and sometimes the
@@ -2433,7 +2439,6 @@ class FixedFrameStreamType(FrameStreamType):
         sync_aperture_in_bits: Allowed slip (in bits) in either direction for the
             sync pattern
         frame_length_in_bits:
-
     """
 
     sync_strategy: FixedFrameStreamType.SyncStrategy = field(
@@ -2459,10 +2464,10 @@ class FixedFrameStreamType(FrameStreamType):
 
     @dataclass(kw_only=True)
     class SyncStrategy(SyncStrategyType):
-        """Attributes:
-        sync_pattern: The pattern of bits used to look for frame
-            synchronization.
-
+        """
+        Attributes:
+            sync_pattern: The pattern of bits used to look for frame
+                synchronization.
         """
 
         sync_pattern: FixedFrameStreamType.SyncStrategy.SyncPattern = field(
@@ -2475,13 +2480,13 @@ class FixedFrameStreamType(FrameStreamType):
 
         @dataclass(kw_only=True)
         class SyncPattern:
-            """Attributes:
-            pattern: CCSDS ASM for non-turbocoded frames = 1acffc1d
-            bit_location_from_start_of_container:
-            mask:
-            mask_length_in_bits: truncate the mask from the left
-            pattern_length_in_bits: truncate the pattern from the left
-
+            """
+            Attributes:
+                pattern: CCSDS ASM for non-turbocoded frames = 1acffc1d
+                bit_location_from_start_of_container:
+                mask:
+                mask_length_in_bits: truncate the mask from the left
+                pattern_length_in_bits: truncate the pattern from the left
             """
 
             pattern: bytes = field(
@@ -2521,14 +2526,14 @@ class FixedFrameStreamType(FrameStreamType):
 
 @dataclass(kw_only=True)
 class InputOutputTriggerAlgorithmType(InputOutputAlgorithmType):
-    """A set of labeled triggers is added to the SimpleInputOutputAlgorithmType.
+    """
+    A set of labeled triggers is added to the SimpleInputOutputAlgorithmType.
 
     Attributes:
         trigger_set:
         trigger_container: First telemetry container from which the output
             parameter should be calculated.
         priority: Algorithm processing priority.
-
     """
 
     trigger_set: None | TriggerSetType = field(
@@ -2557,47 +2562,43 @@ class InputOutputTriggerAlgorithmType(InputOutputAlgorithmType):
 
 @dataclass(kw_only=True)
 class MatchCriteriaType:
-    """Contains either a simple Comparison, a ComparisonList, an arbitrarily complex
+    """
+    Contains either a simple Comparison, a ComparisonList, an arbitrarily complex
     BooleanExpression or an escape to an externally defined algorithm.
-
-    Attributes:
-        comparison: A simple comparison check
-        comparison_list: All comparisons must be true
-        boolean_expression: An arbitrarily complex boolean expression
-        custom_algorithm: An escape to an externally defined algorithm
-
     """
 
-    comparison: None | ComparisonType = field(
+    choice: (
+        None
+        | ComparisonType
+        | MatchCriteriaType.ComparisonList
+        | BooleanExpressionType
+        | InputAlgorithmType
+    ) = field(
         default=None,
         metadata={
-            "name": "Comparison",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    comparison_list: None | MatchCriteriaType.ComparisonList = field(
-        default=None,
-        metadata={
-            "name": "ComparisonList",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    boolean_expression: None | BooleanExpressionType = field(
-        default=None,
-        metadata={
-            "name": "BooleanExpression",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    custom_algorithm: None | InputAlgorithmType = field(
-        default=None,
-        metadata={
-            "name": "CustomAlgorithm",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "Comparison",
+                    "type": ComparisonType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ComparisonList",
+                    "type": ForwardRef("MatchCriteriaType.ComparisonList"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BooleanExpression",
+                    "type": BooleanExpressionType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "CustomAlgorithm",
+                    "type": InputAlgorithmType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -2616,7 +2617,8 @@ class MatchCriteriaType:
 
 @dataclass(kw_only=True)
 class VariableFrameStreamType(FrameStreamType):
-    """For streams that contain a series of frames with a variable frame length where
+    """
+    For streams that contain a series of frames with a variable frame length where
     the frames are found by looking for a series of one's or zero's (usually one's).
 
     The series is called the flag. in the PCM stream that are usually made to be
@@ -2633,9 +2635,9 @@ class VariableFrameStreamType(FrameStreamType):
 
     @dataclass(kw_only=True)
     class SyncStrategy(SyncStrategyType):
-        """Attributes:
-        flag: The pattern of bits used to look for frame synchronization.
-
+        """
+        Attributes:
+            flag: The pattern of bits used to look for frame synchronization.
         """
 
         flag: VariableFrameStreamType.SyncStrategy.Flag = field(
@@ -2666,7 +2668,9 @@ class VariableFrameStreamType(FrameStreamType):
 
 @dataclass(kw_only=True)
 class AlarmConditionsType:
-    """When the alarm is determined by boolean logic."""
+    """
+    When the alarm is determined by boolean logic.
+    """
 
     watch_alarm: None | MatchCriteriaType = field(
         default=None,
@@ -2712,29 +2716,36 @@ class AlarmConditionsType:
 
 @dataclass(kw_only=True)
 class AlgorithmSetType:
-    """An unordered collection of algorithms."""
+    """
+    An unordered collection of algorithms.
+    """
 
-    custom_algorithm: list[InputOutputTriggerAlgorithmType] = field(
+    custom_algorithm_or_math_algorithm: list[
+        InputOutputTriggerAlgorithmType | MathAlgorithmType
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "CustomAlgorithm",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    math_algorithm: list[MathAlgorithmType] = field(
-        default_factory=list,
-        metadata={
-            "name": "MathAlgorithm",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "CustomAlgorithm",
+                    "type": InputOutputTriggerAlgorithmType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "MathAlgorithm",
+                    "type": MathAlgorithmType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
 
 @dataclass(kw_only=True)
 class ContextCalibratorType:
-    """Context calibrations are applied when the ContextMatch is true.
+    """
+    Context calibrations are applied when the ContextMatch is true.
 
     Context calibrators overide Default calibrators.
     """
@@ -2757,53 +2768,49 @@ class ContextCalibratorType:
 
 @dataclass(kw_only=True)
 class IntegerValueType:
-    """Contains an Integer value; value may be provided directly or via the value in a
+    """
+    Contains an Integer value; value may be provided directly or via the value in a
     parameter.
-
-    Attributes:
-        fixed_value:
-        dynamic_value: Uses a parameter instance to obtain the value.  The
-            parameter value may be optionally adjusted by a Linear function or
-            use a series of boolean expressions to lookup the value.  Anything
-            more complex and a DynamicValue with a CustomAlgorithm may be used
-        discrete_lookup_list: Lookup a value using the lookup list supplied.  Use
-            the first match found.
-
     """
 
-    fixed_value: None | int | str = field(
+    fixed_value_or_dynamic_value_or_discrete_lookup_list: (
+        None
+        | int
+        | str
+        | IntegerValueType.DynamicValue
+        | IntegerValueType.DiscreteLookupList
+    ) = field(
         default=None,
         metadata={
-            "name": "FixedValue",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-            "pattern": r"0[xX][0-9a-fA-F]+",
-        },
-    )
-    dynamic_value: None | IntegerValueType.DynamicValue = field(
-        default=None,
-        metadata={
-            "name": "DynamicValue",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    discrete_lookup_list: None | IntegerValueType.DiscreteLookupList = field(
-        default=None,
-        metadata={
-            "name": "DiscreteLookupList",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "FixedValue",
+                    "type": int | str,
+                    "namespace": "http://www.omg.org/space/xtce",
+                    "pattern": r"0[xX][0-9a-fA-F]+",
+                },
+                {
+                    "name": "DynamicValue",
+                    "type": ForwardRef("IntegerValueType.DynamicValue"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "DiscreteLookupList",
+                    "type": ForwardRef("IntegerValueType.DiscreteLookupList"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
     @dataclass(kw_only=True)
     class DynamicValue:
-        """Attributes:
-        parameter_instance_ref:
-        linear_adjustment: A slope and intercept may be applied to scale or
-            shift the value of the parameter in the dynamic value
-
+        """
+        Attributes:
+            parameter_instance_ref:
+            linear_adjustment: A slope and intercept may be applied to scale or
+                shift the value of the parameter in the dynamic value
         """
 
         parameter_instance_ref: ParameterInstanceRefType = field(
@@ -2864,7 +2871,8 @@ class IntegerValueType:
 
 @dataclass(kw_only=True)
 class ParameterPropertiesType:
-    """A wrapper for those properties that are unique to telemetry parameters.
+    """
+    A wrapper for those properties that are unique to telemetry parameters.
 
     Attributes:
         system_name: Optional.  Normally used when the database is built in a
@@ -2883,7 +2891,6 @@ class ParameterPropertiesType:
             that is used purely on the ground (e.g. a ground command counter).
         read_only: A Parameter marked as 'readOnly' true is constant and non-
             settable
-
     """
 
     system_name: None | str = field(
@@ -2935,13 +2942,13 @@ class ParameterPropertiesType:
 
     @dataclass(kw_only=True)
     class PhysicalAddressSet:
-        """Attributes:
-        physical_address: Contains the address (e.g., channel information)
-            required to process the spacecraft telemetry streams. May be an
-            onboard  id, a mux address, or a physical location. Contains the
-            address (channel information) required to process the spacecraft
-            telemetry streams
-
+        """
+        Attributes:
+            physical_address: Contains the address (e.g., channel information)
+                required to process the spacecraft telemetry streams. May be an
+                onboard  id, a mux address, or a physical location. Contains the
+                address (channel information) required to process the spacecraft
+                telemetry streams
         """
 
         physical_address: list[PhysicalAddressType] = field(
@@ -2956,63 +2963,66 @@ class ParameterPropertiesType:
 
 @dataclass(kw_only=True)
 class StreamSetType:
-    """Contains an unordered set of Streams."""
+    """
+    Contains an unordered set of Streams.
+    """
 
-    fixed_frame_stream: list[FixedFrameStreamType] = field(
+    fixed_frame_stream_or_variable_frame_stream_or_custom_stream: list[
+        FixedFrameStreamType | VariableFrameStreamType | CustomStreamType
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "FixedFrameStream",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    variable_frame_stream: list[VariableFrameStreamType] = field(
-        default_factory=list,
-        metadata={
-            "name": "VariableFrameStream",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    custom_stream: list[CustomStreamType] = field(
-        default_factory=list,
-        metadata={
-            "name": "CustomStream",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "FixedFrameStream",
+                    "type": FixedFrameStreamType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "VariableFrameStream",
+                    "type": VariableFrameStreamType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "CustomStream",
+                    "type": CustomStreamType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
 
 @dataclass(kw_only=True)
 class AlarmType:
-    """Alarms associated with numeric data types.
+    """
+    Alarms associated with numeric data types.
 
     Attributes:
-        alarm_conditions: A MatchCriteria may be specified for each of the 5
-            alarm levels.  Each level is optional and the alarm should be the
-            highest level to test true.
-        custom_alarm: An escape for ridiculously complex alarm conditions.  Will
-            trigger on changes to the  containing Parameter.
+        alarm_conditions_or_custom_alarm:
         min_violations: Number of successive instances that meet the alarm
             conditions for the Alarm to trigger.
-
     """
 
-    alarm_conditions: None | AlarmConditionsType = field(
+    alarm_conditions_or_custom_alarm: (
+        None | AlarmConditionsType | InputAlgorithmType
+    ) = field(
         default=None,
         metadata={
-            "name": "AlarmConditions",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    custom_alarm: None | InputAlgorithmType = field(
-        default=None,
-        metadata={
-            "name": "CustomAlarm",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "AlarmConditions",
+                    "type": AlarmConditionsType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "CustomAlarm",
+                    "type": InputAlgorithmType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
     min_violations: int = field(
@@ -3026,7 +3036,8 @@ class AlarmType:
 
 @dataclass(kw_only=True)
 class BinaryDataEncodingType(DataEncodingType):
-    """For binary data or for integer, float, string, or time data that is not in any
+    """
+    For binary data or for integer, float, string, or time data that is not in any
     of the known encoding formats.
 
     For any data that is not encoded in any of the known integer, float, string, or
@@ -3038,7 +3049,6 @@ class BinaryDataEncodingType(DataEncodingType):
             application data type
         to_binary_transform_algorithm: Used to convert binary data from an
             application data type to binary data
-
     """
 
     size_in_bits: IntegerValueType = field(
@@ -3068,7 +3078,8 @@ class BinaryDataEncodingType(DataEncodingType):
 
 @dataclass(kw_only=True)
 class FloatDataEncodingType(DataEncodingType):
-    """For common encodings of floating point data.
+    """
+    For common encodings of floating point data.
 
     Attributes:
         default_calibrator:
@@ -3077,7 +3088,6 @@ class FloatDataEncodingType(DataEncodingType):
             true
         encoding:
         size_in_bits:
-
     """
 
     default_calibrator: None | CalibratorType = field(
@@ -3125,7 +3135,8 @@ class FloatDataEncodingType(DataEncodingType):
 
 @dataclass(kw_only=True)
 class IntegerDataEncodingType(DataEncodingType):
-    """For all major encodings of integer data.
+    """
+    For all major encodings of integer data.
 
     Attributes:
         default_calibrator:
@@ -3134,7 +3145,6 @@ class IntegerDataEncodingType(DataEncodingType):
             true
         encoding:
         size_in_bits:
-
     """
 
     default_calibrator: None | CalibratorType = field(
@@ -3184,51 +3194,50 @@ class IntegerDataEncodingType(DataEncodingType):
 
 @dataclass(kw_only=True)
 class ParameterSetType:
-    """Used by both the TelemetryMetaData and the CommandMetaData components each may
+    """
+    Used by both the TelemetryMetaData and the CommandMetaData components each may
     be built independently.
-
-    Attributes:
-        parameter:
-        parameter_ref: Used to include a Parameter defined in another sub-system
-            in this sub-system.
-
     """
 
-    parameter: list[ParameterSetType.Parameter] = field(
-        default_factory=list,
-        metadata={
-            "name": "Parameter",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    parameter_ref: list[ParameterRefType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ParameterRef",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
+    parameter_or_parameter_ref: list[ParameterSetType.Parameter | ParameterRefType] = (
+        field(
+            default_factory=list,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Parameter",
+                        "type": ForwardRef("ParameterSetType.Parameter"),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "ParameterRef",
+                        "type": ParameterRefType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
+            },
+        )
     )
 
     @dataclass(kw_only=True)
     class Parameter(NameDescriptionType):
-        """Attributes:
-        parameter_properties:
-        parameter_type_ref:
-        initial_value: Used to set the initial calibrated values of
-            Parameters.  Will overwrite an initial value defined for the
-            ParameterType.  For integer types base 10 (decimal) form is
-            assumed unless: if proceeded by a 0b or 0B, value is in base two
-            (binary form, if proceeded by a 0o or 0O, values is in base 8
-            (octal) form, or if proceeded by a 0x or 0X, value is in base 16
-            (hex) form.  Floating point types may be specified in normal
-            (100.0) or scientific (1.0e2) form.  Time types are specified
-            using the ISO 8601 formats described for XTCE time data types.
-            Initial values for string types, may include C language style
-            (\\n, \\t, \\", \\\\, etc.) escape sequences.  Initial values for
-            Array or Aggregate types may not be set.
-
+        """
+        Attributes:
+            parameter_properties:
+            parameter_type_ref:
+            initial_value: Used to set the initial calibrated values of
+                Parameters.  Will overwrite an initial value defined for the
+                ParameterType.  For integer types base 10 (decimal) form is
+                assumed unless: if proceeded by a 0b or 0B, value is in base two
+                (binary form, if proceeded by a 0o or 0O, values is in base 8
+                (octal) form, or if proceeded by a 0x or 0X, value is in base 16
+                (hex) form.  Floating point types may be specified in normal
+                (100.0) or scientific (1.0e2) form.  Time types are specified
+                using the ISO 8601 formats described for XTCE time data types.
+                Initial values for string types, may include C language style
+                (\\n, \\t, \\", \\\\, etc.) escape sequences.  Initial values for
+                Array or Aggregate types may not be set.
         """
 
         parameter_properties: None | ParameterPropertiesType = field(
@@ -3256,14 +3265,14 @@ class ParameterSetType:
 
 @dataclass(kw_only=True)
 class RepeatType:
-    """Hold a structure that can be repeated X times, where X is the Count.
+    """
+    Hold a structure that can be repeated X times, where X is the Count.
 
     Attributes:
         count: Value (either fixed or dynamic) that contains the count of
             repeated structures.
         offset: Indicates the distance between repeating entries (the last bit of
             one entry to the start bit of the next entry)
-
     """
 
     count: IntegerValueType = field(
@@ -3295,7 +3304,9 @@ class RepeatType:
 
 @dataclass(kw_only=True)
 class StringDataEncodingType(DataEncodingType):
-    """For common encodings of string data."""
+    """
+    For common encodings of string data.
+    """
 
     size_in_bits: StringDataEncodingType.SizeInBits = field(
         metadata={
@@ -3313,39 +3324,35 @@ class StringDataEncodingType(DataEncodingType):
 
     @dataclass(kw_only=True)
     class SizeInBits:
-        """Attributes:
-        fixed:
-        termination_char: Like C strings, they are terminated with a special
-            string, usually a null character.
-        leading_size: Like PASCAL strings, the size of the string is given as
-            an integer at the start of the string.  SizeTag must be an
-            unsigned Integer
-
-        """
-
-        fixed: None | IntegerValueType = field(
+        fixed_or_termination_char_or_leading_size: (
+            None
+            | IntegerValueType
+            | bytes
+            | StringDataEncodingType.SizeInBits.LeadingSize
+        ) = field(
             default=None,
             metadata={
-                "name": "Fixed",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        termination_char: None | bytes = field(
-            default=None,
-            metadata={
-                "name": "TerminationChar",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-                "format": "base16",
-            },
-        )
-        leading_size: None | StringDataEncodingType.SizeInBits.LeadingSize = field(
-            default=None,
-            metadata={
-                "name": "LeadingSize",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Fixed",
+                        "type": IntegerValueType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "TerminationChar",
+                        "type": bytes,
+                        "namespace": "http://www.omg.org/space/xtce",
+                        "format": "base16",
+                    },
+                    {
+                        "name": "LeadingSize",
+                        "type": ForwardRef(
+                            "StringDataEncodingType.SizeInBits.LeadingSize"
+                        ),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
             },
         )
 
@@ -3362,19 +3369,16 @@ class StringDataEncodingType(DataEncodingType):
 
 @dataclass(kw_only=True)
 class BaseDataType(NameDescriptionType):
-    """An abstract type used by within the schema to derive other data types by the
+    """
+    An abstract type used by within the schema to derive other data types by the
     ground system.
 
     Attributes:
         unit_set:
-        binary_data_encoding:
-        float_data_encoding:
-        integer_data_encoding:
-        string_data_encoding:
+        choice:
         base_type: Used to derive one Data Type from another - will inherit all
             the attributes from the baseType any of which may be redefined in
             this type definition.
-
     """
 
     unit_set: BaseDataType.UnitSet = field(
@@ -3384,36 +3388,38 @@ class BaseDataType(NameDescriptionType):
             "namespace": "http://www.omg.org/space/xtce",
         }
     )
-    binary_data_encoding: None | BinaryDataEncodingType = field(
+    choice: (
+        None
+        | BinaryDataEncodingType
+        | FloatDataEncodingType
+        | IntegerDataEncodingType
+        | StringDataEncodingType
+    ) = field(
         default=None,
         metadata={
-            "name": "BinaryDataEncoding",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    float_data_encoding: None | FloatDataEncodingType = field(
-        default=None,
-        metadata={
-            "name": "FloatDataEncoding",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    integer_data_encoding: None | IntegerDataEncodingType = field(
-        default=None,
-        metadata={
-            "name": "IntegerDataEncoding",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    string_data_encoding: None | StringDataEncodingType = field(
-        default=None,
-        metadata={
-            "name": "StringDataEncoding",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "BinaryDataEncoding",
+                    "type": BinaryDataEncodingType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "FloatDataEncoding",
+                    "type": FloatDataEncodingType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "IntegerDataEncoding",
+                    "type": IntegerDataEncodingType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "StringDataEncoding",
+                    "type": StringDataEncodingType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
     base_type: None | str = field(
@@ -3438,7 +3444,8 @@ class BaseDataType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class BaseTimeDataType(NameDescriptionType):
-    """An abstract type used by within the schema to describe derive other data types
+    """
+    An abstract type used by within the schema to describe derive other data types
     by the ground system.
 
     Attributes:
@@ -3448,7 +3455,6 @@ class BaseTimeDataType(NameDescriptionType):
             typically used with a user supplied transform algorithm to convert
             time data formats that are too difficult to describe in XTCE.
         reference_time:
-
     """
 
     encoding: None | BaseTimeDataType.Encoding = field(
@@ -3470,36 +3476,38 @@ class BaseTimeDataType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class Encoding:
-        binary_data_encoding: None | BinaryDataEncodingType = field(
+        choice: (
+            None
+            | BinaryDataEncodingType
+            | FloatDataEncodingType
+            | IntegerDataEncodingType
+            | StringDataEncodingType
+        ) = field(
             default=None,
             metadata={
-                "name": "BinaryDataEncoding",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        float_data_encoding: None | FloatDataEncodingType = field(
-            default=None,
-            metadata={
-                "name": "FloatDataEncoding",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        integer_data_encoding: None | IntegerDataEncodingType = field(
-            default=None,
-            metadata={
-                "name": "IntegerDataEncoding",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        string_data_encoding: None | StringDataEncodingType = field(
-            default=None,
-            metadata={
-                "name": "StringDataEncoding",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "BinaryDataEncoding",
+                        "type": BinaryDataEncodingType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "FloatDataEncoding",
+                        "type": FloatDataEncodingType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "IntegerDataEncoding",
+                        "type": IntegerDataEncodingType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "StringDataEncoding",
+                        "type": StringDataEncodingType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
             },
         )
         units: TimeUnits = field(
@@ -3524,17 +3532,22 @@ class BaseTimeDataType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class BinaryAlarmConditionType(AlarmType):
-    """Alarm conditions for Binary types."""
+    """
+    Alarm conditions for Binary types.
+    """
 
 
 @dataclass(kw_only=True)
 class BooleanAlarmType(AlarmType):
-    """Alarm conditions for Boolean types."""
+    """
+    Alarm conditions for Boolean types.
+    """
 
 
 @dataclass(kw_only=True)
 class ContainerType(NameDescriptionType):
-    """An abstract block of data; used as the base type for more specific container
+    """
+    An abstract block of data; used as the base type for more specific container
     types.
 
     Attributes:
@@ -3543,7 +3556,6 @@ class ContainerType(NameDescriptionType):
         binary_encoding: May be used to indicate error detection and correction,
             change byte order,  provide the size (when it can't be derived), or
             perform some custom processing.
-
     """
 
     default_rate_in_stream: None | RateInStreamType = field(
@@ -3595,7 +3607,9 @@ class ContainerType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class EnumerationAlarmType(AlarmType):
-    """Alarm conditions for Enumerations."""
+    """
+    Alarm conditions for Enumerations.
+    """
 
     enumeration_alarm_list: EnumerationAlarmType.EnumerationAlarmList = field(
         metadata={
@@ -3644,7 +3658,8 @@ class EnumerationAlarmType(AlarmType):
 
 @dataclass(kw_only=True)
 class NumericAlarmType(AlarmType):
-    """Alarms associated with numeric data types.
+    """
+    Alarms associated with numeric data types.
 
     Attributes:
         static_alarm_ranges: StaticAlarmRanges are used to trigger alarms when
@@ -3661,7 +3676,6 @@ class NumericAlarmType(AlarmType):
             calculate the change.  For sample based rate of change alarms, the
             change is calulated over the number of samples specified in
             spanOfInterestInSeconds.
-
     """
 
     static_alarm_ranges: None | AlarmRangesType = field(
@@ -3715,7 +3729,8 @@ class NumericAlarmType(AlarmType):
 
 @dataclass(kw_only=True)
 class SequenceEntryType:
-    """An abstract type used by sequence containers.
+    """
+    An abstract type used by sequence containers.
 
     An entry contains a location in the container. The location may be either fixed
     or dynamic, absolute (to the start or end of the enclosing container, or
@@ -3730,7 +3745,6 @@ class SequenceEntryType:
             this condition is true.  If no IncludeCondition is given, then it is
             will be included.  A parameter that is not included will be treated
             as if it did not exist in the sequence at all.
-
     """
 
     location_in_container_in_bits: (
@@ -3762,16 +3776,16 @@ class SequenceEntryType:
 
     @dataclass(kw_only=True)
     class LocationInContainerInBits(IntegerValueType):
-        """Attributes:
-        reference_location: The location may be relative to the start of the
-            container (containerStart), relative to the end of the previous
-            entry (previousEntry), relative to the end of the container
-            (containerEnd), or relative to the entry that follows this one
-            (nextEntry).  If going forward (containerStart and previousEntry)
-            then the location refers to the start of the Entry.  If going
-            backwards (containerEnd and nextEntry) then, the location refers
-            to the end of the entry.
-
+        """
+        Attributes:
+            reference_location: The location may be relative to the start of the
+                container (containerStart), relative to the end of the previous
+                entry (previousEntry), relative to the end of the container
+                (containerEnd), or relative to the entry that follows this one
+                (nextEntry).  If going forward (containerStart and previousEntry)
+                then the location refers to the start of the Entry.  If going
+                backwards (containerEnd and nextEntry) then, the location refers
+                to the end of the entry.
         """
 
         reference_location: LocationInContainerInBitsReferenceLocation = field(
@@ -3785,7 +3799,9 @@ class SequenceEntryType:
 
 @dataclass(kw_only=True)
 class StringAlarmType(AlarmType):
-    """Alarm conditions for Strings."""
+    """
+    Alarm conditions for Strings.
+    """
 
     string_alarm_list: StringAlarmType.StringAlarmList = field(
         metadata={
@@ -3804,9 +3820,9 @@ class StringAlarmType(AlarmType):
 
     @dataclass(kw_only=True)
     class StringAlarmList:
-        """Attributes:
-        string_alarm: Pattern may be a regular expression
-
+        """
+        Attributes:
+            string_alarm: Pattern may be a regular expression
         """
 
         string_alarm: list[StringAlarmType.StringAlarmList.StringAlarm] = field(
@@ -3837,12 +3853,15 @@ class StringAlarmType(AlarmType):
 
 @dataclass(kw_only=True)
 class TimeAlarmConditionType(AlarmType):
-    """Alarm conditions for Time types."""
+    """
+    Alarm conditions for Time types.
+    """
 
 
 @dataclass(kw_only=True)
 class TimeAlarmType(AlarmType):
-    """Alarms associated with time data types.
+    """
+    Alarms associated with time data types.
 
     Attributes:
         static_alarm_ranges: StaticAlarmRanges are used to trigger alarms when
@@ -3851,7 +3870,6 @@ class TimeAlarmType(AlarmType):
             trigger alarms when the parameter value's rate-of-change passes some
             threshold value.  An alarm condition that triggers when the value
             changes too fast (or too slow)
-
     """
 
     static_alarm_ranges: None | TimeAlarmType.StaticAlarmRanges = field(
@@ -3896,7 +3914,8 @@ class TimeAlarmType(AlarmType):
 
 @dataclass(kw_only=True)
 class AbsoluteTimeDataType(BaseTimeDataType):
-    """Used to contain an absolute time.
+    """
+    Used to contain an absolute time.
 
     Contains an absolute (to a known epoch) time. Use the [ISO 8601] extended format
     CCYY-MM-DDThh:mm:ss where "CC" represents the century, "YY" the year, "MM" the
@@ -3919,7 +3938,8 @@ class AbsoluteTimeDataType(BaseTimeDataType):
 
 @dataclass(kw_only=True)
 class ArrayParameterRefEntryType(SequenceEntryType):
-    """An entry that is an array parameter.
+    """
+    An entry that is an array parameter.
 
     This entry is somewhat special because the entry may represent only a part of
     the Array and it's important to describe which dimensions of the array come
@@ -3933,7 +3953,6 @@ class ArrayParameterRefEntryType(SequenceEntryType):
             MUST ascend or the array will need to be broken out entry by entry.
         parameter_ref:
         last_entry_for_this_array_instance:
-
     """
 
     dimension_list: ArrayParameterRefEntryType.DimensionList = field(
@@ -3959,11 +3978,11 @@ class ArrayParameterRefEntryType(SequenceEntryType):
 
     @dataclass(kw_only=True)
     class DimensionList:
-        """Attributes:
-        dimension: For partial entries of an array, the starting and ending
-            index for each dimension, OR the Size must be specified.  Indexes
-            are zero based.
-
+        """
+        Attributes:
+            dimension: For partial entries of an array, the starting and ending
+                index for each dimension, OR the Size must be specified.  Indexes
+                are zero based.
         """
 
         dimension: list[ArrayParameterRefEntryType.DimensionList.Dimension] = field(
@@ -3978,10 +3997,10 @@ class ArrayParameterRefEntryType(SequenceEntryType):
 
         @dataclass(kw_only=True)
         class Dimension:
-            """Attributes:
-            starting_index: zero based index
-            ending_index:
-
+            """
+            Attributes:
+                starting_index: zero based index
+                ending_index:
             """
 
             starting_index: IntegerValueType = field(
@@ -4002,11 +4021,11 @@ class ArrayParameterRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class BinaryDataType(BaseDataType):
-    """Contains an arbitrarily large binary value.
+    """
+    Contains an arbitrarily large binary value.
 
     Attributes:
         initial_value: Extra bits are truncated from the MSB (leftmost)
-
     """
 
     initial_value: None | bytes = field(
@@ -4021,13 +4040,13 @@ class BinaryDataType(BaseDataType):
 
 @dataclass(kw_only=True)
 class BooleanDataType(BaseDataType):
-    """Contains a boolean value.
+    """
+    Contains a boolean value.
 
     Attributes:
         initial_value: Initial value is always given in calibrated form.
         one_string_value:
         zero_string_value:
-
     """
 
     initial_value: None | str = field(
@@ -4055,7 +4074,9 @@ class BooleanDataType(BaseDataType):
 
 @dataclass(kw_only=True)
 class ContainerRefEntryType(SequenceEntryType):
-    """An entry that is simply a reference to another container."""
+    """
+    An entry that is simply a reference to another container.
+    """
 
     container_ref: str = field(
         metadata={
@@ -4067,7 +4088,8 @@ class ContainerRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class ContainerSegmentRefEntryType(SequenceEntryType):
-    """An entry that is only a portion of a container indicating that the entire
+    """
+    An entry that is only a portion of a container indicating that the entire
     container must be assembled from other container segments.
 
     It is assumed that container segments happen sequentially in time, that is the
@@ -4099,13 +4121,13 @@ class ContainerSegmentRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class EnumeratedDataType(BaseDataType):
-    """Contains an enumerated value - a value that has both an integral and a string
+    """
+    Contains an enumerated value - a value that has both an integral and a string
     representation.
 
     Attributes:
         enumeration_list:
         initial_value: Initial value is always given in calibrated form.
-
     """
 
     enumeration_list: EnumeratedDataType.EnumerationList = field(
@@ -4138,7 +4160,8 @@ class EnumeratedDataType(BaseDataType):
 
 @dataclass(kw_only=True)
 class IndirectParameterRefEntryType(SequenceEntryType):
-    """An entry whose name is given by the value of a ParamameterInstance.
+    """
+    An entry whose name is given by the value of a ParamameterInstance.
 
     This entry may be used to implement dwell telemetry streams. The value of the
     parameter in ParameterInstance must use either the name of the Parameter or its
@@ -4163,7 +4186,8 @@ class IndirectParameterRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class NumericContextAlarmType(NumericAlarmType):
-    """Context alarms are applied when the ContextMatch is true.
+    """
+    Context alarms are applied when the ContextMatch is true.
 
     Context alarms override Default alarms.
     """
@@ -4179,7 +4203,9 @@ class NumericContextAlarmType(NumericAlarmType):
 
 @dataclass(kw_only=True)
 class NumericDataType(BaseDataType):
-    """An abstract type that is a super type of either an Integer or Float Data type."""
+    """
+    An abstract type that is a super type of either an Integer or Float Data type.
+    """
 
     to_string: None | NumberToStringType = field(
         default=None,
@@ -4200,7 +4226,9 @@ class NumericDataType(BaseDataType):
 
 @dataclass(kw_only=True)
 class ParameterRefEntryType(SequenceEntryType):
-    """An entry that is a single Parameter."""
+    """
+    An entry that is a single Parameter.
+    """
 
     parameter_ref: str = field(
         metadata={
@@ -4212,7 +4240,8 @@ class ParameterRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class ParameterSegmentRefEntryType(SequenceEntryType):
-    """An entry that is only a portion of a parameter value indicating that the entire
+    """
+    An entry that is only a portion of a parameter value indicating that the entire
     parameter value must be assembled from other parameter segments.
 
     It is assumed that parameter segments happen sequentially in time, that is the
@@ -4243,7 +4272,8 @@ class ParameterSegmentRefEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class RelativeTimeDataType(BaseTimeDataType):
-    """Used to contain a relative time value.
+    """
+    Used to contain a relative time value.
 
     Used to describe a relative time. Normally used for time offsets. A Relative
     time is expressed as PnYn MnDTnH nMnS, where nY represents the number of years,
@@ -4266,7 +4296,8 @@ class RelativeTimeDataType(BaseTimeDataType):
 
 @dataclass(kw_only=True)
 class StreamSegmentEntryType(SequenceEntryType):
-    """An entry that is a portion of a stream (streams are by definition, assumed
+    """
+    An entry that is a portion of a stream (streams are by definition, assumed
     continuous) It is assumed that stream segments happen sequentially in time, that
     is the first part if a steam first, however, if this is not the case the order
     of the stream segments may be supplied with the order attribute where the first
@@ -4295,7 +4326,8 @@ class StreamSegmentEntryType(SequenceEntryType):
 
 @dataclass(kw_only=True)
 class StringDataType(BaseDataType):
-    """Contains a String Value.
+    """
+    Contains a String Value.
 
     Attributes:
         size_range_in_characters:
@@ -4303,7 +4335,6 @@ class StringDataType(BaseDataType):
             style (\\n, \\t, \\", \\\\, etc.) escape sequences.
         restriction_pattern: restriction pattern is a regular expression
         character_width:
-
     """
 
     size_range_in_characters: None | IntegerRangeType = field(
@@ -4339,7 +4370,8 @@ class StringDataType(BaseDataType):
 
 @dataclass(kw_only=True)
 class TimeContextAlarmType(TimeAlarmType):
-    """Context alarms are applied when the ContextMatch is true.
+    """
+    Context alarms are applied when the ContextMatch is true.
 
     Context alarms override Default alarms.
     """
@@ -4355,88 +4387,84 @@ class TimeContextAlarmType(TimeAlarmType):
 
 @dataclass(kw_only=True)
 class CommandContainerEntryListType:
-    """Similar to an EntryList type but also may include command arguments or -as a
+    """
+    Similar to an EntryList type but also may include command arguments or -as a
     convenience - fixed value entries.
     """
 
-    parameter_ref_entry: list[ParameterRefEntryType] = field(
+    choice: list[
+        ParameterRefEntryType
+        | ParameterSegmentRefEntryType
+        | ContainerRefEntryType
+        | ContainerSegmentRefEntryType
+        | StreamSegmentEntryType
+        | IndirectParameterRefEntryType
+        | CommandContainerEntryListType.ArrayParameterRefEntry
+        | CommandContainerEntryListType.ArgumentRefEntry
+        | CommandContainerEntryListType.ArrayArgumentRefEntry
+        | CommandContainerEntryListType.FixedValueEntry
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "ParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    parameter_segment_ref_entry: list[ParameterSegmentRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ParameterSegmentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    container_ref_entry: list[ContainerRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ContainerRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    container_segment_ref_entry: list[ContainerSegmentRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ContainerSegmentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    stream_segment_entry: list[StreamSegmentEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "StreamSegmentEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    indirect_parameter_ref_entry: list[IndirectParameterRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "IndirectParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    array_parameter_ref_entry: list[ArrayParameterRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArrayParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    argument_ref_entry: list[CommandContainerEntryListType.ArgumentRefEntry] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArgumentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    array_argument_ref_entry: list[ArrayParameterRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArrayArgumentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    fixed_value_entry: list[CommandContainerEntryListType.FixedValueEntry] = field(
-        default_factory=list,
-        metadata={
-            "name": "FixedValueEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ParameterRefEntry",
+                    "type": ParameterRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ParameterSegmentRefEntry",
+                    "type": ParameterSegmentRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerRefEntry",
+                    "type": ContainerRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerSegmentRefEntry",
+                    "type": ContainerSegmentRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "StreamSegmentEntry",
+                    "type": StreamSegmentEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "IndirectParameterRefEntry",
+                    "type": IndirectParameterRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArrayParameterRefEntry",
+                    "type": ForwardRef(
+                        "CommandContainerEntryListType.ArrayParameterRefEntry"
+                    ),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArgumentRefEntry",
+                    "type": ForwardRef(
+                        "CommandContainerEntryListType.ArgumentRefEntry"
+                    ),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArrayArgumentRefEntry",
+                    "type": ForwardRef(
+                        "CommandContainerEntryListType.ArrayArgumentRefEntry"
+                    ),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "FixedValueEntry",
+                    "type": ForwardRef("CommandContainerEntryListType.FixedValueEntry"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -4466,82 +4494,86 @@ class CommandContainerEntryListType:
             },
         )
 
+    @dataclass(kw_only=True)
+    class ArrayArgumentRefEntry(ArrayParameterRefEntryType):
+        pass
+
+    @dataclass(kw_only=True)
+    class ArrayParameterRefEntry(ArrayParameterRefEntryType):
+        pass
+
 
 @dataclass(kw_only=True)
 class EntryListType:
-    """Contains an ordered list of Entries.
+    """
+    Contains an ordered list of Entries.
 
     Used in Sequence Container.
     """
 
-    parameter_ref_entry: list[ParameterRefEntryType] = field(
+    choice: list[
+        ParameterRefEntryType
+        | ParameterSegmentRefEntryType
+        | ContainerRefEntryType
+        | ContainerSegmentRefEntryType
+        | StreamSegmentEntryType
+        | IndirectParameterRefEntryType
+        | ArrayParameterRefEntryType
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "ParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    parameter_segment_ref_entry: list[ParameterSegmentRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ParameterSegmentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    container_ref_entry: list[ContainerRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ContainerRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    container_segment_ref_entry: list[ContainerSegmentRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ContainerSegmentRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    stream_segment_entry: list[StreamSegmentEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "StreamSegmentEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    indirect_parameter_ref_entry: list[IndirectParameterRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "IndirectParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    array_parameter_ref_entry: list[ArrayParameterRefEntryType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArrayParameterRefEntry",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "ParameterRefEntry",
+                    "type": ParameterRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ParameterSegmentRefEntry",
+                    "type": ParameterSegmentRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerRefEntry",
+                    "type": ContainerRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ContainerSegmentRefEntry",
+                    "type": ContainerSegmentRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "StreamSegmentEntry",
+                    "type": StreamSegmentEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "IndirectParameterRefEntry",
+                    "type": IndirectParameterRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArrayParameterRefEntry",
+                    "type": ArrayParameterRefEntryType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
 
 @dataclass(kw_only=True)
 class FloatDataType(NumericDataType):
-    """Contains a floating point value.
+    """
+    Contains a floating point value.
 
     Attributes:
         valid_range: The Valid Range bounds the universe of possible values this
             Parameter may have.
         initial_value: Initial value is always given in calibrated form
         size_in_bits:
-
     """
 
     valid_range: None | FloatRangeType = field(
@@ -4570,7 +4602,8 @@ class FloatDataType(NumericDataType):
 
 @dataclass(kw_only=True)
 class IntegerDataType(NumericDataType):
-    """Contains an integral value.
+    """
+    Contains an integral value.
 
     Attributes:
         valid_range: The Valid Range bounds the universe of possible values this
@@ -4580,7 +4613,6 @@ class IntegerDataType(NumericDataType):
             preceding value with 0[b|B], 0[o|O|, 0[x|X] respectively.
         size_in_bits:
         signed:
-
     """
 
     valid_range: None | IntegerRangeType = field(
@@ -4616,96 +4648,87 @@ class IntegerDataType(NumericDataType):
 
 @dataclass(kw_only=True)
 class ArgumentTypeSetType:
-    """Holds the list of argument type definitions."""
+    """
+    Holds the list of argument type definitions.
+    """
 
-    string_argument_type: list[StringDataType] = field(
+    choice: list[
+        StringDataType
+        | EnumeratedDataType
+        | ArgumentTypeSetType.IntegerArgumentType
+        | BinaryDataType
+        | ArgumentTypeSetType.FloatArgumentType
+        | BooleanDataType
+        | RelativeTimeDataType
+        | AbsoluteTimeDataType
+        | ArrayDataTypeType
+        | AggregateDataType
+    ] = field(
         default_factory=list,
         metadata={
-            "name": "StringArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    enumerated_argument_type: list[EnumeratedDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "EnumeratedArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    integer_argument_type: list[ArgumentTypeSetType.IntegerArgumentType] = field(
-        default_factory=list,
-        metadata={
-            "name": "IntegerArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    binary_argument_type: list[BinaryDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "BinaryArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    float_argument_type: list[ArgumentTypeSetType.FloatArgumentType] = field(
-        default_factory=list,
-        metadata={
-            "name": "FloatArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    boolean_argument_type: list[BooleanDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "BooleanArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    relative_time_agument_type: list[RelativeTimeDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "RelativeTimeAgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    absolute_time_argument_type: list[AbsoluteTimeDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "AbsoluteTimeArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    array_argument_type: list[ArrayDataTypeType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArrayArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    aggregate_argument_type: list[AggregateDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "AggregateArgumentType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "StringArgumentType",
+                    "type": StringDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "EnumeratedArgumentType",
+                    "type": EnumeratedDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "IntegerArgumentType",
+                    "type": ForwardRef("ArgumentTypeSetType.IntegerArgumentType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BinaryArgumentType",
+                    "type": BinaryDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "FloatArgumentType",
+                    "type": ForwardRef("ArgumentTypeSetType.FloatArgumentType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BooleanArgumentType",
+                    "type": BooleanDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "RelativeTimeAgumentType",
+                    "type": RelativeTimeDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "AbsoluteTimeArgumentType",
+                    "type": AbsoluteTimeDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArrayArgumentType",
+                    "type": ArrayDataTypeType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "AggregateArgumentType",
+                    "type": AggregateDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
     @dataclass(kw_only=True)
     class IntegerArgumentType(IntegerDataType):
-        """Attributes:
-        valid_range_set: Numerical ranges that define the universe of valid
-            values for this argument.  Used to further bound argument values
-            inside the ValidRange for the overall Data Type
-
+        """
+        Attributes:
+            valid_range_set: Numerical ranges that define the universe of valid
+                values for this argument.  Used to further bound argument values
+                inside the ValidRange for the overall Data Type
         """
 
         valid_range_set: (
@@ -4740,11 +4763,11 @@ class ArgumentTypeSetType:
 
     @dataclass(kw_only=True)
     class FloatArgumentType(FloatDataType):
-        """Attributes:
-        valid_range_set: Numerical ranges that define the universe of valid
-            values for this argument.  Used to further bound argument values
-            inside the ValidRange for the overall Data Type
-
+        """
+        Attributes:
+            valid_range_set: Numerical ranges that define the universe of valid
+                values for this argument.  Used to further bound argument values
+                inside the ValidRange for the overall Data Type
         """
 
         valid_range_set: None | ArgumentTypeSetType.FloatArgumentType.ValidRangeSet = (
@@ -4780,7 +4803,8 @@ class ArgumentTypeSetType:
 
 @dataclass(kw_only=True)
 class CommandContainerType(ContainerType):
-    """The Key = Command Op Code.
+    """
+    The Key = Command Op Code.
 
     Each MetaCommand may have one CommandContainer. The sequence may now contain
     command fields.
@@ -4804,14 +4828,14 @@ class CommandContainerType(ContainerType):
 
     @dataclass(kw_only=True)
     class BaseContainer:
-        """Attributes:
-        restriction_criteria: Given that this Container is the Base container
-            type, RestrictionCriteria lists conditions that must be true for
-            this Container to be 'this' subContainer type.  May be a simple
-            Comparison List, a Boolean Expression, and/or in a Graph of
-            containers established by the NextContainer
-        container_ref:
-
+        """
+        Attributes:
+            restriction_criteria: Given that this Container is the Base container
+                type, RestrictionCriteria lists conditions that must be true for
+                this Container to be 'this' subContainer type.  May be a simple
+                Comparison List, a Boolean Expression, and/or in a Graph of
+                containers established by the NextContainer
+            container_ref:
         """
 
         restriction_criteria: (
@@ -4845,111 +4869,82 @@ class CommandContainerType(ContainerType):
 
 @dataclass(kw_only=True)
 class ParameterTypeSetType:
-    """Holds the list of parameter type definitions.
+    """
+    Holds the list of parameter type definitions.
 
     A Parameter is a description of something that can have a value; it is not the
     value itself.
-
-    Attributes:
-        string_parameter_type:
-        enumerated_parameter_type:
-        integer_parameter_type:
-        binary_parameter_type:
-        float_parameter_type:
-        boolean_parameter_type:
-        relative_time_parameter_type:
-        absolute_time_parameter_type:
-        array_parameter_type: An array type.  Will be an array of parameters of
-            the type referenced in 'arrayTypeRef' and have the number of array
-            dimensions as specified in 'numberOfDimensions'
-        aggregate_parameter_type: AggegateParameters are analogous to a C struc,
-            they are an aggregation of related data items.  Each of these data
-            items is defined here as a 'Member'
-
     """
 
-    string_parameter_type: list[ParameterTypeSetType.StringParameterType] = field(
-        default_factory=list,
-        metadata={
-            "name": "StringParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    enumerated_parameter_type: list[ParameterTypeSetType.EnumeratedParameterType] = (
-        field(
-            default_factory=list,
-            metadata={
-                "name": "EnumeratedParameterType",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-    )
-    integer_parameter_type: list[ParameterTypeSetType.IntegerParameterType] = field(
-        default_factory=list,
-        metadata={
-            "name": "IntegerParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    binary_parameter_type: list[ParameterTypeSetType.BinaryParameterType] = field(
-        default_factory=list,
-        metadata={
-            "name": "BinaryParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    float_parameter_type: list[ParameterTypeSetType.FloatParameterType] = field(
-        default_factory=list,
-        metadata={
-            "name": "FloatParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    boolean_parameter_type: list[ParameterTypeSetType.BooleanParameterType] = field(
-        default_factory=list,
-        metadata={
-            "name": "BooleanParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    relative_time_parameter_type: list[
-        ParameterTypeSetType.RelativeTimeParameterType
+    choice: list[
+        ParameterTypeSetType.StringParameterType
+        | ParameterTypeSetType.EnumeratedParameterType
+        | ParameterTypeSetType.IntegerParameterType
+        | ParameterTypeSetType.BinaryParameterType
+        | ParameterTypeSetType.FloatParameterType
+        | ParameterTypeSetType.BooleanParameterType
+        | ParameterTypeSetType.RelativeTimeParameterType
+        | AbsoluteTimeDataType
+        | ArrayDataTypeType
+        | AggregateDataType
     ] = field(
         default_factory=list,
         metadata={
-            "name": "RelativeTimeParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    absolute_time_parameter_type: list[AbsoluteTimeDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "AbsoluteTimeParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    array_parameter_type: list[ArrayDataTypeType] = field(
-        default_factory=list,
-        metadata={
-            "name": "ArrayParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
-        },
-    )
-    aggregate_parameter_type: list[AggregateDataType] = field(
-        default_factory=list,
-        metadata={
-            "name": "AggregateParameterType",
-            "type": "Element",
-            "namespace": "http://www.omg.org/space/xtce",
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "StringParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.StringParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "EnumeratedParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.EnumeratedParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "IntegerParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.IntegerParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BinaryParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.BinaryParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "FloatParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.FloatParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "BooleanParameterType",
+                    "type": ForwardRef("ParameterTypeSetType.BooleanParameterType"),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "RelativeTimeParameterType",
+                    "type": ForwardRef(
+                        "ParameterTypeSetType.RelativeTimeParameterType"
+                    ),
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "AbsoluteTimeParameterType",
+                    "type": AbsoluteTimeDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "ArrayParameterType",
+                    "type": ArrayDataTypeType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+                {
+                    "name": "AggregateParameterType",
+                    "type": AggregateDataType,
+                    "namespace": "http://www.omg.org/space/xtce",
+                },
+            ),
         },
     )
 
@@ -5231,7 +5226,8 @@ class ParameterTypeSetType:
 
 @dataclass(kw_only=True)
 class SequenceContainerType(ContainerType):
-    """A list of raw parameters, parameter segments, stream segments, containers, or
+    """
+    A list of raw parameters, parameter segments, stream segments, containers, or
     container segments.
 
     Sequence containers may inherit from other sequence containers; when they do,
@@ -5273,14 +5269,14 @@ class SequenceContainerType(ContainerType):
 
     @dataclass(kw_only=True)
     class BaseContainer:
-        """Attributes:
-        restriction_criteria: Given that this Container is the Base container
-            type, RestrictionCriteria lists conditions that must be true for
-            this Container to be 'this' subContainer type.  May be a simple
-            Comparison List, a Boolean Expression, and/or in a Graph of
-            containers established by the NextContainer
-        container_ref:
-
+        """
+        Attributes:
+            restriction_criteria: Given that this Container is the Base container
+                type, RestrictionCriteria lists conditions that must be true for
+                this Container to be 'this' subContainer type.  May be a simple
+                Comparison List, a Boolean Expression, and/or in a Graph of
+                containers established by the NextContainer
+            container_ref:
         """
 
         restriction_criteria: SequenceContainerType.BaseContainer.RestrictionCriteria = field(
@@ -5311,7 +5307,9 @@ class SequenceContainerType(ContainerType):
 
 @dataclass(kw_only=True)
 class CommandContainerSetType:
-    """Contains an unordered Set of Command Containers."""
+    """
+    Contains an unordered Set of Command Containers.
+    """
 
     command_container: list[SequenceContainerType] = field(
         default_factory=list,
@@ -5326,12 +5324,12 @@ class CommandContainerSetType:
 
 @dataclass(kw_only=True)
 class ContainerSetType:
-    """Unordered Set of Containers.
+    """
+    Unordered Set of Containers.
 
     Attributes:
         sequence_container: SequenceContainers define sequences of parameters or
             other containers.
-
     """
 
     sequence_container: list[SequenceContainerType] = field(
@@ -5346,7 +5344,8 @@ class ContainerSetType:
 
 @dataclass(kw_only=True)
 class MetaCommandType(NameDescriptionType):
-    """A type definition used as the base type for a CommandDefinition.
+    """
+    A type definition used as the base type for a CommandDefinition.
 
     Attributes:
         base_meta_command: The MetaCommand is derived from this Base.  Arguments
@@ -5385,7 +5384,6 @@ class MetaCommandType(NameDescriptionType):
             alarms - particularly 'change' alarms for commands that will change
             the value of a Parameter
         abstract:
-
     """
 
     base_meta_command: None | MetaCommandType.BaseMetaCommand = field(
@@ -5548,21 +5546,21 @@ class MetaCommandType(NameDescriptionType):
 
         @dataclass(kw_only=True)
         class Argument(NameDescriptionType):
-            """Attributes:
-            argument_type_ref:
-            initial_value: Used to set the initial calibrated values of
-                Arguments.  Will overwrite an initial value defined for the
-                ArgumentType.  For integer types base 10 (decimal) form is
-                assumed unless: if proceeded by a 0b or 0B, value is in base
-                two (binary form, if proceeded by a 0o or 0O, values is in
-                base 8 (octal) form, or if proceeded by a 0x or 0X, value is
-                in base 16 (hex) form.  Floating point types may be specified
-                in normal (100.0) or scientific (1.0e2) form.  Time types are
-                specified using the ISO 8601 formats described for XTCE time
-                data types.  Initial values for string types, may include C
-                language style (\\n, \\t, \\", \\\\, etc.) escape sequences.
-                Initial values for Array or Aggregate types may not be set.
-
+            """
+            Attributes:
+                argument_type_ref:
+                initial_value: Used to set the initial calibrated values of
+                    Arguments.  Will overwrite an initial value defined for the
+                    ArgumentType.  For integer types base 10 (decimal) form is
+                    assumed unless: if proceeded by a 0b or 0B, value is in base
+                    two (binary form, if proceeded by a 0o or 0O, values is in
+                    base 8 (octal) form, or if proceeded by a 0x or 0X, value is
+                    in base 16 (hex) form.  Floating point types may be specified
+                    in normal (100.0) or scientific (1.0e2) form.  Time types are
+                    specified using the ISO 8601 formats described for XTCE time
+                    data types.  Initial values for string types, may include C
+                    language style (\\n, \\t, \\", \\\\, etc.) escape sequences.
+                    Initial values for Array or Aggregate types may not be set.
             """
 
             argument_type_ref: str = field(
@@ -5581,12 +5579,12 @@ class MetaCommandType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class TransmissionConstraintList:
-        """Attributes:
-        transmission_constraint: A CommandTransmission constraint is used to
-            check that the command can be run in the current operating mode
-            and may block the transmission of the command if the constraint
-            condition is true.
-
+        """
+        Attributes:
+            transmission_constraint: A CommandTransmission constraint is used to
+                check that the command can be run in the current operating mode
+                and may block the transmission of the command if the constraint
+                condition is true.
         """
 
         transmission_constraint: list[
@@ -5603,11 +5601,11 @@ class MetaCommandType(NameDescriptionType):
 
         @dataclass(kw_only=True)
         class TransmissionConstraint(MatchCriteriaType):
-            """Attributes:
-            time_out: Pause during timeOut, fail when the timeout passes
-            suspendable: Indicates whether the constraints for a Command may
-                be suspended.
-
+            """
+            Attributes:
+                time_out: Pause during timeOut, fail when the timeout passes
+                suspendable: Indicates whether the constraints for a Command may
+                    be suspended.
             """
 
             time_out: None | XmlDuration = field(
@@ -5657,16 +5655,16 @@ class MetaCommandType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class Interlock:
-        """Attributes:
-        scope_to_space_system: The name of a SpaceSystem this Interlock
-            applies to.  By default, it only applies to the SpaceSystem that
-            contains this MetaCommand.
-        verification_to_wait_for:
-        verification_progress_percentage: Only applies when the
-            verificationToWaitFor attribute is 'queued' or 'executing'.
-        suspendable: A flag that indicates that under special circumstances,
-            this Interlock can be suspended.
-
+        """
+        Attributes:
+            scope_to_space_system: The name of a SpaceSystem this Interlock
+                applies to.  By default, it only applies to the SpaceSystem that
+                contains this MetaCommand.
+            verification_to_wait_for:
+            verification_progress_percentage: Only applies when the
+                verificationToWaitFor attribute is 'queued' or 'executing'.
+            suspendable: A flag that indicates that under special circumstances,
+                this Interlock can be suspended.
         """
 
         scope_to_space_system: None | str = field(
@@ -5699,31 +5697,31 @@ class MetaCommandType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class VerifierSet:
-        """Attributes:
-        transferred_to_range_verifier: Transferred to range means the command
-            has been received to the network that connects the ground system
-            to the spacecraft.  Obviously, this verifier must come from
-            something other than the spacecraft.
-        sent_from_range_verifier: Sent from range means the command has been
-            transmitted to the spacecraft by the network that connects the
-            ground system to the spacecraft.  Obviously, this verifier must
-            come from something other than the spacecraft.
-        received_verifier: A verifier that simply means the SpaceSystem has
-            received the command.
-        accepted_verifier: A verifier that means the SpaceSystem has accepted
-            the command
-        queued_verifier: A verifer that means the command is scheduled for
-            execution by the SpaceSystem.
-        execution_verifier: A verifier that indicates that the command is
-            being executed.  An optional Element indicates how far along the
-            command has progressed either as a fixed value or an (possibly
-            scaled) ParameterInstance value.
-        complete_verifier: A possible set of verifiers that all must be true
-            for the command be considered completed.
-        failed_verifier: When true, indicates that the command failed.
-            timeToWait is how long to wait for the FailedVerifier to test
-            true.
-
+        """
+        Attributes:
+            transferred_to_range_verifier: Transferred to range means the command
+                has been received to the network that connects the ground system
+                to the spacecraft.  Obviously, this verifier must come from
+                something other than the spacecraft.
+            sent_from_range_verifier: Sent from range means the command has been
+                transmitted to the spacecraft by the network that connects the
+                ground system to the spacecraft.  Obviously, this verifier must
+                come from something other than the spacecraft.
+            received_verifier: A verifier that simply means the SpaceSystem has
+                received the command.
+            accepted_verifier: A verifier that means the SpaceSystem has accepted
+                the command
+            queued_verifier: A verifer that means the command is scheduled for
+                execution by the SpaceSystem.
+            execution_verifier: A verifier that indicates that the command is
+                being executed.  An optional Element indicates how far along the
+                command has progressed either as a fixed value or an (possibly
+                scaled) ParameterInstance value.
+            complete_verifier: A possible set of verifiers that all must be true
+                for the command be considered completed.
+            failed_verifier: When true, indicates that the command failed.
+                timeToWait is how long to wait for the FailedVerifier to test
+                true.
         """
 
         transferred_to_range_verifier: None | CommandVerifierType = field(
@@ -5817,11 +5815,11 @@ class MetaCommandType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class ParameterToSetList:
-        """Attributes:
-        parameter_to_set: Sets a Parameter to a new value (either from a
-            derivation or explicitly) after the command has been verified
-            (all verifications have passed)
-
+        """
+        Attributes:
+            parameter_to_set: Sets a Parameter to a new value (either from a
+                derivation or explicitly) after the command has been verified
+                (all verifications have passed)
         """
 
         parameter_to_set: list[MetaCommandType.ParameterToSetList.ParameterToSet] = (
@@ -5838,28 +5836,22 @@ class MetaCommandType(NameDescriptionType):
 
         @dataclass(kw_only=True)
         class ParameterToSet(ParameterRefType):
-            """Attributes:
-            derivation: Result of the MathOperation will be the new Parameter
-                value
-            new_value:
-            set_on_verification:
-
-            """
-
-            derivation: None | MathOperationType = field(
+            derivation_or_new_value: None | MathOperationType | str = field(
                 default=None,
                 metadata={
-                    "name": "Derivation",
-                    "type": "Element",
-                    "namespace": "http://www.omg.org/space/xtce",
-                },
-            )
-            new_value: None | str = field(
-                default=None,
-                metadata={
-                    "name": "NewValue",
-                    "type": "Element",
-                    "namespace": "http://www.omg.org/space/xtce",
+                    "type": "Elements",
+                    "choices": (
+                        {
+                            "name": "Derivation",
+                            "type": MathOperationType,
+                            "namespace": "http://www.omg.org/space/xtce",
+                        },
+                        {
+                            "name": "NewValue",
+                            "type": str,
+                            "namespace": "http://www.omg.org/space/xtce",
+                        },
+                    ),
                 },
             )
             set_on_verification: VerifierEnumerationType = field(
@@ -5872,11 +5864,11 @@ class MetaCommandType(NameDescriptionType):
 
     @dataclass(kw_only=True)
     class ParametersToSuspendAlarmsOnSet:
-        """Attributes:
-        parameter_to_suspend_alarms_on: Will suspend all Alarms associated
-            with this Parameter for the given suspense time after the given
-            verifier
-
+        """
+        Attributes:
+            parameter_to_suspend_alarms_on: Will suspend all Alarms associated
+                with this Parameter for the given suspense time after the given
+                verifier
         """
 
         parameter_to_suspend_alarms_on: list[
@@ -5910,7 +5902,8 @@ class MetaCommandType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class CommandMetaDataType:
-    """Command Meta Data contains information about commands.
+    """
+    Command Meta Data contains information about commands.
 
     Attributes:
         parameter_type_set: A list of parameter types
@@ -5923,7 +5916,6 @@ class CommandMetaDataType:
             a Command.
         stream_set:
         algorithm_set:
-
     """
 
     parameter_type_set: None | ParameterTypeSetType = field(
@@ -5984,42 +5976,31 @@ class CommandMetaDataType:
 
     @dataclass(kw_only=True)
     class MetaCommandSet:
-        """Attributes:
-        meta_command: All commands to be sent on this mission are listed
-            here.  In addition this area has verification and validation
-            information
-        meta_command_ref: Used to include a MetaCommand defined in another
-            sub-system in this sub-system.
-        block_meta_command: BlockMetaCommands are simply a list of individual
-            MetaCommands that can be packaged up in a single
-            BlockMetaCommand.
-
-        """
-
-        meta_command: list[MetaCommandType] = field(
-            default_factory=list,
-            metadata={
-                "name": "MetaCommand",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        meta_command_ref: list[str] = field(
-            default_factory=list,
-            metadata={
-                "name": "MetaCommandRef",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
-            },
-        )
-        block_meta_command: list[
-            CommandMetaDataType.MetaCommandSet.BlockMetaCommand
+        meta_command_or_meta_command_ref_or_block_meta_command: list[
+            MetaCommandType | str | CommandMetaDataType.MetaCommandSet.BlockMetaCommand
         ] = field(
             default_factory=list,
             metadata={
-                "name": "BlockMetaCommand",
-                "type": "Element",
-                "namespace": "http://www.omg.org/space/xtce",
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "MetaCommand",
+                        "type": MetaCommandType,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "MetaCommandRef",
+                        "type": str,
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                    {
+                        "name": "BlockMetaCommand",
+                        "type": ForwardRef(
+                            "CommandMetaDataType.MetaCommandSet.BlockMetaCommand"
+                        ),
+                        "namespace": "http://www.omg.org/space/xtce",
+                    },
+                ),
             },
         )
 
@@ -6097,7 +6078,8 @@ class CommandMetaDataType:
 
 @dataclass(kw_only=True)
 class TelemetryMetaDataType:
-    """All the data about telemetry is contained in TelemetryMetaData.
+    """
+    All the data about telemetry is contained in TelemetryMetaData.
 
     Attributes:
         parameter_type_set: A list of parameter types
@@ -6115,7 +6097,6 @@ class TelemetryMetaDataType:
             The collection of messages to search thru will be bound by a Service.
         stream_set:
         algorithm_set:
-
     """
 
     parameter_type_set: None | ParameterTypeSetType = field(
@@ -6187,12 +6168,12 @@ class TelemetryMetaDataType:
 
         @dataclass(kw_only=True)
         class Message(NameDescriptionType):
-            """Attributes:
-            match_criteria:
-            contain_ref: The ContainerRef should point to ROOT container that
-                will describe an entire packet/minor frame or chunk of
-                telemetry.
-
+            """
+            Attributes:
+                match_criteria:
+                contain_ref: The ContainerRef should point to ROOT container that
+                    will describe an entire packet/minor frame or chunk of
+                    telemetry.
             """
 
             match_criteria: MatchCriteriaType = field(
@@ -6213,7 +6194,8 @@ class TelemetryMetaDataType:
 
 @dataclass(kw_only=True)
 class SpaceSystemType(NameDescriptionType):
-    """SpaceSystem is a collection of SpaceSystem(s) including space assets, ground
+    """
+    SpaceSystem is a collection of SpaceSystem(s) including space assets, ground
     assets, multi-satellite systems and sub-systems.
 
     A SpaceSystem is the root element for the set of data necessary to monitor and
@@ -6228,7 +6210,6 @@ class SpaceSystemType(NameDescriptionType):
             messages.
         space_system:
         operational_status:
-
     """
 
     header: None | HeaderType = field(
@@ -6295,7 +6276,9 @@ class SpaceSystemType(NameDescriptionType):
 
 @dataclass(kw_only=True)
 class SpaceSystem(SpaceSystemType):
-    """The ROOT Element."""
+    """
+    The ROOT Element.
+    """
 
     class Meta:
         nillable = True
