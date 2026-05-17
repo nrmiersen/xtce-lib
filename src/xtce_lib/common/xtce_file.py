@@ -139,7 +139,7 @@ class XtceFile:
                 schema_path.write_bytes(self._schema_resource.read_bytes())
                 xml_xsd_path.write_bytes(self._xml_resource.read_bytes())
 
-                schema_doc = etree.parse(str(schema_path))
+                schema_doc = etree.parse(schema_path)
                 xmlschema = etree.XMLSchema(schema_doc)
 
                 self.__class__._schema_cache[self._version] = xmlschema
@@ -152,12 +152,7 @@ class XtceFile:
 
     def _get_xsd_resources(self) -> tuple[Traversable, Traversable]:
         """Get schema resources for the XTCE version of this file."""
-        files = (
-            importlib.resources.files(
-                f"xtce_lib.generated.{self._version.value.module_name}"
-            )
-            / "xsd"
-        )
+        files = importlib.resources.files("xtce_lib.xsd")
         schema_file = files / self._version.value.xsd_name
         xsd_file = files / "xml.xsd"
 
