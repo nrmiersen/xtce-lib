@@ -8,7 +8,11 @@ version = "0.1.0a1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["lxml>=6.1.0", "xsdata>=26.2"]
+dependencies = [
+    "lxml>=6.1.0",
+    "pydantic>=2.13.4",
+    "xsdata>=26.2",
+]
 
 [dependency-groups]
 dev = [

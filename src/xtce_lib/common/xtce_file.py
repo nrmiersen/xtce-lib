@@ -6,11 +6,21 @@ import tempfile
 from dataclasses import dataclass
 from importlib.abc import Traversable
 from pathlib import Path
-from typing import ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from lxml import etree
+from xsdata.formats.dataclass.parsers import XmlParser
 
 from ._version import XtceVersion
+
+if TYPE_CHECKING:
+    from xtce_lib.generated.xtce_1_1.models import SpaceSystem as SpaceSystem11
+    from xtce_lib.generated.xtce_1_2.models import SpaceSystem as SpaceSystem12
+    from xtce_lib.generated.xtce_1_3.models import SpaceSystem as SpaceSystem13
+
+    AnySpaceSystem = SpaceSystem11 | SpaceSystem12 | SpaceSystem13
+else:
+    AnySpaceSystem = Any
 
 
 @dataclass
@@ -42,6 +52,7 @@ class XtceFile:
 
         self._namespace = self.get_namespace(self._file_path)
         self._version = XtceVersion.from_namespace(self._namespace)
+        self._raw_model: AnySpaceSystem | None = None
 
         self._schema_resource, self._xml_resource = self._get_xsd_resources()
 
@@ -59,6 +70,13 @@ class XtceFile:
     def version(self) -> str:
         """Get the XTCE version of the file."""
         return self._version.value.version
+
+    @property
+    def raw_model(self) -> Any:
+        """Get the raw parsed model of the XTCE file."""
+        if self._raw_model is None:
+            self.parse_raw()
+        return self._raw_model
 
     @staticmethod
     def get_namespace(file_path: str | Path) -> str:
@@ -121,6 +139,32 @@ class XtceFile:
             # Catastrophic syntax error
             syntax_error = XtceValidationError(line=e.lineno or 0, message=str(e))
             return ValidationResult(is_valid=False, errors=[syntax_error])
+
+    def parse_raw(self, strict: bool = False) -> None:
+        """Parse the XML file into the version-specific xsdata dataclasses.
+
+        Args:
+            strict: If True, validates the file against the schema before parsing.
+
+        Raises:
+            ValueError: If validation fails in strict mode or if parsing fails.
+
+        """
+        if strict:
+            result = self.validate()
+            if not result.is_valid:
+                raise ValueError(
+                    f"Cannot parse invalid XTCE file: {result.errors[0].message}"
+                )
+
+        # Import the correct generated module based on the XTCE version
+        module_path = f"xtce_lib.generated.{self._version.value.module_name}.models"
+        models_module = importlib.import_module(module_path)
+
+        # Parse XML into the SpaceSystem root class
+        root_class = getattr(models_module, "SpaceSystem")
+        parser = XmlParser()
+        self._raw_model = parser.parse(str(self._file_path), root_class)
 
     def _get_validator(self) -> etree.XMLSchema:
         """Get the XMLSchema validator for the XTCE version of this file."""

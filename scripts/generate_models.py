@@ -4,7 +4,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Map versions to their specific XSD files based on your current directory structure
 XTCE_VERSIONS = {
     "1_1": "dtc-06-11-06.xsd",
     "1_2": "dtc-18-02-04.xsd",
@@ -45,8 +44,6 @@ def main() -> None:
                 file=sys.stderr,
             )
             sys.exit(1)
-
-    print("\nAll models generated successfully")
 
 
 if __name__ == "__main__":
