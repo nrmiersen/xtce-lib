@@ -8,11 +8,7 @@ version = "0.1.0a1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "lxml>=6.1.0",
-    "pydantic>=2.13.4",
-    "xsdata>=26.2",
-]
+dependencies = ["lxml>=6.1.0", "pydantic>=2.13.4", "xsdata>=26.2"]
 
 [dependency-groups]
 dev = [
@@ -35,5 +31,8 @@ ignore = [
     "D203", # Conflicts with D211
     "D213", # Conflicts with D212
 ]
+extend-select = ["D413"]
 [tool.ruff.lint.isort]
 known-first-party = ["xtce_lib"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
