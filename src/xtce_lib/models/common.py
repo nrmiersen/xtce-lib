@@ -9,10 +9,10 @@ class Alias(XtceBaseModel):
     """Used to contain an alternate name or ID for the object.
 
     For example, a parameter may have a mnemonic, an on-board id, and special IDs used
-    by various ground software applications; all of these are alias's. Some ground
+    by various ground software applications; all of these are aliases. Some ground
     system processing equipment has some severe naming restrictions on parameters (e.g.,
     names must less then 12 characters, single case or integral id's only); their
-    alias's provide a means of capturing each name in a "nameSpace". Note: the name is
+    aliases provide a means of capturing each name in a "nameSpace". Note: the name is
     not reference-able (it cannot be used in a name reference substituting for the name
     of the item of interest).
     """
@@ -20,15 +20,15 @@ class Alias(XtceBaseModel):
     name_space: str = Field(
         ...,
         description=(
-            'Aliases should be grouped together in a "namespace" so that they can be'
-            " switched in and out of data extractions."
-            " The namespace generally identifies the purpose of the alternate name, whether for"
-            " software variable names, additional operator names, or whatever the purpose."
+            'Aliases should be grouped together in a "namespace" so that they can be '
+            "switched in and out of data extractions. The namespace generally "
+            "identifies the purpose of the alternate name, whether for software "
+            "variable names, additional operator names, or whatever the purpose."
         ),
         examples=["Bus", "Payload", "Ground"],
     )
-    """Aliases should be grouped together in a "namespace" so that they can be
-    switched in and out of data extractions.
+    """Aliases should be grouped together in a "namespace" so that they can be switched
+    in and out of data extractions.
 
     The namespace generally identifies the purpose of the alternate name, whether for
     software variable names, additional operator names, or whatever the purpose.
@@ -37,10 +37,10 @@ class Alias(XtceBaseModel):
     alias: str = Field(
         ...,
         description=(
-            "The alternate name or ID to use."
-            " The alias does not have the restrictions that apply to name attributes. This is"
-            " useful for capturing legacy identifiers for systems with unusual naming conventions."
-            " It is also useful for capturing variable names in software, amongst other things."
+            "The alternate name or ID to use. The alias does not have the restrictions "
+            "that apply to name attributes. This is useful for capturing legacy "
+            "identifiers for systems with unusual naming conventions. It is also "
+            "useful for capturing variable names in software, amongst other things."
         ),
         examples=["BatteryVoltage", "BusBatteryVoltage", "BattVolt"],
     )
@@ -61,7 +61,9 @@ class AncillaryData(XtceBaseModel):
 
     value: str = Field(
         default="",
-        description="The value of this Ancillary Data characteristic, feature, or data.",
+        description=(
+            "The value of this Ancillary Data characteristic, feature, or data."
+        ),
         examples=[
             "123 bytes",
             '{"min_size": 1, "max_size": 10}',
@@ -72,22 +74,29 @@ class AncillaryData(XtceBaseModel):
 
     name: str = Field(
         ...,
-        description="Identifier for this Ancillary Data characteristic, feature, or data.",
+        description=(
+            "Identifier for this Ancillary Data characteristic, feature, or data."
+        ),
         examples=["ContainerSize", "SizeRangeDict", "SizeRangeXml"],
     )
     """Identifier for this Ancillary Data characteristic, feature, or data."""
 
     mime_type: str = Field(
         default="text/plain",
-        description="Optional text encoding method for the element text content of this element.",
+        description=(
+            "Optional text encoding method for the element text content of this "
+            "element."
+        ),
         examples=["text/plain", "application/json", "application/xml"],
     )
-    """Optional text encoding method for the element text content of this
-    element."""
+    """Optional text encoding method for the element text content of this element."""
 
     href: str | None = Field(
         default=None,
-        description="Optional Uniform Resource Identifier for this characteristic, feature, or data.",
+        description=(
+            "Optional Uniform Resource Identifier for this characteristic, "
+            "feature, or data."
+        ),
         examples=[
             "http://example.com/data",
             "https://example.com/data",
@@ -95,15 +104,19 @@ class AncillaryData(XtceBaseModel):
         ],
     )
     """Optional Uniform Resource Identifier for this characteristic, feature, or
-    data."""
-
+    data.
+    """
 
 class DescriptionBase(XtceBaseModel):
-    """Defines an abstract schema type used as basis for NameDescriptionBase and OptionalNameDescriptionBase."""
+    """Defines an abstract schema type used as basis for NameDescriptionBase and
+    OptionalNameDescriptionBase.
+    """
 
     short_description: str | None = Field(
         default=None,
-        description="Optional short description to be used for explanation of this item.",
+        description=(
+            "Optional short description to be used for explanation of this item."
+        ),
         max_length=80,
         examples=[
             "Battery voltage in volts",
@@ -116,18 +129,28 @@ class DescriptionBase(XtceBaseModel):
     long_description: str | None = Field(
         default=None,
         description=(
-            "Optional long form description to be used for explanatory descriptions of"
-            " this item and may include HTML markup using CDATA."
-            " Long Descriptions are of unbounded length."
+            "Optional long form description to be used for explanatory descriptions of "
+            "this item and may include HTML markup using CDATA. Long Descriptions are "
+            "of unbounded length."
         ),
         examples=[
-            "This parameter represents the voltage of the battery in volts. It is measured by the battery voltage sensor and is used to monitor the health of the battery.",
-            "This parameter represents the speed of RWA1 in m/s. It is measured by the RWA1 speed sensor and is used to control RWA1.",
-            "This parameter is an unsigned 8-bit integer. It is used to store small numerical values.",
+            (
+                "This parameter represents the voltage of the battery in  volts. It is "
+                "measured by the battery voltage sensor and is used to monitor the "
+                "health of the battery."
+            ),
+            (
+                "This parameter represents the speed of RWA1 in m/s. It is measured by "
+                "the RWA1 speed sensor and is used to control RWA1."
+            ),
+            (
+                "This parameter is an unsigned 8-bit integer. It is used to store "
+                "small numerical values."
+            ),
         ],
     )
-    """Optional long form description to be used for explanatory descriptions of
-    this item and may include HTML markup using CDATA.
+    """Optional long form description to be used for explanatory descriptions of this
+    item and may include HTML markup using CDATA.
 
     Long Descriptions are of unbounded length.
     """
@@ -144,9 +167,10 @@ class DescriptionBase(XtceBaseModel):
     )
     """Use for any non-standard data associated with this named item."""
 
-
 class NameDescriptionBase(DescriptionBase):
-    """Defines a base schema type definition used by many other schema types throughout schema."""
+    """Defines a base schema type definition used by many other schema types throughout
+    schema.
+    """
 
     name: str = Field(
         ...,
@@ -156,10 +180,10 @@ class NameDescriptionBase(DescriptionBase):
     )
     """The name of this defined item."""
 
-
 class OptionalNameDescriptionBase(DescriptionBase):
-    """The type definition used by most elements that have an optional name with optional descriptions."""
-
+    """The type definition used by most elements that have an optional name with
+    optional descriptions.
+    """
     name: str | None = Field(
         default=None,
         description="The optional name of this defined item.",
