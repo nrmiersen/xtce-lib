@@ -646,7 +646,6 @@ name = "xtce-lib"
 version = "0.1.0a1"
 source = { editable = "." }
 dependencies = [
-    { name = "docformatter" },
     { name = "lxml" },
     { name = "pydantic" },
     { name = "xsdata" },
@@ -654,6 +653,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "docformatter" },
     { name = "lxml-stubs" },
     { name = "pytest" },
     { name = "types-lxml" },
@@ -662,7 +662,6 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "docformatter", specifier = ">=1.7.8" },
     { name = "lxml", specifier = ">=6.1.0" },
     { name = "pydantic", specifier = ">=2.13.4" },
     { name = "xsdata", specifier = ">=26.2" },
@@ -670,6 +669,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "docformatter", specifier = ">=1.7.8" },
     { name = "lxml-stubs", specifier = ">=0.5.1" },
     { name = "pytest", specifier = ">=9.0.3" },
     { name = "types-lxml", specifier = ">=2026.2.16" },

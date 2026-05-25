@@ -1,8 +1,21 @@
-"""Defines the XtcePath class, a pathlib-like object for handling XTCE SpaceSystem hierarchies."""
+"""Defines the XtcePath class, a pathlib-like object for handling XTCE SpaceSystem
+hierarchies.
+"""
+
+import re
+from typing import Any
+
+from pydantic.json_schema import JsonSchemaValue
+from pydantic_core import core_schema
+
+XTCE_NAME_REFERENCE_WITH_PATH_PATTERN = r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+_XTCE_NAME_REFERENCE_WITH_PATH_REGEX = re.compile(XTCE_NAME_REFERENCE_WITH_PATH_PATTERN)
 
 
 class XtcePath:
     """A pathlib-like object specifically for XTCE SpaceSystem hierarchies."""
+
+    # TODO maybe support arrays/aggregates with indexing
 
     def __init__(self, path: "str | XtcePath"):
         """Initialize a normalized XTCE path from a string or another XtcePath."""
@@ -153,3 +166,43 @@ class XtcePath:
     def __fspath__(self) -> str:
         """Support os.fspath protocol for interoperability."""
         return str(self)
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls,
+        source_type: Any,
+        handler: Any,
+    ) -> core_schema.CoreSchema:
+        """Hook for Pydantic to validate and serialize XtcePath values."""
+
+        def validate(value: Any) -> "XtcePath":
+            if isinstance(value, XtcePath):
+                return value
+            if isinstance(value, str):
+                if not _XTCE_NAME_REFERENCE_WITH_PATH_REGEX.fullmatch(value):
+                    msg = "XtcePath must be a valid XTCE name reference path"
+                    raise ValueError(msg)
+                return XtcePath(value)
+
+            msg = "XtcePath must be a string or XtcePath"
+            raise ValueError(msg)
+
+        return core_schema.no_info_plain_validator_function(
+            validate,
+            serialization=core_schema.plain_serializer_function_ser_schema(
+                lambda value: str(value),
+                when_used="always",
+            ),
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls,
+        core_schema_obj: core_schema.CoreSchema,
+        handler: Any,
+    ) -> JsonSchemaValue:
+        """Represent XtcePath as a string with XTCE name-reference constraints."""
+        return {
+            "type": "string",
+            "pattern": XTCE_NAME_REFERENCE_WITH_PATH_PATTERN,
+        }

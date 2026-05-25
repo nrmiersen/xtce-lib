@@ -3,6 +3,7 @@
 import os
 
 import pytest
+from pydantic import BaseModel, ValidationError
 
 from xtce_lib import XtcePath
 
@@ -199,3 +200,70 @@ def test_repr_and_fspath_are_informative() -> None:
 
     assert repr(path) == "XtcePath('/A/B')"
     assert os.fspath(path) == "/A/B"
+
+
+def test_pydantic_coerces_string_input() -> None:
+    """Pydantic should coerce supported inputs into XtcePath."""
+
+    class PathModel(BaseModel):
+        path: XtcePath
+
+    from_str = PathModel(path="/A/B")  # type: ignore
+
+    assert isinstance(from_str.path, XtcePath)
+    assert from_str.path == XtcePath("/A/B")
+
+
+def test_pydantic_accepts_dot_segments_in_qualified_paths() -> None:
+    """Pydantic should accept './' and '../' path navigation segments."""
+
+    class PathModel(BaseModel):
+        path: XtcePath
+
+    dot_path = PathModel(path="./A/B")  # type: ignore
+    dotdot_path = PathModel(path="../A/B")  # type: ignore
+
+    assert dot_path.path == XtcePath("./A/B")
+    assert dotdot_path.path == XtcePath("../A/B")
+
+
+def test_pydantic_rejects_invalid_input_type() -> None:
+    """Pydantic should reject unsupported input types for XtcePath."""
+
+    class PathModel(BaseModel):
+        path: XtcePath
+
+    with pytest.raises(ValidationError):
+        PathModel(path=123)  # type: ignore
+
+
+@pytest.mark.parametrize(
+    "invalid_value",
+    [
+        "A/B/",
+        "A:B",
+        "A[0]/B",
+        ".",
+        "..",
+    ],
+)
+def test_pydantic_rejects_invalid_name_reference_strings(invalid_value: str) -> None:
+    """Pydantic should reject strings that violate XTCE name-reference pattern."""
+
+    class PathModel(BaseModel):
+        path: XtcePath
+
+    with pytest.raises(ValidationError, match="valid XTCE name reference path"):
+        PathModel(path=invalid_value)  # type: ignore
+
+
+def test_pydantic_serialization_and_json_schema() -> None:
+    """Pydantic should serialize XtcePath as a string and expose string schema."""
+
+    class PathModel(BaseModel):
+        path: XtcePath
+
+    model = PathModel(path=XtcePath("/A/B"))
+
+    assert model.model_dump() == {"path": "/A/B"}
+    assert model.model_json_schema()["properties"]["path"]["type"] == "string"
