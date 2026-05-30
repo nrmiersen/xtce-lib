@@ -42,6 +42,8 @@ class ValidationResult:
 class XtceFile:
     """XTCE file manager for parsing and validation."""
 
+    # TODO add unified model
+
     # Cache at class level
     _schema_cache: ClassVar[dict[XtceVersion, etree.XMLSchema]] = {}
     _NAMESPACE_PATTERN: ClassVar[re.Pattern[str]] = re.compile(r"^\{([^}]+)\}")
@@ -165,6 +167,8 @@ class XtceFile:
         root_class = getattr(models_module, "SpaceSystem")
         parser = XmlParser()
         self._raw_model = parser.parse(str(self._file_path), root_class)
+
+        # TODO catch exceptions?
 
     def _get_validator(self) -> etree.XMLSchema:
         """Get the XMLSchema validator for the XTCE version of this file."""
