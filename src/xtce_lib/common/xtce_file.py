@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from lxml import etree
 from xsdata.formats.dataclass.parsers import XmlParser
 
-from ._version import XtceVersion
+from .xtce_version import XtceVersion
 
 if TYPE_CHECKING:
     from xtce_lib.generated.xtce_1_1.models import SpaceSystem as SpaceSystem11
@@ -126,7 +126,7 @@ class XtceFile:
             if is_valid:
                 return ValidationResult(is_valid=True, errors=[])
 
-            errors = []
+            errors: list[XtceValidationError] = []
             for error in validator.error_log:
                 # Strip the namespace
                 clean_message = re.sub(r"\{(?:http|urn)[^}]+\}", "", error.message)

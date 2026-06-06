@@ -40,5 +40,6 @@ class XtceDatabase:
         """Write this SpaceSystem to an XTCE file."""
         file_path = Path(file_path)
         # TODO maybe use Pydantic validate_call
+        # TODO probably want to allow passthru arguments for the file writing (pretty print, encoding, etc.)
         # TODO write to file
         return XtceFile(file_path)

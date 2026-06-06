@@ -43,6 +43,7 @@ class MetaCommandRef(NameReferenceWithPath):
     """A reference to a MetaCommand.
 
     Used to include a MetaCommand defined in another sub-system in this sub-system.
+
     """
 
 
@@ -54,6 +55,7 @@ class CommandMetadata(XtceBaseModel):
     """Command related metadata.
 
     Items defined in this area may refer to items defined in TelemetryMetadata.
+
     """
 
     parameter_types: list[
@@ -75,6 +77,7 @@ class CommandMetadata(XtceBaseModel):
 
     These parameters are located here so that MetaCommand data can be built
     independently of TelemetryMetadata.
+
     """
 
     argument_types: list[
@@ -96,6 +99,7 @@ class CommandMetadata(XtceBaseModel):
     provided/calculated/determined by the software creating the command instance. As a
     result, arguments contain separate type information. In some cases, arguments have
     different descriptive characteristics.
+
     """
 
     meta_commands: list[MetaCommand | MetaCommandRef | BlockMetaCommand] = Field(

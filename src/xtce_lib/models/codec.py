@@ -6,30 +6,90 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .enums import BitOrder, Endian, FloatEncoding, IntegerEncoding, StringEncoding
+from .match import DiscreteLookup
+from .parameters import ParameterInstance
 from .processing import (
+    CRC,
+    XOR,
     Calibrator,
+    Checksum,
     ContextCalibrator,
-    ErrorDetectCorrect,
     InputAlgorithm,
+    LinearAdjustment,
+    Parity,
 )
 
 
 class DynamicValue(XtceBaseModel):
-    pass
+    """A value obtained by a reference to a parameter instance.
+
+    The parameter value may be optionally adjusted by a linear function or use a series
+    of boolean expressions to lookup the value. Anything more complex and a DynamicValue
+    with a CustomAlgorithm may be used.
+
+    """
+
+    parameter_instance: ParameterInstance = Field(...)
+    """Retrieve the value by referencing the value of a parameter."""
+
+    linear_adjustment: LinearAdjustment | None = Field(default=None)
+    """A slope and intercept may be applied to scale or shift the value selected from
+    the parameter.
+    """
 
 
 class DiscreteLookupList(XtceBaseModel):
+    """Describe an ordered table of integer values and associated conditions, forming a
+    lookup table.
+
+    The list may have duplicates. The table is evaluated from first to last, the first
+    condition to be true returns the value associated with it.
+
+    """
+
+    lookups: list[DiscreteLookup] = Field(default_factory=list, min_length=1)
+    """Describe a lookup condition set using discrete values from parameters."""
+
+    default_value: int = Field(...)
+    """In the event that no lookup condition evaluates to true, then this value will be
+    used.
+    """
+
+
+class LeadingSize(XtceBaseModel):
+    pass
+
+
+class TerminationCharacter(XtceBaseModel):
     pass
 
 
 class VariableString(XtceBaseModel):
-    pass
+    """A variable string whose length may change between samples."""
+
+    length_source: DynamicValue | DiscreteLookupList | None = Field(default=None)
+    """The source of the length value, either from a parameter instance or a lookup
+    table.
+    """
+
+    string_boundary: LeadingSize | TerminationCharacter = Field(...)
+    """The method used to determine the end of the string, either by a leading size or a
+    termination character.
+    """
+
+    max_size_in_bits: int = Field(..., ge=1)
+    """The upper bound of the size of this string data type so that the implementation
+    can reserve/allocate enough memory to capture all reported instances of the
+    string.
+    """
 
 
 class DataEncoding(XtceBaseModel):
     """Describes how a particular piece of data is sent or received from some device."""
 
-    error_detect_correct: ErrorDetectCorrect | None = Field(default=None)
+    error_detect_correct: list[Checksum | CRC | XOR | Parity] | None = Field(
+        default=None
+    )
     """DEPRECATED: Use the ErrorDetectCorrect element in the container elements
     instead.
     """
@@ -56,8 +116,8 @@ class DataEncoding(XtceBaseModel):
     the significances would be listed as 3 (0x0A), 2 (0x0B), 1 (0x0C), 0 (0x0D) with 3
     being first in the list, and for leastSignificantByteFirst/little endian as 0
     (0x0D), 1 (0x0C), 2 (0x0B), 3 (0x0A) with 0 being first in the list.
-    """
 
+    """
 
 class IntegerDataEncoding(DataEncoding):
     """Describes how an integer value is sent or received from some device."""
@@ -73,6 +133,7 @@ class IntegerDataEncoding(DataEncoding):
     engineering/calibrated value when the match criteria evaluates to true.
 
     The first in the list to match takes precedence.
+
     """
 
     encoding: IntegerEncoding = Field(default=IntegerEncoding.UNSIGNED)
@@ -89,6 +150,7 @@ class IntegerDataEncoding(DataEncoding):
     This is used by some systems to limit the telemetry processing and/or recording
     requirements, such as for an analog-to-digital converter that dithers in the least
     significant bit. If the value is unspecified or zero, any change is significant.
+
     """
 
     # TODO validate size in bits is valid for encoding type
@@ -109,6 +171,7 @@ class FloatDataEncoding(DataEncoding):
     engineering/calibrated value when the match criteria evaluates to true.
 
     The first in the list to match takes precedence.
+
     """
 
     encoding: FloatEncoding = Field(default=FloatEncoding.IEEE754_1985)
@@ -125,6 +188,7 @@ class FloatDataEncoding(DataEncoding):
     - `64`: IEEE754, DEC, IBM
     - `80`: IEEE754_1985
     - `128`: IEEE754
+
     """
 
     change_threshold: float | None = Field(default=None)
@@ -133,6 +197,7 @@ class FloatDataEncoding(DataEncoding):
     This is used by some systems to limit the telemetry processing and/or recording
     requirements, such as for an analog-to-digital converter that dithers in the least
     significant bit. If the value is unspecified or zero, any change is significant.
+
     """
 
     # TODO validate size in bits is valid for encoding type
@@ -146,6 +211,7 @@ class StringDataEncoding(DataEncoding):
 
     Can either be an integer representing a fixed size, or a variable length represented
     by a dynamic value, leading size, termination character.
+
     """
 
     encoding: StringEncoding = Field(default=StringEncoding.UTF_8)

@@ -3,6 +3,7 @@
 import pytest
 from pydantic import ValidationError
 
+from xtce_lib.common.xtce_path import XTCE_NAME_REFERENCE_WITH_PATH_PATTERN, XtcePath
 from xtce_lib.models.common import (
     EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN,
     EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN,
@@ -11,7 +12,6 @@ from xtce_lib.models.common import (
     NameReferenceNoPath,
     NameReferenceWithPath,
 )
-from xtce_lib.xtce_path import XTCE_NAME_REFERENCE_WITH_PATH_PATTERN, XtcePath
 
 
 class TestNameReferenceWithPath:

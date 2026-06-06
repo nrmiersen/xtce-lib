@@ -4,7 +4,7 @@ import re
 
 from pydantic import Field, field_validator
 
-from xtce_lib.xtce_path import XtcePath
+from xtce_lib.common.xtce_path import XtcePath
 
 from ._base import XtceBaseModel
 
@@ -35,6 +35,7 @@ class Alias(XtceBaseModel):
     aliases provide a means of capturing each name in a "nameSpace". Note: the name is
     not reference-able (it cannot be used in a name reference substituting for the name
     of the item of interest).
+
     """
 
     name_space: str = Field(..., examples=["Bus", "Payload", "Ground"])
@@ -43,6 +44,7 @@ class Alias(XtceBaseModel):
 
     The namespace generally identifies the purpose of the alternate name, whether for
     software variable names, additional operator names, or whatever the purpose.
+
     """
 
     alias: str = Field(
@@ -53,6 +55,7 @@ class Alias(XtceBaseModel):
     The alias does not have the restrictions that apply to name attributes. This is
     useful for capturing legacy identifiers for systems with unusual naming conventions.
     It is also useful for capturing variable names in software, amongst other things.
+
     """
 
 
@@ -61,6 +64,7 @@ class AncillaryData(XtceBaseModel):
 
     May be used to include administrative data (e.g., version, CM or tags) or
     potentially any MIME type. Data may be included or given as an href.
+
     """
 
     value: str = Field(
@@ -133,6 +137,7 @@ class DescriptionBase(XtceBaseModel):
     item and may include HTML markup using CDATA.
 
     Long Descriptions are of unbounded length.
+
     """
 
     aliases: list[Alias] = Field(
@@ -175,7 +180,6 @@ class NameReferenceNoPath(XtceBaseModel):
     """A reference that can not include a path to a named object where array and
     aggregate are not possible.
     """
-
     name: str = Field(
         ...,
         json_schema_extra={"pattern": NAME_REFERENCE_NO_PATH_PATTERN},
@@ -184,8 +188,8 @@ class NameReferenceNoPath(XtceBaseModel):
     """A reference to a named item that can not include a path to the item.
 
     Can not include array or aggregate references.
-    """
 
+    """
     # TODO validate no array or aggregate
 
     @field_validator("name", mode="after")
@@ -200,7 +204,6 @@ class ExpandedNameReferenceNoPath(XtceBaseModel):
     """A reference that can not include a path to a named object where array and
     aggregate are possible.
     """
-
     name: str = Field(
         ...,
         json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN},
@@ -209,8 +212,8 @@ class ExpandedNameReferenceNoPath(XtceBaseModel):
     """A reference to a named item that can not include a path to the item.
 
     Can include array or aggregate references.
-    """
 
+    """
     @field_validator("name", mode="after")
     @classmethod
     def _validate_name_pattern(cls, value: str) -> str:
@@ -223,7 +226,6 @@ class NameReferenceWithPath(XtceBaseModel):
     """A reference that can include a path to a named object where array and aggregate
     are not possible.
     """
-
     name: XtcePath = Field(
         ...,
         examples=["SimpleSat/Bus/EPDS/BatteryOne/Voltage"],
@@ -231,8 +233,8 @@ class NameReferenceWithPath(XtceBaseModel):
     """A reference to a named item as a Unix style path to the item.
 
     Can not include array or aggregate references.
-    """
 
+    """
     # TODO validate no array or aggregate
 
 
@@ -240,7 +242,6 @@ class ExpandedNameReferenceWithPath(XtceBaseModel):
     """A reference that can include a path to a named object where array and aggregate
     are possible.
     """
-
     name: str = Field(
         ...,
         json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN},
@@ -249,8 +250,8 @@ class ExpandedNameReferenceWithPath(XtceBaseModel):
     """A reference to a named item as a Unix style path to the item.
 
     Can include array and aggregate references.
-    """
 
+    """
     @field_validator("name", mode="after")
     @classmethod
     def _validate_name_pattern(cls, value: str) -> str:

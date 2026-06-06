@@ -49,3 +49,7 @@ class Parameter(XtceBaseModel):
 
 class ParameterRef(XtceBaseModel):
     pass
+
+
+class ParameterInstance(ParameterRef):
+    pass

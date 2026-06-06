@@ -4,15 +4,27 @@ from ._base import XtceBaseModel
 from .common import NameDescriptionBase
 
 
+class Checksum(XtceBaseModel):
+    pass
+
+
+class CRC(XtceBaseModel):
+    pass
+
+
+class XOR(XtceBaseModel):
+    pass
+
+
+class Parity(XtceBaseModel):
+    pass
+
+
 class InputOutputTriggerAlgorithm(XtceBaseModel):
     pass
 
 
 class MathAlgorithm(XtceBaseModel):
-    pass
-
-
-class ErrorDetectCorrect(XtceBaseModel):
     pass
 
 
@@ -33,4 +45,8 @@ class SimpleAlgorithm(NameDescriptionBase):
 
 
 class InputAlgorithm(SimpleAlgorithm):
+    pass
+
+
+class LinearAdjustment(XtceBaseModel):
     pass

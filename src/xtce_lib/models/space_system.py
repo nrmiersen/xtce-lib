@@ -1,10 +1,18 @@
 """Top-level classes relevant to the SpaceSystem."""
 
+import dataclasses
+from typing import Any, Self
+
 from pydantic import Field
+from typing_extensions import assert_never
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy
+from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from .commands import CommandMetadata
-from .common import NameDescriptionBase
+from .common import Alias, AncillaryData, NameDescriptionBase
 from .enums import SystemType, ValidationStatus
 from .telemetry import TelemetryMetadata
 
@@ -13,6 +21,7 @@ class Header(XtceBaseModel):
     """Schema for a Header record.
 
     A header contains general information about the system or subsystem.
+
     """
 
     authors: list[str] = Field(
@@ -95,6 +104,7 @@ class MessageRef(XtceBaseModel):
     )
     """Name of message."""
 
+
 class ContainerRef(XtceBaseModel):
     """Holds a reference to a container."""
 
@@ -108,6 +118,7 @@ class ContainerRef(XtceBaseModel):
         ],
     )
     """Name of container."""
+
 
 class Service(NameDescriptionBase):
     """Holds a set of services, logical groups of containers OR messages."""
@@ -125,6 +136,7 @@ class SpaceSystem(NameDescriptionBase):
     and sub-systems. A SpaceSystem is the root element for the set of data necessary to
     monitor and command an arbitrary space device - this includes the binary
     decomposition the data streams going into and out of a device.
+
     """
 
     header: Header | None = Field(default=None)
@@ -156,6 +168,7 @@ class SpaceSystem(NameDescriptionBase):
 
     Represents what from a space enterprise this SpaceSystem element represents. See the
     individual enumeration descriptions in SystemType.
+
     """
 
     asset_type: str = Field(
@@ -171,3 +184,347 @@ class SpaceSystem(NameDescriptionBase):
     """Optional descriptive attribute for document owner convenience."""
 
     base: str | None = Field(default=None)
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], space_system: xtce_1_1.SpaceSystem) -> Self:
+        version = XtceVersion.V1_1
+
+        kwargs = {
+            f.name: getattr(space_system, f.name)
+            for f in dataclasses.fields(space_system)
+        }
+
+        if space_system.alias_set:
+            kwargs["alias_set"] = [
+                Alias.from_xsdata(alias, version)
+                for alias in space_system.alias_set.alias
+            ]
+        if space_system.ancillary_data_set:
+            kwargs["ancillary_data_set"] = [
+                AncillaryData.from_xsdata(ancillary_data, version)
+                for ancillary_data in space_system.ancillary_data_set.ancillary_data
+            ]
+        if space_system.header:
+            kwargs["header"] = Header.from_xsdata(
+                space_system.header,
+                version,
+            )
+        if space_system.telemetry_meta_data:
+            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
+                space_system.telemetry_meta_data,
+                version,
+            )
+        if space_system.command_meta_data:
+            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
+                space_system.command_meta_data,
+                version,
+            )
+        if space_system.service_set:
+            kwargs["services"] = [
+                Service.from_xsdata(service, version)
+                for service in space_system.service_set.service
+            ]
+        if space_system.space_system:
+            kwargs["space_system"] = [
+                cls._from_v1_1(subsystem) for subsystem in space_system.space_system
+            ]
+
+        return cls(**kwargs)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], space_system: xtce_1_2.SpaceSystem) -> Self:
+        version = XtceVersion.V1_2
+
+        kwargs = {
+            f.name: getattr(space_system, f.name)
+            for f in dataclasses.fields(space_system)
+        }
+
+        if space_system.alias_set:
+            kwargs["alias_set"] = [
+                Alias.from_xsdata(alias, version)
+                for alias in space_system.alias_set.alias
+            ]
+        if space_system.ancillary_data_set:
+            kwargs["ancillary_data_set"] = [
+                AncillaryData.from_xsdata(ancillary_data, version)
+                for ancillary_data in space_system.ancillary_data_set.ancillary_data
+            ]
+        if space_system.header:
+            kwargs["header"] = Header.from_xsdata(
+                space_system.header,
+                version,
+            )
+        if space_system.telemetry_meta_data:
+            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
+                space_system.telemetry_meta_data,
+                version,
+            )
+        if space_system.command_meta_data:
+            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
+                space_system.command_meta_data,
+                version,
+            )
+        if space_system.service_set:
+            kwargs["services"] = [
+                Service.from_xsdata(service, version)
+                for service in space_system.service_set.service
+            ]
+        if space_system.space_system:
+            kwargs["space_system"] = [
+                cls._from_v1_2(subsystem) for subsystem in space_system.space_system
+            ]
+
+        return cls(**kwargs)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], space_system: xtce_1_3.SpaceSystem) -> Self:
+        version = XtceVersion.V1_2
+
+        kwargs = {
+            f.name: getattr(space_system, f.name)
+            for f in dataclasses.fields(space_system)
+        }
+
+        if space_system.alias_set:
+            kwargs["alias_set"] = [
+                Alias.from_xsdata(alias, version)
+                for alias in space_system.alias_set.alias
+            ]
+        if space_system.ancillary_data_set:
+            kwargs["ancillary_data_set"] = [
+                AncillaryData.from_xsdata(ancillary_data, version)
+                for ancillary_data in space_system.ancillary_data_set.ancillary_data
+            ]
+        if space_system.header:
+            kwargs["header"] = Header.from_xsdata(
+                space_system.header,
+                version,
+            )
+        if space_system.telemetry_meta_data:
+            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
+                space_system.telemetry_meta_data,
+                version,
+            )
+        if space_system.command_meta_data:
+            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
+                space_system.command_meta_data,
+                version,
+            )
+        if space_system.service_set:
+            kwargs["services"] = [
+                Service.from_xsdata(service, version)
+                for service in space_system.service_set.service
+            ]
+        if space_system.space_system:
+            kwargs["space_system"] = [
+                cls._from_v1_3(subsystem) for subsystem in space_system.space_system
+            ]
+        if space_system.system_type:
+            kwargs["system_type"] = SystemType(space_system.system_type.value)
+
+        return cls(**kwargs)
+
+    @classmethod
+    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to create a SpaceSystem from an xsdata-generated SpaceSystem
+        object of any version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return cls._from_v1_1(raw_obj)
+            case XtceVersion.V1_2:
+                return cls._from_v1_2(raw_obj)
+            case XtceVersion.V1_3:
+                return cls._from_v1_3(raw_obj)
+            case _:
+                assert_never(version)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.SpaceSystem:
+        version = XtceVersion.V1_1
+
+        self._enforce_unsupported_field(
+            field_name="system_type",
+            current_value=self.system_type,
+            empty_value=SystemType.UNKNOWN,
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="asset_type",
+            current_value=self.asset_type,
+            empty_value="unknown",
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="base",
+            current_value=self.base,
+            empty_value=None,
+            target_version=version,
+            policy=policy,
+        )
+
+        return xtce_1_1.SpaceSystem(
+            name=self.name,
+            short_description=self.short_description,
+            long_description=self.long_description,
+            alias_set=xtce_1_1.AliasSetType(
+                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
+            )
+            if self.aliases
+            else None,
+            ancillary_data_set=xtce_1_1.DescriptionType.AncillaryDataSet(
+                ancillary_data=[
+                    ancillary_data.to_xsdata(version=version)
+                    for ancillary_data in self.ancillary_data
+                ]
+            )
+            if self.ancillary_data
+            else None,
+            header=self.header.to_xsdata(version=version) if self.header else None,
+            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
+            if self.telemetry_metadata
+            else None,
+            command_meta_data=self.command_metadata.to_xsdata(version=version)
+            if self.command_metadata
+            else None,
+            service_set=xtce_1_1.SpaceSystemType.ServiceSet(
+                service=[
+                    service.to_xsdata(version=version) for service in self.services
+                ]
+            )
+            if self.services
+            else None,
+            space_system=[
+                subsystem._to_v1_1(policy) for subsystem in self.space_system
+            ],
+            operational_status=self.operational_status,
+        )
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.SpaceSystem:
+        version = XtceVersion.V1_2
+
+        self._enforce_unsupported_field(
+            field_name="system_type",
+            current_value=self.system_type,
+            empty_value=SystemType.UNKNOWN,
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="asset_type",
+            current_value=self.asset_type,
+            empty_value="unknown",
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="base",
+            current_value=self.base,
+            empty_value=None,
+            target_version=version,
+            policy=policy,
+        )
+
+        return xtce_1_2.SpaceSystem(
+            name=self.name,
+            short_description=self.short_description,
+            long_description=self.long_description,
+            alias_set=xtce_1_2.AliasSetType(
+                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
+            )
+            if self.aliases
+            else None,
+            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
+                ancillary_data=[
+                    ancillary_data.to_xsdata(version=version)
+                    for ancillary_data in self.ancillary_data
+                ]
+            )
+            if self.ancillary_data
+            else None,
+            header=self.header.to_xsdata(version=version) if self.header else None,
+            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
+            if self.telemetry_metadata
+            else None,
+            command_meta_data=self.command_metadata.to_xsdata(version=version)
+            if self.command_metadata
+            else None,
+            service_set=xtce_1_2.ServiceSetType(
+                service=[
+                    service.to_xsdata(version=version) for service in self.services
+                ]
+            )
+            if self.services
+            else None,
+            space_system=[
+                subsystem._to_v1_2(policy) for subsystem in self.space_system
+            ],
+            operational_status=self.operational_status,
+        )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.SpaceSystem:
+        version = XtceVersion.V1_3
+
+        return xtce_1_3.SpaceSystem(
+            name=self.name,
+            short_description=self.short_description,
+            long_description=self.long_description,
+            alias_set=xtce_1_3.AliasSetType(
+                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
+            )
+            if self.aliases
+            else None,
+            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
+                ancillary_data=[
+                    ancillary_data.to_xsdata(version=version)
+                    for ancillary_data in self.ancillary_data
+                ]
+            )
+            if self.ancillary_data
+            else None,
+            header=self.header.to_xsdata(version=version) if self.header else None,
+            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
+            if self.telemetry_metadata
+            else None,
+            command_meta_data=self.command_metadata.to_xsdata(version=version)
+            if self.command_metadata
+            else None,
+            service_set=xtce_1_3.ServiceSetType(
+                service=[
+                    service.to_xsdata(version=version) for service in self.services
+                ]
+            )
+            if self.services
+            else None,
+            space_system=[
+                subsystem._to_v1_3(policy) for subsystem in self.space_system
+            ],
+            system_type=xtce_1_3.SystemTypeType(self.system_type.value),
+            asset_type=self.asset_type,
+            operational_status=self.operational_status,
+            base=self.base,
+        )
+
+    def to_xsdata(
+        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.SpaceSystem | xtce_1_2.SpaceSystem | xtce_1_3.SpaceSystem:
+        """Convert this SpaceSystem to an xsdata-generated SpaceSystem object of the
+        specified version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return self._to_v1_1(policy)
+            case XtceVersion.V1_2:
+                return self._to_v1_2(policy)
+            case XtceVersion.V1_3:
+                return self._to_v1_3(policy)
+            case _:
+                assert_never(version)

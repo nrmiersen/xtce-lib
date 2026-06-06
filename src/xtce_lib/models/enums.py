@@ -61,6 +61,7 @@ class StringEncoding(str, Enum):
             little endian.  Bits are not prepended with a Byte Order Mark.
         UTF_32_BE: With UTF-32BE, encoded bits will always be represented as big
             endian.  Bits are not prepended with a Byte Order Mark.
+
     """
 
     US_ASCII = "US-ASCII"
@@ -96,6 +97,7 @@ class SystemType(str, Enum):
             organization.
         UNKNOWN: The default enumeration is meant for backwards compatibility
             with earlier versions and should be avoided.
+
     """
 
     ASSET = "asset"
@@ -121,6 +123,7 @@ class UnitForm(str, Enum):
         RAW: The unit of measure for this value refers to the raw binary value
             from the data stream, prior to conversion to the local native data
             type and application of calibrators.
+
     """
 
     CALIBRATED = "calibrated"

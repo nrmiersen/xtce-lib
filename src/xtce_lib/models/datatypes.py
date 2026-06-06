@@ -30,6 +30,7 @@ class Unit(XtceBaseModel):
     For example, a unit text of "meters" may have a "factor" attribute of 2, resulting
     "2 times meters" as the actual unit. This is not commonly used. The most common
     method for "2 times meters" is to use the str 'unit' attribute in a form like "2*m".
+
     """
 
     power: float = Field(default=1.0, examples=[1.0, 2.0, -1.0])
@@ -40,6 +41,7 @@ class Unit(XtceBaseModel):
     For example, a unit text of "meters" may have a "power" attribute of 2, resulting
     "meters squared" as the actual unit. This is not commonly used. The most common
     method for "meters squared" is to use the str 'unit' attribute in a form like "m^2".
+
     """
 
     form: UnitForm = Field(default=UnitForm.CALIBRATED)
@@ -83,6 +85,7 @@ class BaseData(NameDescriptionBase):
 
     This is only necessary if this data type is telemetered in some form. Local
     variables and derived typically do not require encoding.
+
     """
 
     base_type: None
