@@ -8,11 +8,7 @@ version = "0.1.0a1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = [
-    "lxml>=6.1.0",
-    "pydantic>=2.13.4",
-    "xsdata>=26.2",
-]
+dependencies = ["lxml>=6.1.0", "pydantic>=2.13.4", "xsdata>=26.2"]
 
 [dependency-groups]
 dev = [
@@ -21,6 +17,27 @@ dev = [
     "pytest>=9.0.3",
     "types-lxml>=2026.2.16",
     "xsdata[cli]>=26.2",
+]
+
+[tool.docformatter]
+wrap-summaries = 88
+wrap-descriptions = 88
+close-quotes-on-newline = true
+blank = true
+exclude = ["generated", "xsd"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+reportMatchNotExhaustive = "error"
+reportUnknownVariableType = false
+reportUnnecessaryIsInstance = false
+exclude = [
+    "**/.*",
+    ".venv",
+    "**/node_modules/**",
+    "**/__pycache__",
+    "**/generated/**",
+    "**/xsd/**",
 ]
 
 [tool.ruff]
@@ -42,9 +59,3 @@ extend-select = ["D413"]
 known-first-party = ["xtce_lib"]
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
-[tool.docformatter]
-wrap-summaries = 88
-wrap-descriptions = 88
-close-quotes-on-newline = true
-exclude = ["generated", "xsd"]
