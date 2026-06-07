@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from xtce_lib.models import SpaceSystem
+from xtce_lib.models.space_system import SpaceSystem
 
 from .xtce_file import XtceFile
 
