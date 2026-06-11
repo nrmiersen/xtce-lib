@@ -6,8 +6,7 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .enums import BitOrder, Endian, FloatEncoding, IntegerEncoding, StringEncoding
-from .match import DiscreteLookup
-from .parameters import ParameterInstance
+from .match import DiscreteLookupList
 from .processing import (
     CRC,
     XOR,
@@ -18,6 +17,7 @@ from .processing import (
     LinearAdjustment,
     Parity,
 )
+from .references import ParameterInstance
 
 
 class DynamicValue(XtceBaseModel):
@@ -35,24 +35,6 @@ class DynamicValue(XtceBaseModel):
     linear_adjustment: LinearAdjustment | None = Field(default=None)
     """A slope and intercept may be applied to scale or shift the value selected from
     the parameter.
-    """
-
-
-class DiscreteLookupList(XtceBaseModel):
-    """Describe an ordered table of integer values and associated conditions, forming a
-    lookup table.
-
-    The list may have duplicates. The table is evaluated from first to last, the first
-    condition to be true returns the value associated with it.
-
-    """
-
-    lookups: list[DiscreteLookup] = Field(default_factory=list, min_length=1)
-    """Describe a lookup condition set using discrete values from parameters."""
-
-    default_value: int = Field(...)
-    """In the event that no lookup condition evaluates to true, then this value will be
-    used.
     """
 
 
@@ -118,6 +100,7 @@ class DataEncoding(XtceBaseModel):
     (0x0D), 1 (0x0C), 2 (0x0B), 3 (0x0A) with 0 being first in the list.
 
     """
+
 
 class IntegerDataEncoding(DataEncoding):
     """Describes how an integer value is sent or received from some device."""

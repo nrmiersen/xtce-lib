@@ -28,6 +28,7 @@ class XtceBaseModel(BaseModel, ABC):
         This method should be overridden by subclasses.
 
         """
+        # TODO add logic here for passing around the error list
         pass
 
     def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:

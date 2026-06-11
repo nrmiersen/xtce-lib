@@ -1,5 +1,9 @@
 """Unified XTCE model module."""
 
+from typing import Any
+
+from xtce_lib.models._base import XtceBaseModel
+
 from .arguments import (
     AbsoluteTimeArgument,
     AggregateArgument,
@@ -12,9 +16,12 @@ from .arguments import (
     RelativeTimeArgument,
     StringArgument,
 )
+from .array import Dimension
 from .codec import (
     BinaryDataEncoding,
     DataEncoding,
+    DiscreteLookupList,
+    DynamicValue,
     FloatDataEncoding,
     IntegerDataEncoding,
     StringDataEncoding,
@@ -46,8 +53,6 @@ from .parameters import (
     FloatParameter,
     IntegerParameter,
     Parameter,
-    ParameterInstance,
-    ParameterRef,
     RelativeTimeParameter,
     StringParameter,
 )
@@ -65,6 +70,7 @@ from .processing import (
     Parity,
     SimpleAlgorithm,
 )
+from .references import ParameterInstance, ParameterRef
 from .space_system import SpaceSystem
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 from .telemetry import TelemetryMetadata
@@ -80,8 +86,11 @@ __all__ = [
     "IntegerArgument",
     "RelativeTimeArgument",
     "StringArgument",
+    "Dimension",
     "BinaryDataEncoding",
     "DataEncoding",
+    "DiscreteLookupList",
+    "DynamicValue",
     "FloatDataEncoding",
     "IntegerDataEncoding",
     "StringDataEncoding",
@@ -109,8 +118,6 @@ __all__ = [
     "FloatParameter",
     "IntegerParameter",
     "Parameter",
-    "ParameterInstance",
-    "ParameterRef",
     "RelativeTimeParameter",
     "StringParameter",
     "CRC",
@@ -125,9 +132,31 @@ __all__ = [
     "MathAlgorithm",
     "Parity",
     "SimpleAlgorithm",
+    "ParameterInstance",
+    "ParameterRef",
     "SpaceSystem",
     "CustomStream",
     "FixedFrameStream",
     "VariableFrameStream",
     "TelemetryMetadata",
 ]
+
+
+def _rebuild_all_models(
+    base_class: type[XtceBaseModel], namespace: dict[str, Any]
+) -> None:
+    """Recursively find and rebuild all Pydantic models.
+
+    This resolves forward references for all models in the module.
+    """
+    for subclass in base_class.__subclasses__():
+        try:
+            subclass.model_rebuild(_types_namespace=namespace)
+            _rebuild_all_models(subclass, namespace)
+        except Exception as e:
+            raise RuntimeError(
+                f"Error rebuilding model {subclass.__name__}: {e}"
+            ) from e
+
+
+_rebuild_all_models(XtceBaseModel, globals())

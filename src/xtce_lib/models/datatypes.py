@@ -62,6 +62,7 @@ class Unit(XtceBaseModel):
     specification of the nature/property of the unit.
     """
 
+
 class BaseData(NameDescriptionBase):
     """An abstract schema type used by within the schema to derive the other
     simple/primitive engineering form data types.
@@ -91,5 +92,42 @@ class BaseData(NameDescriptionBase):
     base_type: None
     """Used to derive one Data Type from another - will inherit all the attributes from the baseType any of which may be redefined in this type definition."""
 
+
 class IntegerData(BaseData):
+    pass
+
+
+class FloatData(BaseData):
+    pass
+
+
+class StringData(BaseData):
+    pass
+
+
+class BinaryData(BaseData):
+    pass
+
+
+class BooleanData(BaseData):
+    pass
+
+
+class EnumeratedData(BaseData):
+    pass
+
+
+class ArrayData(BaseData):
+    pass
+
+
+class AggregateData(BaseData):
+    pass
+
+
+class RelativeTimeData(BaseData):
+    pass
+
+
+class AbsoluteTimeData(BaseData):
     pass

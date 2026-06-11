@@ -50,3 +50,7 @@ class InputAlgorithm(SimpleAlgorithm):
 
 class LinearAdjustment(XtceBaseModel):
     pass
+
+
+class InputOutputAlgorithm(InputAlgorithm):
+    pass

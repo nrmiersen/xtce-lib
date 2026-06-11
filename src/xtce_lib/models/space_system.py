@@ -169,13 +169,17 @@ class SpaceSystem(NameDescriptionBase):
     Represents what from a space enterprise this SpaceSystem element represents. See the
     individual enumeration descriptions in SystemType.
 
+    Applicable since: XTCE 1.3.
+
     """
 
     asset_type: str = Field(
         default="unknown",
         examples=["spacecraft", "aircraft", "device"],
     )
-    """Broad name for the type of asset."""
+    """Broad name for the type of asset.
+
+    Applicable since: XTCE 1.3."""
 
     operational_status: str | None = Field(
         default=None,
@@ -184,6 +188,7 @@ class SpaceSystem(NameDescriptionBase):
     """Optional descriptive attribute for document owner convenience."""
 
     base: str | None = Field(default=None)
+    """Applicable since: XTCE 1.3."""
 
     @classmethod
     def _from_v1_1(cls: type[Self], space_system: xtce_1_1.SpaceSystem) -> Self:

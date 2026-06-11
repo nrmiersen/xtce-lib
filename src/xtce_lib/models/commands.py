@@ -27,11 +27,11 @@ from .parameters import (
     FloatParameter,
     IntegerParameter,
     Parameter,
-    ParameterRef,
     RelativeTimeParameter,
     StringParameter,
 )
 from .processing import InputOutputTriggerAlgorithm, MathAlgorithm
+from .references import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 
 
@@ -129,6 +129,6 @@ class CommandMetadata(XtceBaseModel):
     )
     """Contains an unordered set of algorithms."""
 
-    def validate(self):
+    def validate_semantics(self):
         """Perform semantic validation of this CommandMetadata."""
         # TODO make sure there are no duplicate parameter names

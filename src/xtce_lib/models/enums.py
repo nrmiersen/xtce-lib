@@ -141,3 +141,105 @@ class ValidationStatus(str, Enum):
     VALIDATED = "Validated"
     RELEASED = "Released"
     WITHDRAWN = "Withdrawn"
+
+
+class RangeForm(str, Enum):
+    """Defines inside and outside enumerated terms, where the term outside means the
+    range is (-inf, minimum) and (maximum, inf) -- that is a range where acceptable
+    values must be less than the minimum and greater than the maximum, and the term
+    inside means the range is (minimum, maximum) -- that is acceptable values are
+    between the minimum and maximum (either the min or max may be inclusive or
+    exclusive).
+    """
+
+    OUTSIDE = "outside"
+    INSIDE = "inside"
+
+
+class ChangeSpan(str, Enum):
+    """Defines a changePerSecond and changePerSample for use in rate of change alarms.
+
+    Used by ChangeAlarmRangesType.
+    """
+
+    CHANGE_PER_SECOND = "changePerSecond"
+    CHANGE_PER_SAMPLE = "changePerSample"
+
+
+class ChangeBasis(str, Enum):
+    """Defines absoluteChange and percentageChange for use in rate of change alarms.
+
+    Used by ChangeAlarmRangesType.
+    """
+
+    ABSOLUTE_CHANGE = "absoluteChange"
+    PERCENTAGE_CHANGE = "percentageChange"
+
+
+class ConcernLevel(str, Enum):
+    """Defines six levels: Normal, Watch, Warning, Distress, Critical and Severe, in
+    that order of concern from least to most.
+
+    These level definitions are used throughout the alarm definitions. An
+    implementation should interpret these as best to match their uniqueness and
+    provide documentation on how this standard maps to their implementation. Not all
+    are likely to be provided, with some either ignored, promoted or demoted to
+    others, or warned on input. There exist some reasonable usage recommendations in
+    the user community.
+
+    Attributes:
+        NORMAL: The case of "normal" or "no concern level" is generally the
+            default.  This value can be useful when describing an exception or
+            disabling when the more typical case is a non-normal concern level.
+        WATCH: DEPRECATED: The lowest level of concern.  Systems that support
+            only 3 or 4 concern levels have been observed to promote "watch" to
+            "warning" during data processing, if this enumeration is not
+            explicitly supported.  This value may not exist in future versions of
+            this specification.
+        WARNING: A level of concern to be interpreted by the user as less than
+            the highest possible concern.  This is intended by the specification
+            to be quite vague.  The project operational concept will explicitly
+            define how these are to be used.
+        DISTRESS: A level of concern to be interpreted by the user as greater
+            than the least concern but not yet rising to the highest possible
+            concern.  This is intended by the specification to be quite vague.
+            The project operational concept will explicitly define how these are
+            to be used.
+        CRITICAL: A level of concern to be interpreted by the user as the highest
+            possible concern.  This is intended by the specification to be quite
+            vague.  The project operational concept will explicitly define how
+            these are to be used.
+        SEVERE: DEPRECATED: The highest level of concern.  Systems that support
+            only 3 or 4 concern levels have been observed to demote "severe" to
+            "critical" during data processing, if this enumeration is not
+            explicitly supported.  This value may not exist in future versions of
+            this specification.
+
+    """
+
+    NORMAL = "normal"
+    WATCH = "watch"
+    WARNING = "warning"
+    DISTRESS = "distress"
+    CRITICAL = "critical"
+    SEVERE = "severe"
+
+
+class TimeUnits(str, Enum):
+    """Base time unit of measure.
+
+    It is best practice to avoid days, months, and years due to ambiguity involving
+    leap seconds and leap days. If these are used, the system should document how
+    the leaps are handled.
+    """
+
+    SECONDS = "seconds"
+    MILLISECONDS = "milliseconds"
+    MICROSECONDS = "microseconds"
+    NANOSECONDS = "nanoseconds"
+    PICOSECONDS = "picoseconds"
+    MINUTES = "minutes"
+    HOURS = "hours"
+    DAYS = "days"
+    MONTHS = "months"
+    YEARS = "years"
