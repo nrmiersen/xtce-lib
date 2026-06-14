@@ -5,19 +5,26 @@ from typing import Literal
 from pydantic import Field
 
 from ._base import XtceBaseModel
-from .enums import BitOrder, Endian, FloatEncoding, IntegerEncoding, StringEncoding
-from .match import DiscreteLookupList
+from .enum import (
+    BitOrder,
+    Endian,
+    FloatEncoding,
+    IntegerEncoding,
+    StringEncoding,
+    TimeUnits,
+)
 from .processing import (
     CRC,
     XOR,
     Calibrator,
     Checksum,
     ContextCalibrator,
+    DiscreteLookupList,
     InputAlgorithm,
     LinearAdjustment,
     Parity,
 )
-from .references import ParameterInstance
+from .reference import ParameterInstanceRef
 
 
 class DynamicValue(XtceBaseModel):
@@ -29,7 +36,7 @@ class DynamicValue(XtceBaseModel):
 
     """
 
-    parameter_instance: ParameterInstance = Field(...)
+    parameter_instance: ParameterInstanceRef = Field(...)
     """Retrieve the value by referencing the value of a parameter."""
 
     linear_adjustment: LinearAdjustment | None = Field(default=None)
@@ -39,11 +46,12 @@ class DynamicValue(XtceBaseModel):
 
 
 class LeadingSize(XtceBaseModel):
-    pass
+    size_in_bits_of_size_tag: int = Field(default=16, ge=1)
 
 
 class TerminationCharacter(XtceBaseModel):
-    pass
+    character: bytes = Field(default=b"\x00")
+    # TODO make sure this matches xsd def, it doesn't exist in xsdata generated models because it gets obfuscated for some reason
 
 
 class VariableString(XtceBaseModel):
@@ -214,3 +222,16 @@ class BinaryDataEncoding(DataEncoding):
 
     to_binary_transform_algorithm: InputAlgorithm | None = Field(default=None)
     """Used to convert to binary data from an application data type."""
+
+
+class TimeEncoding(XtceBaseModel):
+    encoding_type: (
+        IntegerDataEncoding
+        | FloatDataEncoding
+        | StringDataEncoding
+        | BinaryDataEncoding
+        | None
+    ) = Field(default=None)
+    units: TimeUnits = Field(default=TimeUnits.SECONDS)
+    scale: float = Field(default=1.0)
+    offset: float = Field(default=0.0)

@@ -50,7 +50,7 @@ class XtceFile:
 
     def __init__(self, file_path: str | Path) -> None:
         """Initialize the XTCE file object."""
-        self._file_path = Path(file_path)
+        self._file_path = Path(file_path).resolve()
 
         self._namespace = self.get_namespace(self._file_path)
         self._version = XtceVersion.from_namespace(self._namespace)

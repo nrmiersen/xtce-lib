@@ -4,9 +4,8 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .common import NameDescriptionBase, OptionalNameDescriptionBase
-from .containers import SequenceContainer
-from .match import MatchCriteria
-from .parameters import (
+from .container import SequenceContainer
+from .parameter import (
     AbsoluteTimeParameter,
     AggregateParameter,
     ArrayParameter,
@@ -19,8 +18,8 @@ from .parameters import (
     RelativeTimeParameter,
     StringParameter,
 )
-from .processing import InputOutputTriggerAlgorithm, MathAlgorithm
-from .references import ParameterRef
+from .processing import InputOutputTriggerAlgorithm, MatchCriteria, MathAlgorithm
+from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 
 
@@ -52,10 +51,7 @@ class TelemetryMetadata(XtceBaseModel):
     ] = Field(default_factory=list)
     """A list of parameter types."""
     parameters: list[Parameter | ParameterRef] = Field(default_factory=list)
-    containers: list[SequenceContainer] = Field(
-        default_factory=list,
-        min_length=1,
-    )
+    containers: list[SequenceContainer] = Field(default_factory=list, min_length=1)
     message_set: MessageSet | None = Field(default=None)
     streams: list[CustomStream | FixedFrameStream | VariableFrameStream] = Field(
         default_factory=list,

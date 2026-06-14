@@ -11,9 +11,9 @@ from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
-from .commands import CommandMetadata
+from .command import CommandMetadata
 from .common import Alias, AncillaryData, NameDescriptionBase
-from .enums import SystemType, ValidationStatus
+from .enum import SystemType, ValidationStatus
 from .telemetry import TelemetryMetadata
 
 

@@ -3,7 +3,7 @@
 from pydantic import Field
 
 from ._base import XtceBaseModel
-from .arguments import (
+from .argument import (
     AbsoluteTimeArgument,
     AggregateArgument,
     ArrayArgument,
@@ -16,8 +16,8 @@ from .arguments import (
     StringArgument,
 )
 from .common import NameDescriptionBase, NameReferenceWithPath
-from .containers import SequenceContainer
-from .parameters import (
+from .container import SequenceContainer
+from .parameter import (
     AbsoluteTimeParameter,
     AggregateParameter,
     ArrayParameter,
@@ -31,12 +31,41 @@ from .parameters import (
     StringParameter,
 )
 from .processing import InputOutputTriggerAlgorithm, MathAlgorithm
-from .references import ParameterRef
+from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 
 
+class Argument(NameDescriptionBase):
+    # TODO maybe move to argument.py
+    argument_type_ref: str = Field(
+        ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+    initial_value: str | None = Field(default=None)  # TODO figure out typing
+
+
+class ArgumentAssignment(XtceBaseModel):
+    # TODO maybe move to argument.py
+    name: str = Field(
+        ..., pattern=r"([^\.\[\]:/ \t]+(\[[0-9]+\])*(\.[^\.\[\]:/ \t]+(\[[0-9]+\])*)*)"
+    )
+    value: str = Field(...)  # TODO figure out typing
+    # TODO validate type of value, validate ranges, validate enumerations
+
+
+class BaseMetaCommand(XtceBaseModel):
+    argument_assignments: list[ArgumentAssignment] = Field(
+        default_factory=list, min_length=1
+    )
+    meta_command_ref: str = Field(
+        ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+
+
 class MetaCommand(NameDescriptionBase):
-    pass
+    base_meta_command: BaseMetaCommand | None = Field(default=None)
+    system_name: str | None = Field(default=None)
+    arguments: list[Argument] = Field(default_factory=list, min_length=1)
+    command_container: CommandContainer | None = Field(default=None)
 
 
 class MetaCommandRef(NameReferenceWithPath):

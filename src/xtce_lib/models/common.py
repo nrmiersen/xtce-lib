@@ -140,17 +140,12 @@ class DescriptionBase(XtceBaseModel):
 
     """
 
-    aliases: list[Alias] = Field(
-        default_factory=list,
-        min_length=1,
-    )
+    aliases: list[Alias] = Field(default_factory=list, min_length=1)
     """Used to contain an alias (alternate) name or ID for this item."""
 
-    ancillary_data: list[AncillaryData] = Field(
-        default_factory=list,
-        min_length=1,
-    )
+    ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
     """Use for any non-standard data associated with this named item."""
+
 
 class NameDescriptionBase(DescriptionBase):
     """Defines a base schema type definition used by many other schema types throughout
@@ -164,6 +159,7 @@ class NameDescriptionBase(DescriptionBase):
     )
     """The name of this defined item."""
 
+
 class OptionalNameDescriptionBase(DescriptionBase):
     """The type definition used by most elements that have an optional name with
     optional descriptions.
@@ -176,10 +172,12 @@ class OptionalNameDescriptionBase(DescriptionBase):
     )
     """The optional name of this defined item."""
 
+
 class NameReferenceNoPath(XtceBaseModel):
     """A reference that can not include a path to a named object where array and
     aggregate are not possible.
     """
+
     name: str = Field(
         ...,
         json_schema_extra={"pattern": NAME_REFERENCE_NO_PATH_PATTERN},
@@ -190,6 +188,7 @@ class NameReferenceNoPath(XtceBaseModel):
     Can not include array or aggregate references.
 
     """
+
     # TODO validate no array or aggregate
 
     @field_validator("name", mode="after")
@@ -204,6 +203,7 @@ class ExpandedNameReferenceNoPath(XtceBaseModel):
     """A reference that can not include a path to a named object where array and
     aggregate are possible.
     """
+
     name: str = Field(
         ...,
         json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN},
@@ -214,6 +214,7 @@ class ExpandedNameReferenceNoPath(XtceBaseModel):
     Can include array or aggregate references.
 
     """
+
     @field_validator("name", mode="after")
     @classmethod
     def _validate_name_pattern(cls, value: str) -> str:
@@ -226,6 +227,7 @@ class NameReferenceWithPath(XtceBaseModel):
     """A reference that can include a path to a named object where array and aggregate
     are not possible.
     """
+
     name: XtcePath = Field(
         ...,
         examples=["SimpleSat/Bus/EPDS/BatteryOne/Voltage"],
@@ -235,6 +237,7 @@ class NameReferenceWithPath(XtceBaseModel):
     Can not include array or aggregate references.
 
     """
+
     # TODO validate no array or aggregate
 
 
@@ -242,6 +245,7 @@ class ExpandedNameReferenceWithPath(XtceBaseModel):
     """A reference that can include a path to a named object where array and aggregate
     are possible.
     """
+
     name: str = Field(
         ...,
         json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN},
@@ -252,6 +256,7 @@ class ExpandedNameReferenceWithPath(XtceBaseModel):
     Can include array and aggregate references.
 
     """
+
     @field_validator("name", mode="after")
     @classmethod
     def _validate_name_pattern(cls, value: str) -> str:

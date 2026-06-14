@@ -4,9 +4,8 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .common import AncillaryData
-from .enums import ChangeBasis, ChangeSpan, ConcernLevel, RangeForm, TimeUnits
-from .match import ContextMatch, MatchCriteria
-from .processing import InputAlgorithm
+from .enum import ChangeBasis, ChangeSpan, ConcernLevel, RangeForm, TimeUnits
+from .processing import ContextMatch, InputAlgorithm, MatchCriteria
 from .range import FloatRange, MultiRangeType
 
 

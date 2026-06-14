@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .processing import DiscreteLookupList
 
 if TYPE_CHECKING:
-    from .codec import DiscreteLookupList, DynamicValue
+    from .codec import DynamicValue
 
 
 class Dimension(XtceBaseModel):
