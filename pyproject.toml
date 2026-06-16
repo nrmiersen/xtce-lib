@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "xtce-lib"
+version = "0.1.0a1"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["lxml>=6.1.0", "pydantic>=2.13.4", "xsdata>=26.2"]
+
+[dependency-groups]
+dev = [
+    "docformatter>=1.7.8",
+    "lxml-stubs>=0.5.1",
+    "pytest>=9.0.3",
+    "types-lxml>=2026.2.16",
+    "xsdata[cli]>=26.2",
+]
+
+[tool.docformatter]
+wrap-summaries = 88
+wrap-descriptions = 88
+close-quotes-on-newline = true
+blank = true
+exclude = ["generated", "xsd"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+reportMatchNotExhaustive = "error"
+reportUnknownVariableType = false
+reportUnnecessaryIsInstance = false
+exclude = [
+    "**/.*",
+    ".venv",
+    "**/node_modules/**",
+    "**/__pycache__",
+    "**/generated/**",
+    "**/xsd/**",
+]
+
+[tool.ruff]
+line-length = 88
+exclude = ["**generated/**"]
+[tool.ruff.lint]
+select = [
+    "D", # pydocstyle
+    "I", # isort
+    "F", # pyflakes
+]
+ignore = [
+    "D203", # Conflicts with D211
+    "D205",
+    "D213", # Conflicts with D212
+]
+extend-select = ["D413"]
+[tool.ruff.lint.isort]
+known-first-party = ["xtce_lib"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
