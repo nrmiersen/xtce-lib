@@ -41,3 +41,10 @@ class InputParameterInstanceRef(ParameterInstanceRef):
 
 class OutputParameterRef(ParameterRef):
     output_name: str | None = Field(default=None)
+
+
+class ArgumentInstanceRef(XtceBaseModel):
+    argument_ref: str = Field(
+        ..., pattern=r"([^\.\[\]:/ \t]+(\[[0-9]+\])*(\.[^\.\[\]:/ \t]+(\[[0-9]+\])*)*)"
+    )
+    use_calibrated_value: bool = Field(default=True)

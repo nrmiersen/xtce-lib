@@ -24,7 +24,7 @@ from .processing import (
     LinearAdjustment,
     Parity,
 )
-from .reference import ParameterInstanceRef
+from .reference import ArgumentInstanceRef, ParameterInstanceRef
 
 
 class DynamicValue(XtceBaseModel):
@@ -43,6 +43,11 @@ class DynamicValue(XtceBaseModel):
     """A slope and intercept may be applied to scale or shift the value selected from
     the parameter.
     """
+
+
+class ArgumentDynamicValue(XtceBaseModel):
+    instance: ArgumentInstanceRef | ParameterInstanceRef | None = Field(default=None)
+    linear_adjustment: LinearAdjustment | None = Field(default=None)
 
 
 class LeadingSize(XtceBaseModel):

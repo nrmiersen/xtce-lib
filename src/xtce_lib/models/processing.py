@@ -16,6 +16,7 @@ from .enum import (
 )
 from .misc import Constant
 from .reference import (
+    ArgumentInstanceRef,
     InputParameterInstanceRef,
     OutputParameterRef,
     ParameterInstanceRef,
@@ -44,11 +45,25 @@ class InputAlgorithm(SimpleAlgorithm):
     inputs: list[InputParameterInstanceRef | Constant] = Field(default_factory=list)
 
 
+class ArgumentInputAlgorithm(SimpleAlgorithm):
+    inputs: list[InputParameterInstanceRef | ArgumentInstanceRef | Constant] = Field(
+        default_factory=list
+    )
+
+
 class Comparison(ParameterInstanceRef):
     comparison_operator: ComparisonOperator = Field(
         default=ComparisonOperator.EQUALS_SIGN_EQUALS_SIGN
     )
     value: str = Field(...)  # TODO enforce type?
+
+
+class ArgumentComparison(XtceBaseModel):
+    instance: ParameterInstanceRef | ArgumentInstanceRef | None = Field(default=None)
+    comparison_operator: ComparisonOperator = Field(
+        default=ComparisonOperator.EQUALS_SIGN_EQUALS_SIGN
+    )
+    value: str = Field(...)
 
 
 class BaseComparison(XtceBaseModel):
@@ -65,6 +80,14 @@ class ComparisonCheck(BaseComparison):
     value: str | None = Field(default=None)  # TODO enforce type?
 
 
+class ArgumentComparisonCheck(BaseComparison):
+    refs: list[ParameterInstanceRef | ArgumentInstanceRef] = Field(
+        default_factory=list, max_length=2
+    )
+    comparison_operator: ComparisonOperator = Field(...)
+    value: str | None = Field(default=None)
+
+
 class BaseConditions(XtceBaseModel):
     # Nothing
     pass
@@ -76,8 +99,20 @@ class AndedConditions(BaseConditions):
     )
 
 
+class ArgumentAndedConditions(BaseConditions):
+    conditions: list[ArgumentComparisonCheck | ArgumentOredConditions] = Field(
+        default_factory=list, min_length=2
+    )
+
+
 class OredConditions(BaseConditions):
     conditions: list[ComparisonCheck | AndedConditions] = Field(
+        default_factory=list, min_length=2
+    )
+
+
+class ArgumentOredConditions(BaseConditions):
+    conditions: list[ArgumentComparisonCheck | ArgumentAndedConditions] = Field(
         default_factory=list, min_length=2
     )
 
@@ -88,6 +123,15 @@ class BooleanExpression(XtceBaseModel):
     )
 
 
+class ArgumentBooleanExpression(XtceBaseModel):
+    comparison: (
+        ArgumentComparisonCheck
+        | ArgumentAndedConditions
+        | ArgumentOredConditions
+        | None
+    ) = Field(default=None)
+
+
 class MatchCriteria(XtceBaseModel):
     criteria: (
         Comparison | list[Comparison] | BooleanExpression | InputAlgorithm | None
@@ -96,7 +140,21 @@ class MatchCriteria(XtceBaseModel):
     )  # TODO maybe still use separate ComparisonList object
 
 
+class ArgumentMatchCriteria(XtceBaseModel):
+    criteria: (
+        ArgumentComparison
+        | list[ArgumentComparison]
+        | ArgumentBooleanExpression
+        | ArgumentInputAlgorithm
+        | None
+    ) = Field(default=None, min_length=1)
+
+
 class DiscreteLookup(MatchCriteria):
+    value: int = Field(...)
+
+
+class ArgumentDiscreteLookup(ArgumentMatchCriteria):
     value: int = Field(...)
 
 
@@ -121,6 +179,11 @@ class DiscreteLookupList(XtceBaseModel):
     """In the event that no lookup condition evaluates to true, then this value will be
     used.
     """
+
+
+class ArgumentDiscreteLookupList(XtceBaseModel):
+    lookups: list[ArgumentDiscreteLookup] = Field(default_factory=list, min_length=1)
+    default_value: int = Field(...)
 
 
 class ValueOperand(XtceBaseModel):

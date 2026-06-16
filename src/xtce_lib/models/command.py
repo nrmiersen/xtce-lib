@@ -1,6 +1,7 @@
 """Command models."""
 
 from pydantic import Field
+from xsdata.models.datatype import XmlDuration
 
 from ._base import XtceBaseModel
 from .argument import (
@@ -16,7 +17,7 @@ from .argument import (
     StringArgument,
 )
 from .common import NameDescriptionBase, NameReferenceWithPath
-from .container import SequenceContainer
+from .container import CommandContainer, SequenceContainer
 from .parameter import (
     AbsoluteTimeParameter,
     AggregateParameter,
@@ -30,7 +31,7 @@ from .parameter import (
     RelativeTimeParameter,
     StringParameter,
 )
-from .processing import InputOutputTriggerAlgorithm, MathAlgorithm
+from .processing import InputOutputTriggerAlgorithm, MatchCriteria, MathAlgorithm
 from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 
@@ -61,11 +62,29 @@ class BaseMetaCommand(XtceBaseModel):
     )
 
 
+class TransmissionConstraint(MatchCriteria):
+    argument_restrictions: list[ArgumentAssignment] = Field(
+        default_factory=list, min_length=1
+    )
+    timeout: XmlDuration | None = Field(default=None)
+    suspendable: bool = Field(default=False)
+
+
 class MetaCommand(NameDescriptionBase):
     base_meta_command: BaseMetaCommand | None = Field(default=None)
     system_name: str | None = Field(default=None)
     arguments: list[Argument] = Field(default_factory=list, min_length=1)
     command_container: CommandContainer | None = Field(default=None)
+    transmission_constraints: list[TransmissionConstraint] = Field(
+        default_factory=list, min_length=1
+    )
+    default_significance: Significance | None = Field(default=None)
+    context_significance: list[...]
+    interlock: Interlock | None = Field(default=None)
+    verifiers: list[...]
+    parameters_to_set: list[...]
+    parameters_to_suspend_alarms_on: list[...]
+    abstract: bool = Field(default=False)
 
 
 class MetaCommandRef(NameReferenceWithPath):
