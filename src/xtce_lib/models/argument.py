@@ -1,43 +1,65 @@
 """Argument models."""
 
-from ._base import XtceBaseModel
+from pydantic import Field
+
+from .array import ArgumentDimension
+from .datatype import (
+    AggregateData,
+    ArgumentAbsoluteTimeData,
+    ArgumentBinaryData,
+    ArgumentBooleanData,
+    ArgumentEnumeratedData,
+    ArgumentFloatData,
+    ArgumentIntegerData,
+    ArgumentRelativeTimeData,
+    ArgumentStringData,
+    ArrayData,
+)
+from .range import ValidFloatRanges, ValidIntegerRanges
 
 
-class StringArgument(XtceBaseModel):
+class IntegerArgument(ArgumentIntegerData):
+    valid_ranges: ValidIntegerRanges | None = Field(default=None)
+
+
+class FloatArgument(ArgumentFloatData):
+    valid_ranges: ValidFloatRanges | None = Field(default=None)
+
+
+class StringArgument(ArgumentStringData):
+    # Nothing
     pass
 
 
-class EnumeratedArgument(XtceBaseModel):
+class BinaryArgument(ArgumentBinaryData):
+    # Nothing
     pass
 
 
-class IntegerArgument(XtceBaseModel):
+class BooleanArgument(ArgumentBooleanData):
+    # Nothing
     pass
 
 
-class BinaryArgument(XtceBaseModel):
+class EnumeratedArgument(ArgumentEnumeratedData):
+    # Nothing
     pass
 
 
-class FloatArgument(XtceBaseModel):
+class ArrayArgument(ArrayData):
+    dimensions: list[ArgumentDimension] = Field(default_factory=list, min_length=1)
+
+
+class AggregateArgument(AggregateData):
+    # Nothing
     pass
 
 
-class BooleanArgument(XtceBaseModel):
+class RelativeTimeArgument(ArgumentRelativeTimeData):
+    # Nothing
     pass
 
 
-class RelativeTimeArgument(XtceBaseModel):
-    pass
-
-
-class AbsoluteTimeArgument(XtceBaseModel):
-    pass
-
-
-class ArrayArgument(XtceBaseModel):
-    pass
-
-
-class AggregateArgument(XtceBaseModel):
+class AbsoluteTimeArgument(ArgumentAbsoluteTimeData):
+    # Nothing
     pass

@@ -500,3 +500,60 @@ class EpochTime(str, Enum):
     J2000 = "J2000"
     UNIX = "UNIX"
     GPS = "GPS"
+
+
+class ConsequenceLevel(str, Enum):
+    """Defines the criticality level of a command.
+
+    Criticality levels follow ISO 14950.
+
+    Attributes:
+        NORMAL: Normal command.  Corresponds to ISO 14950 Level D telecommand
+            criticality.
+        VITAL: Command that is not a critical command but is essential to the
+            success of the mission and, if sent at the wrong time, could cause
+            momentary loss of the mission.  Corresponds to ISO 14950 Level C
+            telecommand criticality.
+        CRITICAL: Command that, if executed at the wrong time or in the wrong
+            configuration, could cause irreversible loss or damage for the
+            mission.  Corresponds to ISO 14950 Level B telecommand criticality.
+            Some space programs have called this "restricted" and may be
+            implemented with a secondary confirmation before transmission.
+        FORBIDDEN: Command that is not expected to be used for nominal or
+            foreseeable contingency operations, that is included for unforeseen
+            contingency operations, and that could cause irreversible damage if
+            executed at the wrong time or in the wrong configuration.
+            Corresponds to ISO 14950 Level A telecommand criticality.  Some space
+            programs have called this "prohibited".
+        USER1: In the event that a program uses this value, that program will
+            need to define the meaning of this value to their system.
+        USER2: In the event that a program uses this value, that program will
+            need to define the meaning of this value to their system.
+
+    """
+
+    NORMAL = "normal"
+    VITAL = "vital"
+    CRITICAL = "critical"
+    FORBIDDEN = "forbidden"
+    USER1 = "user1"
+    USER2 = "user2"
+
+
+class VerifierType(str, Enum):
+    """An enumerated list of verifier types."""
+
+    RELEASE = "release"
+    TRANSFERRED_TO_RANGE = "transferredToRange"
+    SENT_FROM_RANGE = "sentFromRange"
+    RECEIVED = "received"
+    ACCEPTED = "accepted"
+    QUEUED = "queued"
+    EXECUTING = "executing"
+    COMPLETE = "complete"
+    FAILED = "failed"
+
+
+class TimeWindowIsRelativeTo(str, Enum):
+    COMMAND_RELEASE = "commandRelease"
+    TIME_LAST_VERIFIER_PASSED = "timeLastVerifierPassed"

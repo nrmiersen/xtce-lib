@@ -16,6 +16,8 @@ from .enum import (
 from .processing import (
     CRC,
     XOR,
+    ArgumentDiscreteLookupList,
+    ArgumentInputAlgorithm,
     Calibrator,
     Checksum,
     ContextCalibrator,
@@ -77,6 +79,14 @@ class VariableString(XtceBaseModel):
     can reserve/allocate enough memory to capture all reported instances of the
     string.
     """
+
+
+class ArgumentVariableString(XtceBaseModel):
+    length_source: ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(
+        default=None
+    )
+    string_boundary: LeadingSize | TerminationCharacter = Field(...)
+    max_size_in_bits: int = Field(..., ge=1)
 
 
 class DataEncoding(XtceBaseModel):
@@ -216,6 +226,11 @@ class StringDataEncoding(DataEncoding):
     # TODO validate size in bits is valid for encoding type
 
 
+class ArgumentStringDataEncoding(DataEncoding):
+    size_in_bits: int | ArgumentVariableString = Field(..., ge=1)
+    encoding: StringEncoding = Field(default=StringEncoding.UTF_8)
+
+
 class BinaryDataEncoding(DataEncoding):
     """Describes how a binary value is sent or received from some device."""
 
@@ -227,6 +242,14 @@ class BinaryDataEncoding(DataEncoding):
 
     to_binary_transform_algorithm: InputAlgorithm | None = Field(default=None)
     """Used to convert to binary data from an application data type."""
+
+
+class ArgumentBinaryDataEncoding(DataEncoding):
+    size_in_bits: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = (
+        Field(default=None, ge=1)
+    )
+    from_binary_transform_algorithm: ArgumentInputAlgorithm | None = Field(default=None)
+    to_binary_transform_algorithm: ArgumentInputAlgorithm | None = Field(default=None)
 
 
 class TimeEncoding(XtceBaseModel):

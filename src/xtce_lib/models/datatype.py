@@ -7,6 +7,8 @@ from xsdata.models.datatype import XmlDateTime, XmlDuration
 
 from ._base import XtceBaseModel
 from .codec import (
+    ArgumentBinaryDataEncoding,
+    ArgumentStringDataEncoding,
     BinaryDataEncoding,
     FloatDataEncoding,
     IntegerDataEncoding,
@@ -95,8 +97,24 @@ class BaseData(NameDescriptionBase):
 
     """
 
-    base_type: None
+    base_type: str | None = Field(
+        default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
     """Used to derive one Data Type from another - will inherit all the attributes from the baseType any of which may be redefined in this type definition."""
+
+
+class ArgumentBaseData(NameDescriptionBase):
+    units: list[Unit] = Field(default_factory=list)
+    encoding_type: (
+        IntegerDataEncoding
+        | FloatDataEncoding
+        | ArgumentStringDataEncoding
+        | ArgumentBinaryDataEncoding
+        | None
+    ) = Field(...)
+    base_type: str | None = Field(
+        default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
 
 
 class NumberFormat(XtceBaseModel):
@@ -125,9 +143,22 @@ class IntegerData(BaseData):
     signed: bool = Field(default=True)
 
 
+class ArgumentIntegerData(ArgumentBaseData):
+    to_string: ToString | None = Field(default=None)
+    initial_value: int | None = Field(default=None)
+    size_in_bits: int = Field(default=32, ge=1)
+    signed: bool = Field(default=True)
+
+
 class FloatData(BaseData):
     to_string: ToString | None = Field(default=None)
     valid_range: ValidFloatRange | None = Field(default=None)
+    initial_value: float | None = Field(default=None)
+    size_in_bits: Literal[16, 32, 40, 48, 64, 80, 128] = Field(default=32)
+
+
+class ArgumentFloatData(ArgumentBaseData):
+    to_string: ToString | None = Field(default=None)
     initial_value: float | None = Field(default=None)
     size_in_bits: Literal[16, 32, 40, 48, 64, 80, 128] = Field(default=32)
 
@@ -141,11 +172,30 @@ class StringData(BaseData):
     )  # TODO make sure this works
 
 
+class ArgumentStringData(ArgumentBaseData):
+    size_range_in_characters: IntegerRange | None = Field(default=None)
+    initial_value: str | None = Field(default=None)
+    restriction_pattern: str | None = Field(default=None)
+    character_width: Literal[8, 16, 32] | None = Field(
+        default=None
+    )  # TODO make sure this works
+
+
 class BinaryData(BaseData):
     initial_value: bytes | None = Field(default=None)
 
 
+class ArgumentBinaryData(ArgumentBaseData):
+    initial_value: bytes | None = Field(default=None)
+
+
 class BooleanData(BaseData):
+    initial_value: str | None = Field(default=None)
+    one_string_value: str = Field(default="True")
+    zero_string_value: str = Field(default="False")
+
+
+class ArgumentBooleanData(ArgumentBaseData):
     initial_value: str | None = Field(default=None)
     one_string_value: str = Field(default="True")
     zero_string_value: str = Field(default="False")
@@ -159,6 +209,11 @@ class ValueEnumeration(XtceBaseModel):
 
 
 class EnumeratedData(BaseData):
+    enumerations: list[ValueEnumeration] = Field(default_factory=list, min_length=1)
+    initial_value: str | None = Field(default=None)
+
+
+class ArgumentEnumeratedData(ArgumentBaseData):
     enumerations: list[ValueEnumeration] = Field(default_factory=list, min_length=1)
     initial_value: str | None = Field(default=None)
 
@@ -190,9 +245,26 @@ class BaseTimeData(NameDescriptionBase):
     )
 
 
+class ArgumentBaseTimeData(NameDescriptionBase):
+    # TODO figure out what the difference is actually supposed to be...
+    encoding: TimeEncoding | None = Field(default=None)
+    reference_time: ReferenceTime | None = Field(default=None)
+    base_type: str | None = Field(
+        default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+
+
 class RelativeTimeData(BaseTimeData):
     initial_value: XmlDuration | None = Field(default=None)
 
 
+class ArgumentRelativeTimeData(ArgumentBaseTimeData):
+    initial_value: XmlDuration | None = Field(default=None)
+
+
 class AbsoluteTimeData(BaseTimeData):
+    initial_value: XmlDateTime | None = Field(default=None)
+
+
+class ArgumentAbsoluteTimeData(ArgumentBaseTimeData):
     initial_value: XmlDateTime | None = Field(default=None)

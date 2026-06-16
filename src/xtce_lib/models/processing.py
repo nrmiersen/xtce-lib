@@ -205,6 +205,16 @@ class MathOperation(MathOperationCalibrator):
     pass
 
 
+class ArgumentMathOperation(XtceBaseModel):
+    operation: list[
+        ValueOperand
+        | ThisParameterOperand
+        | MathOperators
+        | ParameterInstanceRef
+        | ArgumentInstanceRef
+    ] = Field(default_factory=list)
+
+
 class TriggeredMathOperation(MathOperation):
     trigger_set: TriggerSet = Field(...)
     output_parameter_ref: str = Field(

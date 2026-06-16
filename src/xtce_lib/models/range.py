@@ -24,6 +24,7 @@ class MultiRangeType(FloatRange):
 
 
 class ValidIntegerRange(IntegerRange):
+    # TODO this probably needs a different name, didn't realize it conflicted with ValidIntegerRangeSetType
     valid_range_applies_to_calibrated: bool = Field(default=True)
 
 
@@ -32,3 +33,11 @@ class ValidFloatRange(FloatRange):
 
 
 # TODO figure out what to do with the int/float valid ranges cause they're nested in their data type classes
+class ValidIntegerRanges(XtceBaseModel):
+    valid_ranges: list[IntegerRange] = Field(default_factory=list, min_length=1)
+    valid_range_applies_to_calibrated: bool = Field(default=True)
+
+
+class ValidFloatRanges(XtceBaseModel):
+    valid_ranges: list[FloatRange] = Field(default_factory=list, min_length=1)
+    valid_range_applies_to_calibrated: bool = Field(default=True)

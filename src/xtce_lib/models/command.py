@@ -18,6 +18,7 @@ from .argument import (
 )
 from .common import NameDescriptionBase, NameReferenceWithPath
 from .container import CommandContainer, SequenceContainer
+from .enum import ConsequenceLevel, VerifierType
 from .parameter import (
     AbsoluteTimeParameter,
     AggregateParameter,
@@ -31,9 +32,16 @@ from .parameter import (
     RelativeTimeParameter,
     StringParameter,
 )
-from .processing import InputOutputTriggerAlgorithm, MatchCriteria, MathAlgorithm
+from .processing import (
+    ArgumentMathOperation,
+    ContextMatch,
+    InputOutputTriggerAlgorithm,
+    MatchCriteria,
+    MathAlgorithm,
+)
 from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
+from .verifier import VerifierSet
 
 
 class Argument(NameDescriptionBase):
@@ -70,6 +78,38 @@ class TransmissionConstraint(MatchCriteria):
     suspendable: bool = Field(default=False)
 
 
+class Significance(XtceBaseModel):
+    space_system_at_risk: str | None = Field(
+        default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+    reason_for_warning: str | None = Field(default=None)
+    consequence_level: ConsequenceLevel = Field(default=ConsequenceLevel.NORMAL)
+
+
+class ContextSignificance(XtceBaseModel):
+    context_match: ContextMatch = Field(...)
+    significance: Significance = Field(...)
+
+
+class Interlock(XtceBaseModel):
+    scope_to_space_system: str | None = Field(
+        default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+    verification_to_wait_for: VerifierType = Field(default=VerifierType.COMPLETE)
+    verification_progress_percentage: float | None = Field(default=None)
+    suspendable: bool = Field(default=False)
+
+
+class ParameterToSet(XtceBaseModel):
+    derivation_or_new_value: str | ArgumentMathOperation | None = Field(default=None)
+    set_on_verification: VerifierType = Field(default=VerifierType.COMPLETE)
+
+
+class ParameterToSuspendAlarmsOn(ParameterRef):
+    suspense_time: XmlDuration = Field(...)
+    verifier_to_trigger_on: VerifierType = Field(default=VerifierType.RELEASE)
+
+
 class MetaCommand(NameDescriptionBase):
     base_meta_command: BaseMetaCommand | None = Field(default=None)
     system_name: str | None = Field(default=None)
@@ -79,11 +119,15 @@ class MetaCommand(NameDescriptionBase):
         default_factory=list, min_length=1
     )
     default_significance: Significance | None = Field(default=None)
-    context_significance: list[...]
+    context_significance: list[ContextSignificance] = Field(
+        default_factory=list, min_length=1
+    )
     interlock: Interlock | None = Field(default=None)
-    verifiers: list[...]
-    parameters_to_set: list[...]
-    parameters_to_suspend_alarms_on: list[...]
+    verifier_set: VerifierSet | None = Field(default=None)
+    parameters_to_set: list[ParameterToSet] = Field(default_factory=list, min_length=1)
+    parameters_to_suspend_alarms_on: list[ParameterToSuspendAlarmsOn] = Field(
+        default_factory=list, min_length=1
+    )
     abstract: bool = Field(default=False)
 
 
@@ -95,8 +139,19 @@ class MetaCommandRef(NameReferenceWithPath):
     """
 
 
+class MetaCommandStep(XtceBaseModel):
+    argument_assignments: list[ArgumentAssignment] = Field(
+        default_factory=list, min_length=1
+    )
+    meta_command_ref: str = Field(
+        ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    )
+
+
 class BlockMetaCommand(NameDescriptionBase):
-    pass
+    meta_command_steps: list[MetaCommandStep] = Field(
+        default_factory=list, min_length=1
+    )
 
 
 class CommandMetadata(XtceBaseModel):
