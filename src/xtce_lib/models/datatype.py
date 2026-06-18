@@ -1,9 +1,9 @@
 """Data type models."""
 
+import datetime
 from typing import Literal
 
 from pydantic import Field
-from xsdata.models.datatype import XmlDateTime, XmlDuration
 
 from ._base import XtceBaseModel
 from .codec import (
@@ -255,16 +255,16 @@ class ArgumentBaseTimeData(NameDescriptionBase):
 
 
 class RelativeTimeData(BaseTimeData):
-    initial_value: XmlDuration | None = Field(default=None)
+    initial_value: datetime.timedelta | None = Field(default=None)  # XmlDuration
 
 
 class ArgumentRelativeTimeData(ArgumentBaseTimeData):
-    initial_value: XmlDuration | None = Field(default=None)
+    initial_value: datetime.timedelta | None = Field(default=None)  # XmlDuration
 
 
 class AbsoluteTimeData(BaseTimeData):
-    initial_value: XmlDateTime | None = Field(default=None)
+    initial_value: datetime.datetime | None = Field(default=None)  # XmlDateTime
 
 
 class ArgumentAbsoluteTimeData(ArgumentBaseTimeData):
-    initial_value: XmlDateTime | None = Field(default=None)
+    initial_value: datetime.datetime | None = Field(default=None)  # XmlDateTime

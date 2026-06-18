@@ -1,5 +1,6 @@
 """Unified XTCE model module."""
 
+import sys
 from typing import Any
 
 from ._base import XtceBaseModel
@@ -179,6 +180,29 @@ from .stream import (
 )
 from .telemetry import Message, MessageSet, TelemetryMetadata
 from .time import TimeAssociation
+from .trigger import (
+    BaseTrigger,
+    OnContainerUpdateTrigger,
+    OnParameterUpdateTrigger,
+    OnPeriodicRateTrigger,
+    TriggerSet,
+)
+from .verifier import (
+    AcceptedVerifier,
+    ChangeValue,
+    CheckWindow,
+    CheckWindowAlgorithms,
+    CommandVerifier,
+    CompleteVerifier,
+    ExecutionVerifier,
+    FailedVerifier,
+    ParameterValueChange,
+    QueuedVerifier,
+    ReceivedVerifier,
+    SentFromRangeVerifier,
+    TransferredToRangeVerifier,
+    VerifierSet,
+)
 
 __all__ = [
     "XtceBaseModel",
@@ -338,6 +362,25 @@ __all__ = [
     "MessageSet",
     "TelemetryMetadata",
     "TimeAssociation",
+    "BaseTrigger",
+    "OnContainerUpdateTrigger",
+    "OnParameterUpdateTrigger",
+    "OnPeriodicRateTrigger",
+    "TriggerSet",
+    "AcceptedVerifier",
+    "CheckWindow",
+    "CheckWindowAlgorithms",
+    "ChangeValue",
+    "CommandVerifier",
+    "CompleteVerifier",
+    "ExecutionVerifier",
+    "FailedVerifier",
+    "ParameterValueChange",
+    "QueuedVerifier",
+    "ReceivedVerifier",
+    "SentFromRangeVerifier",
+    "TransferredToRangeVerifier",
+    "VerifierSet",
 ]
 
 
@@ -358,4 +401,13 @@ def _rebuild_all_models(
             ) from e
 
 
-_rebuild_all_models(XtceBaseModel, globals())
+def _build_model_namespace() -> dict[str, Any]:
+    namespace = dict(globals())
+    prefix = f"{__name__}."
+    for module_name, module in sys.modules.items():
+        if module_name == __name__ or module_name.startswith(prefix):
+            namespace.update(vars(module))
+    return namespace
+
+
+_rebuild_all_models(XtceBaseModel, _build_model_namespace())

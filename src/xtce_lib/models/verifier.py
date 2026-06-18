@@ -1,15 +1,21 @@
 """Verifier models."""
 
+from __future__ import annotations
+
+import datetime
+from typing import TYPE_CHECKING
+
 from pydantic import Field
-from xsdata.models.datatype import XmlDuration
 
 from ._base import XtceBaseModel
 from .codec import DynamicValue
-from .command import ArgumentAssignment
 from .common import OptionalNameDescriptionBase
 from .enum import TimeWindowIsRelativeTo
 from .processing import BooleanExpression, Comparison, InputAlgorithm
 from .reference import ContainerRef, ParameterRef
+
+if TYPE_CHECKING:
+    from .command import ArgumentAssignment
 
 
 class ChangeValue(XtceBaseModel):
@@ -23,8 +29,12 @@ class ParameterValueChange(XtceBaseModel):
 
 
 class CheckWindow(XtceBaseModel):
-    time_to_start_checking: XmlDuration | None = Field(default=None)
-    time_to_stop_checking: XmlDuration | None = Field(default=None)
+    time_to_start_checking: datetime.timedelta | None = Field(
+        default=None
+    )  # XmlDuration
+    time_to_stop_checking: datetime.timedelta | None = Field(
+        default=None
+    )  # XmlDuration
     time_window_is_relative_to: TimeWindowIsRelativeTo = Field(
         default=TimeWindowIsRelativeTo.TIME_LAST_VERIFIER_PASSED
     )

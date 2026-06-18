@@ -1,7 +1,7 @@
 """Base classes for the unified XTCE model."""
 
 import logging
-from abc import ABC, abstractmethod
+from abc import ABC
 from typing import Any, Self
 
 from pydantic import BaseModel, ConfigDict
@@ -81,14 +81,14 @@ class XtceBaseModel(BaseModel, ABC):
         self._handle_downgrade(message, policy)
 
     @classmethod
-    @abstractmethod
+    # @abstractmethod
     def from_xsdata(cls, raw_obj: Any, version: XtceVersion) -> Self:
         """Factory method to create an XtceBaseModel from an xsdata-generated object of
         any version.
         """
         pass
 
-    @abstractmethod
+    # @abstractmethod
     def to_xsdata(self, version: XtceVersion) -> Any:
         """Convert this XtceBaseModel to an xsdata-generated object of the specified
         version.

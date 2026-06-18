@@ -82,6 +82,7 @@ class StringContextAlarm(StringAlarm):
 
 
 class BinaryAlarm(Alarm):
+    # Nothing
     pass
 
 
@@ -90,6 +91,7 @@ class BinaryContextAlarm(BinaryAlarm):
 
 
 class BooleanAlarm(Alarm):
+    # Nothing
     pass
 
 
@@ -99,7 +101,7 @@ class BooleanContextAlarm(BooleanAlarm):
 
 class EnumerationAlarmLevel(XtceBaseModel):
     level: ConcernLevel = Field(...)
-    enumeration_label: str = Field(...)  # validate label exists
+    enumeration_label: str = Field(...)  # TODO validate label exists
 
 
 class EnumerationAlarm(Alarm):

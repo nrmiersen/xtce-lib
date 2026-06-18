@@ -1,7 +1,8 @@
 """Time models."""
 
+import datetime
+
 from pydantic import Field
-from xsdata.models.datatype import XmlDate, XmlDateTime
 
 from xtce_lib.models._base import XtceBaseModel
 
@@ -17,6 +18,6 @@ class TimeAssociation(ParameterInstanceRef):
 
 class ReferenceTime(XtceBaseModel):
     # TODO maybe give separate attributes for offset or epoch
-    reference_type: ParameterInstanceRef | XmlDate | XmlDateTime | EpochTime | None = (
-        Field(default=None)
-    )
+    reference_type: (
+        ParameterInstanceRef | datetime.date | datetime.datetime | EpochTime | None
+    ) = Field(default=None)  # TODO XmlDate, XmlDateTime

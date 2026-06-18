@@ -239,7 +239,6 @@ class ArgumentFixedValueEntry(ArgumentSequenceEntry):
 
 
 class CommandContainer(Container):
-    # TODO maybe move to command.py
     entries: list[
         ArgumentParameterRefEntry
         | ArgumentParameterSegmentRefEntry

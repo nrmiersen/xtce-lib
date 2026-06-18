@@ -1,7 +1,8 @@
 """Command models."""
 
+import datetime
+
 from pydantic import Field
-from xsdata.models.datatype import XmlDuration
 
 from ._base import XtceBaseModel
 from .argument import (
@@ -74,7 +75,7 @@ class TransmissionConstraint(MatchCriteria):
     argument_restrictions: list[ArgumentAssignment] = Field(
         default_factory=list, min_length=1
     )
-    timeout: XmlDuration | None = Field(default=None)
+    timeout: datetime.timedelta | None = Field(default=None)  # XmlDuration
     suspendable: bool = Field(default=False)
 
 
@@ -106,7 +107,7 @@ class ParameterToSet(XtceBaseModel):
 
 
 class ParameterToSuspendAlarmsOn(ParameterRef):
-    suspense_time: XmlDuration = Field(...)
+    suspense_time: datetime.timedelta = Field(...)  # XmlDuration
     verifier_to_trigger_on: VerifierType = Field(default=VerifierType.RELEASE)
 
 

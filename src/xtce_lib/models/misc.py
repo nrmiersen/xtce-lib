@@ -1,10 +1,16 @@
 """Miscellaneous models."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from pydantic import Field
 
 from ._base import XtceBaseModel
-from .codec import ArgumentDynamicValue, DynamicValue
-from .processing import ArgumentDiscreteLookupList, DiscreteLookupList
+
+if TYPE_CHECKING:
+    from .codec import ArgumentDynamicValue, DynamicValue
+    from .processing import ArgumentDiscreteLookupList, DiscreteLookupList
 
 
 class Repeat(XtceBaseModel):
