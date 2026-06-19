@@ -8,10 +8,11 @@ from typing import TYPE_CHECKING
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .algorithm import InputAlgorithm
 from .codec import DynamicValue
 from .common import OptionalNameDescriptionBase
+from .condition import BooleanExpression, Comparison
 from .enum import TimeWindowIsRelativeTo
-from .processing import BooleanExpression, Comparison, InputAlgorithm
 from .reference import ContainerRef, ParameterRef
 
 if TYPE_CHECKING:

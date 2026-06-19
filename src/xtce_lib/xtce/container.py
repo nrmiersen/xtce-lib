@@ -7,20 +7,18 @@ from typing import TYPE_CHECKING
 from pydantic import Field
 
 from ._base import XtceBaseModel
-from .array import ArgumentDimension, Dimension
-from .common import AncillaryData, NameDescriptionBase
-from .enum import ReferenceLocation
-from .misc import ArgumentRepeat, Repeat
-from .processing import (
+from .algorithm import (
     CRC,
     XOR,
-    ArgumentDiscreteLookupList,
-    ArgumentMatchCriteria,
     Checksum,
     InputAlgorithm,
-    MatchCriteria,
     Parity,
 )
+from .array import ArgumentDimension, Dimension
+from .common import AncillaryData, NameDescriptionBase
+from .condition import ArgumentDiscreteLookupList, ArgumentMatchCriteria, MatchCriteria
+from .enum import ReferenceLocation
+from .misc import ArgumentRepeat, Repeat
 from .reference import ContainerRef, ParameterInstanceRef
 from .stream import RateInStream, RateInStreamWithStreamName
 from .time import TimeAssociation

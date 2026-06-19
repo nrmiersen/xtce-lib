@@ -3,9 +3,9 @@
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .algorithm import InputAlgorithm, InputOutputAlgorithm
 from .common import NameDescriptionBase
 from .enum import Basis, FlagBit, PcmType
-from .processing import InputAlgorithm, InputOutputAlgorithm
 from .reference import ContainerRef, ServiceRef, StreamRef
 
 

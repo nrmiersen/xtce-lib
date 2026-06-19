@@ -3,7 +3,9 @@
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .algorithm import InputOutputTriggerAlgorithm, MathAlgorithm
 from .common import NameDescriptionBase, OptionalNameDescriptionBase
+from .condition import MatchCriteria
 from .container import SequenceContainer
 from .parameter import (
     AbsoluteTimeParameter,
@@ -18,7 +20,6 @@ from .parameter import (
     RelativeTimeParameter,
     StringParameter,
 )
-from .processing import InputOutputTriggerAlgorithm, MatchCriteria, MathAlgorithm
 from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 

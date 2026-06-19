@@ -10,7 +10,7 @@ from ._base import XtceBaseModel
 
 if TYPE_CHECKING:
     from .codec import ArgumentDynamicValue, DynamicValue
-    from .processing import ArgumentDiscreteLookupList, DiscreteLookupList
+    from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
 
 
 class Repeat(XtceBaseModel):

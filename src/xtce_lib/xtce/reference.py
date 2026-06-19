@@ -18,9 +18,18 @@ class ParameterInstanceRef(ParameterRef):
 
 
 class ContainerRef(XtceBaseModel):
-    container_ref: str = Field(
-        ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+    """Holds a reference to a container."""
+
+    ref: str = Field(
+        ...,
+        pattern=r"^(?:/?(?:\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+$",
+        examples=[
+            "/Telemetry/Power/PowerStatus",
+            "../Thermal/ThermalStatus",
+            "Command/ExecutionReport",
+        ],
     )
+    """Name of container."""
 
 
 class ServiceRef(XtceBaseModel):

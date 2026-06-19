@@ -5,6 +5,16 @@ from typing import Literal
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .algorithm import (
+    CRC,
+    XOR,
+    ArgumentInputAlgorithm,
+    Checksum,
+    InputAlgorithm,
+    Parity,
+)
+from .calibrator import Calibrator, ContextCalibrator, LinearAdjustment
+from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
 from .enum import (
     BitOrder,
     Endian,
@@ -12,19 +22,6 @@ from .enum import (
     IntegerEncoding,
     StringEncoding,
     TimeUnits,
-)
-from .processing import (
-    CRC,
-    XOR,
-    ArgumentDiscreteLookupList,
-    ArgumentInputAlgorithm,
-    Calibrator,
-    Checksum,
-    ContextCalibrator,
-    DiscreteLookupList,
-    InputAlgorithm,
-    LinearAdjustment,
-    Parity,
 )
 from .reference import ArgumentInstanceRef, ParameterInstanceRef
 

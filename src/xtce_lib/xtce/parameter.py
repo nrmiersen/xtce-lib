@@ -21,6 +21,7 @@ from .alarm import (
 )
 from .array import Dimension
 from .common import NameDescriptionBase
+from .condition import MatchCriteria
 from .datatype import (
     AbsoluteTimeData,
     AggregateData,
@@ -34,7 +35,6 @@ from .datatype import (
     StringData,
 )
 from .enum import TelemetryDataSource
-from .processing import MatchCriteria
 from .time import TimeAssociation
 
 

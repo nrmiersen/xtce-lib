@@ -5,6 +5,10 @@ import datetime
 from pydantic import Field
 
 from ._base import XtceBaseModel
+from .algorithm import (
+    InputOutputTriggerAlgorithm,
+    MathAlgorithm,
+)
 from .argument import (
     AbsoluteTimeArgument,
     AggregateArgument,
@@ -17,7 +21,9 @@ from .argument import (
     RelativeTimeArgument,
     StringArgument,
 )
+from .calibrator import ArgumentMathOperation
 from .common import NameDescriptionBase, NameReferenceWithPath
+from .condition import ContextMatch, MatchCriteria
 from .container import CommandContainer, SequenceContainer
 from .enum import ConsequenceLevel, VerifierType
 from .parameter import (
@@ -32,13 +38,6 @@ from .parameter import (
     Parameter,
     RelativeTimeParameter,
     StringParameter,
-)
-from .processing import (
-    ArgumentMathOperation,
-    ContextMatch,
-    InputOutputTriggerAlgorithm,
-    MatchCriteria,
-    MathAlgorithm,
 )
 from .reference import ParameterRef
 from .stream import CustomStream, FixedFrameStream, VariableFrameStream

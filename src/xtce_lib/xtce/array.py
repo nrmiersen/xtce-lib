@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from pydantic import Field
 
 from ._base import XtceBaseModel
-from .processing import ArgumentDiscreteLookupList, DiscreteLookupList
+from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
 
 if TYPE_CHECKING:
     from .codec import ArgumentDynamicValue, DynamicValue

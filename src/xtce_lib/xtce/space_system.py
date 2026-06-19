@@ -14,6 +14,7 @@ from ._base import XtceBaseModel
 from .command import CommandMetadata
 from .common import Alias, AncillaryData, NameDescriptionBase
 from .enum import SystemType, ValidationStatus
+from .reference import ContainerRef
 from .telemetry import TelemetryMetadata
 
 
@@ -103,21 +104,6 @@ class MessageRef(XtceBaseModel):
         ],
     )
     """Name of message."""
-
-
-class ContainerRef(XtceBaseModel):
-    """Holds a reference to a container."""
-
-    ref: str = Field(
-        ...,
-        pattern=r"^(?:/?(?:\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+$",
-        examples=[
-            "/Telemetry/Power/PowerStatus",
-            "../Thermal/ThermalStatus",
-            "Command/ExecutionReport",
-        ],
-    )
-    """Name of container."""
 
 
 class Service(NameDescriptionBase):
