@@ -4,8 +4,7 @@ import datetime
 
 from pydantic import Field
 
-from xtce_lib.models._base import XtceBaseModel
-
+from ._base import XtceBaseModel
 from .enum import EpochTime, TimeUnits
 from .reference import ParameterInstanceRef
 
