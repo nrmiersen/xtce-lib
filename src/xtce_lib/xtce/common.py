@@ -263,3 +263,10 @@ class ExpandedNameReferenceWithPath(XtceBaseModel):
         if not _EXPANDED_NAME_REFERENCE_WITH_PATH_REGEX.fullmatch(value):
             raise ValueError("name must be a valid XTCE name reference path")
         return value
+
+
+class Constant(XtceBaseModel):
+    constant_name: str = Field(...)
+    value: str = Field(
+        ...
+    )  # TODO figure out how this is represented in xsd, should I enforce some types here?

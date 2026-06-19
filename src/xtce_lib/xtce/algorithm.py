@@ -4,9 +4,8 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .calibrator import MathOperation
-from .common import NameDescriptionBase
+from .common import Constant, NameDescriptionBase
 from .enum import BitOrder, ChecksumTypeName, ParityForm, ReferencePoint
-from .misc import Constant
 from .reference import (
     ArgumentInstanceRef,
     InputParameterInstanceRef,

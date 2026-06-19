@@ -18,7 +18,6 @@ from .array import ArgumentDimension, Dimension
 from .common import AncillaryData, NameDescriptionBase
 from .condition import ArgumentDiscreteLookupList, ArgumentMatchCriteria, MatchCriteria
 from .enum import ReferenceLocation
-from .misc import ArgumentRepeat, Repeat
 from .reference import ContainerRef, ParameterInstanceRef
 from .stream import RateInStream, RateInStreamWithStreamName
 from .time import TimeAssociation
@@ -26,7 +25,19 @@ from .time import TimeAssociation
 if TYPE_CHECKING:
     from .codec import ArgumentDynamicValue, DiscreteLookupList, DynamicValue
 
-# IntegerValueType = int | DynamicValue | DiscreteLookupList
+
+class Repeat(XtceBaseModel):
+    count: int | DynamicValue | DiscreteLookupList | None = Field(default=None)
+    offset: int | DynamicValue | DiscreteLookupList | None = Field(default=None)
+
+
+class ArgumentRepeat(XtceBaseModel):
+    count: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(
+        default=None
+    )
+    offset: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(
+        default=None
+    )
 
 
 class LocationInContainer(XtceBaseModel):
