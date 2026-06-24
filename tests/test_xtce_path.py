@@ -165,6 +165,30 @@ class TestXtcePath:
         """Leaf should return None for root paths with no components."""
         assert XtcePath("/").leaf is None
 
+    def test_pathnode_can_be_reused_as_a_path_segment(self) -> None:
+        """A leaf PathNode should be accepted back into XtcePath composition."""
+        path = XtcePath("/TestSystem") / "TestArray[2].test_aggregate"
+
+        assert XtcePath("/TestSystem") / path.leaf == XtcePath(
+            "/TestSystem/TestArray[2].test_aggregate"
+        )
+
+    def test_xtcepath_accepts_pathnode_input_directly(self) -> None:
+        """XtcePath should accept a PathNode as a single path segment."""
+        node = PathNode.from_string("TestArray[2].test_aggregate")
+
+        path = XtcePath(node)
+
+        assert path == XtcePath("TestArray[2].test_aggregate")
+        assert path.parts == (node,)
+        assert path.is_absolute() is False
+
+    def test_division_by_missing_leaf_returns_original_path(self) -> None:
+        """Dividing by None should leave the left-hand path unchanged."""
+        base = XtcePath("/TestSystem")
+
+        assert base / XtcePath("/").leaf == base
+
     def test_root_path_properties(self) -> None:
         """Root path should expose expected root semantics."""
         root = XtcePath("/")
@@ -321,6 +345,18 @@ class TestXtcePath:
 
         with pytest.raises(ValidationError):
             PathModel(path=123)  # type: ignore
+
+    def test_pydantic_accepts_pathnode_input(self) -> None:
+        """Pydantic should accept PathNode values for XtcePath fields."""
+
+        class PathModel(BaseModel):
+            path: XtcePath
+
+        node = PathNode.from_string("TestArray[2].test_aggregate")
+
+        model = PathModel(path=node)  # type: ignore
+
+        assert model.path == XtcePath(node)
 
     @pytest.mark.parametrize(
         "invalid_value",

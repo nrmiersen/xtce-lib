@@ -96,14 +96,17 @@ class PathNode:
 class XtcePath:
     """A pathlib-like object specifically for XTCE SpaceSystem hierarchies."""
 
-    def __init__(self, path: "str | XtcePath"):
-        """Initialize a normalized XTCE path from a string or another XtcePath.
+    def __init__(self, path: "str | XtcePath | PathNode"):
+        """Initialize a normalized XTCE path from a string, another XtcePath, or a PathNode.
 
         Multiple consecutive '/'s are treated as one.
         """
         if isinstance(path, XtcePath):
             self._parts: tuple[PathNode, ...] = path.parts
             self._is_absolute = path.is_absolute()
+        elif isinstance(path, PathNode):
+            self._is_absolute = False
+            self._parts = (path,)
         else:
             self._is_absolute = path.startswith("/")
             clean_path = path.strip("/")
@@ -112,7 +115,7 @@ class XtcePath:
             )
 
     @staticmethod
-    def _to_parts(path: "str | XtcePath") -> tuple[PathNode, ...]:
+    def _to_parts(path: "str | XtcePath | PathNode") -> tuple[PathNode, ...]:
         """Normalize input into path parts."""
         return path.parts if isinstance(path, XtcePath) else XtcePath(path).parts
 
@@ -166,7 +169,7 @@ class XtcePath:
         """True if this path has no parent packages."""
         return len(self._parts) <= 1
 
-    def joinpath(self, *other: "str | XtcePath") -> "XtcePath":
+    def joinpath(self, *other: "str | XtcePath | PathNode") -> "XtcePath":
         """Join one or more path segments and return a new XtcePath."""
         parts = list(self._parts)
         is_absolute = self._is_absolute
@@ -205,7 +208,7 @@ class XtcePath:
         """Return True if this path is absolute (i.e., starts with a slash)."""
         return self._is_absolute
 
-    def relative_to(self, other: "str | XtcePath") -> "XtcePath":
+    def relative_to(self, other: "str | XtcePath | PathNode") -> "XtcePath":
         """Return this path relative to other, or raise ValueError."""
         base_path = XtcePath(other)
         base_parts = base_path.parts
@@ -218,7 +221,7 @@ class XtcePath:
         suffix = "/".join(str(p) for p in self._parts[len(base_parts) :])
         return XtcePath(suffix or ".")
 
-    def is_relative_to(self, other: "str | XtcePath") -> bool:
+    def is_relative_to(self, other: "str | XtcePath | PathNode") -> bool:
         """Return True if this path is relative to other."""
         base_path = XtcePath(other)
         if self._is_absolute != base_path.is_absolute():
@@ -261,8 +264,10 @@ class XtcePath:
         """Return a debug-friendly representation of this path."""
         return f"XtcePath('{self.__str__()}')"
 
-    def __truediv__(self, other: "str | XtcePath") -> "XtcePath":
+    def __truediv__(self, other: "str | XtcePath | PathNode | None") -> "XtcePath":
         """Support path composition with the / operator."""
+        if other is None:
+            return self
         return self.joinpath(other)
 
     def __eq__(self, other: object) -> bool:
@@ -294,13 +299,15 @@ class XtcePath:
         def validate(value: Any) -> "XtcePath":
             if isinstance(value, XtcePath):
                 return value
+            if isinstance(value, PathNode):
+                return XtcePath(value)
             if isinstance(value, str):
                 if not re.compile(EXPD_NAME_REF_W_PATH).fullmatch(value):
                     msg = "XtcePath must be a valid XTCE name reference path"
                     raise ValueError(msg)
                 return XtcePath(value)
 
-            msg = "XtcePath must be a string or XtcePath"
+            msg = "XtcePath must be a string, PathNode, or XtcePath"
             raise ValueError(msg)
 
         return core_schema.no_info_plain_validator_function(
