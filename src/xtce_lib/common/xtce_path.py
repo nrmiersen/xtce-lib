@@ -3,44 +3,133 @@ hierarchies.
 """
 
 import re
+from dataclasses import dataclass
 from typing import Any
 
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
 
-XTCE_NAME_REFERENCE_WITH_PATH_PATTERN = r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
-_XTCE_NAME_REFERENCE_WITH_PATH_REGEX = re.compile(XTCE_NAME_REFERENCE_WITH_PATH_PATTERN)
+from xtce_lib.xtce._pattern import EXPD_NAME_REF_W_PATH
+
+
+@dataclass(frozen=True)
+class PathNode:
+    """Represents a single node in an XTCE path."""
+
+    raw: str
+    base: str
+    indices: tuple[int, ...] = ()
+    member: "PathNode | None" = None
+
+    # Group 1: base name (everything up to first [ or .)
+    # Group 2: all brackets combined (e.g., "[0][1]")
+    # Group 4: the remainder of the string after the first dot
+    _NODE_PATTERN = re.compile(r"^([^\[\.]+)((\[\d+\])*)(?:\.(.+))?$")
+
+    # Extracts individual integers from the bracket string
+    _INDEX_PATTERN = re.compile(r"\[(\d+)\]")
+
+    @classmethod
+    def from_string(cls, raw_segment: str) -> "PathNode":
+        """Parse a raw path segment into a PathNode."""
+        if raw_segment in (".", ".."):
+            return cls(raw=raw_segment, base=raw_segment)
+
+        match = cls._NODE_PATTERN.match(raw_segment)
+        if not match:
+            return cls(raw=raw_segment, base=raw_segment)
+
+        base_name = match.group(1)
+        brackets_str = match.group(2)
+        member_remainder = match.group(4)
+
+        # Parse all indices
+        parsed_indices = tuple(
+            int(m.group(1)) for m in cls._INDEX_PATTERN.finditer(brackets_str)
+        )
+
+        # Parse all aggregate members
+        parsed_member = None
+        if member_remainder:
+            parsed_member = cls.from_string(member_remainder)
+
+        return cls(
+            raw=raw_segment,
+            base=base_name,
+            indices=parsed_indices,
+            member=parsed_member,
+        )
+
+    @property
+    def is_array(self) -> bool:
+        """Return True if this node has any array indices."""
+        return len(self.indices) > 0
+
+    @property
+    def is_aggregate(self) -> bool:
+        """Return True if this node has a member (i.e., is an aggregate)."""
+        return self.member is not None
+
+    @property
+    def contains_array(self) -> bool:
+        """Return True if this node or any of its members is an array."""
+        if self.is_array:
+            return True
+        if self.member:
+            return self.member.contains_array
+        return False
+
+    @property
+    def contains_aggregate(self) -> bool:
+        """Return True if this node or any of its members is an aggregate."""
+        if self.is_aggregate:
+            return True
+        if self.member:
+            return self.member.contains_aggregate
+        return False
+
+    def __str__(self) -> str:
+        """Return the string representation of this node."""
+        return self.raw
 
 
 class XtcePath:
     """A pathlib-like object specifically for XTCE SpaceSystem hierarchies."""
 
-    # TODO maybe support arrays/aggregates with indexing
-
     def __init__(self, path: "str | XtcePath"):
-        """Initialize a normalized XTCE path from a string or another XtcePath."""
+        """Initialize a normalized XTCE path from a string or another XtcePath.
+
+        Multiple consecutive '/'s are treated as one.
+        """
         if isinstance(path, XtcePath):
-            self._parts = path.parts
+            self._parts: tuple[PathNode, ...] = path.parts
             self._is_absolute = path.is_absolute()
         else:
             self._is_absolute = path.startswith("/")
             clean_path = path.strip("/")
-            self._parts = tuple(p for p in clean_path.split("/") if p)
+            self._parts: tuple[PathNode, ...] = tuple(
+                PathNode.from_string(p) for p in clean_path.split("/") if p
+            )
 
     @staticmethod
-    def _to_parts(path: "str | XtcePath") -> tuple[str, ...]:
+    def _to_parts(path: "str | XtcePath") -> tuple[PathNode, ...]:
         """Normalize input into path parts."""
         return path.parts if isinstance(path, XtcePath) else XtcePath(path).parts
 
     @property
-    def parts(self) -> tuple[str, ...]:
+    def parts(self) -> tuple[PathNode, ...]:
         """Returns the rigid tuple of path components."""
         return self._parts
 
     @property
     def name(self) -> str:
         """The final component (e.g., the Command name or Type name)."""
-        return self._parts[-1] if self._parts else ""
+        return str(self._parts[-1]) if self._parts else ""
+
+    @property
+    def leaf(self) -> "PathNode | None":
+        """The final PathNode component, or None for empty paths."""
+        return self._parts[-1] if self._parts else None
 
     @property
     def parent(self) -> "XtcePath":
@@ -52,7 +141,7 @@ class XtcePath:
             return XtcePath("/" if self._is_absolute else ".")
 
         prefix = "/" if self._is_absolute else ""
-        return XtcePath(prefix + "/".join(self._parts[:-1]))
+        return XtcePath(prefix + "/".join(str(p) for p in self._parts[:-1]))
 
     @property
     def parents(self) -> tuple["XtcePath", ...]:
@@ -62,7 +151,7 @@ class XtcePath:
 
         prefix = "/" if self._is_absolute else ""
         ancestors = [
-            XtcePath(prefix + "/".join(self._parts[:i]))
+            XtcePath(prefix + "/".join(str(p) for p in self._parts[:i]))
             for i in range(len(self._parts) - 1, 0, -1)
         ]
 
@@ -91,7 +180,7 @@ class XtcePath:
                 parts.extend(segment_path.parts)
 
         prefix = "/" if is_absolute else ""
-        path_str = prefix + "/".join(parts)
+        path_str = prefix + "/".join(str(p) for p in parts)
         if not path_str and not is_absolute:
             path_str = "."
         return XtcePath(path_str)
@@ -108,7 +197,9 @@ class XtcePath:
             raise ValueError(msg)
 
         prefix = "/" if self._is_absolute else ""
-        return XtcePath(prefix + "/".join((*self._parts[:-1], clean_name)))
+        return XtcePath(
+            prefix + "/".join(str(p) for p in (*self._parts[:-1], clean_name))
+        )
 
     def is_absolute(self) -> bool:
         """Return True if this path is absolute (i.e., starts with a slash)."""
@@ -124,7 +215,7 @@ class XtcePath:
         if self._parts[: len(base_parts)] != base_parts:
             msg = f"{self} is not in the subpath of {base_path}"
             raise ValueError(msg)
-        suffix = "/".join(self._parts[len(base_parts) :])
+        suffix = "/".join(str(p) for p in self._parts[len(base_parts) :])
         return XtcePath(suffix or ".")
 
     def is_relative_to(self, other: "str | XtcePath") -> bool:
@@ -135,11 +226,36 @@ class XtcePath:
         base_parts = base_path.parts
         return self._parts[: len(base_parts)] == base_parts
 
+    def normalize(self) -> "XtcePath":
+        """Normalize '.' and '..' segments in the path."""
+        resolved_parts: list[str] = []
+
+        for part in self._parts:
+            if str(part) == "..":
+                if resolved_parts and resolved_parts[-1] != "..":
+                    resolved_parts.pop()
+                    if not resolved_parts and not self._is_absolute:
+                        resolved_parts.append("..")
+                elif not self._is_absolute:
+                    resolved_parts.append(str(part))
+                # For absolute paths at root, ".." is ignored
+            elif str(part) == ".":
+                # Skip current-directory references
+                pass
+            else:
+                resolved_parts.append(str(part))
+
+        prefix = "/" if self._is_absolute else ""
+        path_str = prefix + "/".join(resolved_parts)
+        if not path_str and not self._is_absolute:
+            path_str = "."
+        return XtcePath(path_str)
+
     def __str__(self) -> str:
         """Return the normalized XTCE path string."""
         if self._is_absolute:
-            return "/" + "/".join(self._parts) if self._parts else "/"
-        return "/".join(self._parts) if self._parts else "."
+            return "/" + "/".join(str(p) for p in self._parts) if self._parts else "/"
+        return "/".join(str(p) for p in self._parts) if self._parts else "."
 
     def __repr__(self) -> str:
         """Return a debug-friendly representation of this path."""
@@ -179,7 +295,7 @@ class XtcePath:
             if isinstance(value, XtcePath):
                 return value
             if isinstance(value, str):
-                if not _XTCE_NAME_REFERENCE_WITH_PATH_REGEX.fullmatch(value):
+                if not re.compile(EXPD_NAME_REF_W_PATH).fullmatch(value):
                     msg = "XtcePath must be a valid XTCE name reference path"
                     raise ValueError(msg)
                 return XtcePath(value)
@@ -204,5 +320,5 @@ class XtcePath:
         """Represent XtcePath as a string with XTCE name-reference constraints."""
         return {
             "type": "string",
-            "pattern": XTCE_NAME_REFERENCE_WITH_PATH_PATTERN,
+            "pattern": EXPD_NAME_REF_W_PATH,
         }
