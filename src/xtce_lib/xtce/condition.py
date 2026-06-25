@@ -144,7 +144,6 @@ class DiscreteLookupList(XtceBaseModel):
     used.
     """
 
-
 class ArgumentDiscreteLookupList(XtceBaseModel):
     lookups: list[ArgumentDiscreteLookup] = Field(default_factory=list, min_length=1)
     default_value: int = Field(...)

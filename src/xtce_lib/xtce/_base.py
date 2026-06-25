@@ -1,5 +1,7 @@
 """Base classes for the unified XTCE model."""
 
+from __future__ import annotations
+
 import logging
 from abc import ABC
 from typing import Any, Self
@@ -21,15 +23,6 @@ class XtceBaseModel(BaseModel, ABC):
         from_attributes=True,
         extra="forbid",
     )
-
-    def validate_semantics(self) -> None:
-        """Validate the semantic validity of the model.
-
-        This method should be overridden by subclasses.
-
-        """
-        # TODO add logic here for passing around the error list
-        pass
 
     def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""

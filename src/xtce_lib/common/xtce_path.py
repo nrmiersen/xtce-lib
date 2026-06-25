@@ -9,7 +9,17 @@ from typing import Any
 from pydantic.json_schema import JsonSchemaValue
 from pydantic_core import core_schema
 
-from xtce_lib.xtce._pattern import EXPD_NAME_REF_W_PATH
+
+def require_regex(pattern: str):
+    """Generate a validator that enforces a regex on the stringified XtcePath."""
+    compiled = re.compile(pattern)
+
+    def validator(path: XtcePath) -> XtcePath:
+        if not compiled.fullmatch(str(path)):
+            raise ValueError(f"XtcePath '{path}' must match pattern: '{pattern}'")
+        return path
+
+    return validator
 
 
 @dataclass(frozen=True)
@@ -169,6 +179,16 @@ class XtcePath:
         """True if this path has no parent packages."""
         return len(self._parts) <= 1
 
+    @property
+    def contains_array(self) -> bool:
+        """Return True if any path component contains array indexing."""
+        return any(part.contains_array for part in self._parts)
+
+    @property
+    def contains_aggregate(self) -> bool:
+        """Return True if any path component contains aggregate member access."""
+        return any(part.contains_aggregate for part in self._parts)
+
     def joinpath(self, *other: "str | XtcePath | PathNode") -> "XtcePath":
         """Join one or more path segments and return a new XtcePath."""
         parts = list(self._parts)
@@ -302,13 +322,9 @@ class XtcePath:
             if isinstance(value, PathNode):
                 return XtcePath(value)
             if isinstance(value, str):
-                if not re.compile(EXPD_NAME_REF_W_PATH).fullmatch(value):
-                    msg = "XtcePath must be a valid XTCE name reference path"
-                    raise ValueError(msg)
                 return XtcePath(value)
 
-            msg = "XtcePath must be a string, PathNode, or XtcePath"
-            raise ValueError(msg)
+            raise ValueError("XtcePath must be a string, PathNode, or XtcePath")
 
         return core_schema.no_info_plain_validator_function(
             validate,
@@ -325,7 +341,4 @@ class XtcePath:
         handler: Any,
     ) -> JsonSchemaValue:
         """Represent XtcePath as a string with XTCE name-reference constraints."""
-        return {
-            "type": "string",
-            "pattern": EXPD_NAME_REF_W_PATH,
-        }
+        return {"type": "string"}

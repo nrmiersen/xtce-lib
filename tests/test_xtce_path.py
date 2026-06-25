@@ -49,6 +49,16 @@ class TestPathNode:
             ("BUS[abc]", _node("BUS[abc]", "BUS[abc]")),
             ("BUS.", _node("BUS.", "BUS.")),
         ],
+        ids=[
+            "plain",
+            "single_index",
+            "multiple_indices",
+            "nested_aggregate",
+            "dot",
+            "dotdot",
+            "invalid_index",
+            "trailing_dot",
+        ],
     )
     def test_from_string_parses_supported_forms(
         self,
@@ -57,7 +67,6 @@ class TestPathNode:
     ) -> None:
         """PathNode should parse plain, indexed, aggregate, and fallback forms."""
         node = PathNode.from_string(raw_segment)
-
         assert node == expected
         assert str(node) == raw_segment
 
@@ -226,6 +235,28 @@ class TestXtcePath:
         """Single-component paths should be considered root-level."""
         assert XtcePath("/A").is_root is True
 
+    @pytest.mark.parametrize(
+        "raw_path, expected_contains_array, expected_contains_aggregate",
+        [
+            ("/A/B/C", False, False),
+            ("/A/B[2]/C", True, False),
+            ("/A/B.FIELD/C", False, True),
+            ("/A/B[2].FIELD/C", True, True),
+            ("/", False, False),
+        ],
+    )
+    def test_contains_flags_reflect_all_path_components(
+        self,
+        raw_path: str,
+        expected_contains_array: bool,
+        expected_contains_aggregate: bool,
+    ) -> None:
+        """Top-level contains flags should summarize all PathNode components."""
+        path = XtcePath(raw_path)
+
+        assert path.contains_array is expected_contains_array
+        assert path.contains_aggregate is expected_contains_aggregate
+
     def test_joinpath_accepts_mixed_segment_types(self) -> None:
         """Joinpath should accept both strings and XtcePath instances."""
         base = XtcePath("/A")
@@ -359,7 +390,7 @@ class TestXtcePath:
         assert model.path == XtcePath(node)
 
     @pytest.mark.parametrize(
-        "invalid_value",
+        "raw_value",
         [
             "A/B/",
             "A:B",
@@ -368,27 +399,28 @@ class TestXtcePath:
             "..",
         ],
     )
-    def test_pydantic_rejects_invalid_name_reference_strings(
-        self, invalid_value: str
-    ) -> None:
-        """Pydantic should reject strings that violate XTCE name-reference pattern."""
+    def test_pydantic_accepts_non_pattern_strings(self, raw_value: str) -> None:
+        """Pydantic should accept strings without XTCE regex validation."""
 
         class PathModel(BaseModel):
             path: XtcePath
 
-        with pytest.raises(ValidationError, match="valid XTCE name reference path"):
-            PathModel(path=invalid_value)  # type: ignore
+        model = PathModel(path=raw_value)  # type: ignore
+
+        assert model.path == XtcePath(raw_value)
 
     def test_pydantic_serialization_and_json_schema(self) -> None:
-        """Pydantic should serialize XtcePath as a string and expose string schema."""
+        """Pydantic should serialize XtcePath as a string without regex pattern."""
 
         class PathModel(BaseModel):
             path: XtcePath
 
         model = PathModel(path=XtcePath("/A/B"))
+        schema = model.model_json_schema()["properties"]["path"]
 
         assert model.model_dump() == {"path": "/A/B"}
-        assert model.model_json_schema()["properties"]["path"]["type"] == "string"
+        assert schema["type"] == "string"
+        assert "pattern" not in schema
 
     def test_normalize_removes_dot_segments(self) -> None:
         """Normalize should remove '.' segments from paths."""

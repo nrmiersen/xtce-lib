@@ -601,6 +601,7 @@ def _rebuild_all_models(
     """Recursively find and rebuild all Pydantic models.
 
     This resolves forward references for all models in the module.
+
     """
     for subclass in base_class.__subclasses__():
         try:

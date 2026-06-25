@@ -51,6 +51,7 @@ class TelemetryMetadata(XtceBaseModel):
         | AbsoluteTimeParameter
     ] = Field(default_factory=list)
     """A list of parameter types."""
+
     parameters: list[Parameter | ParameterRef] = Field(default_factory=list)
     containers: list[SequenceContainer] = Field(default_factory=list, min_length=1)
     message_set: MessageSet | None = Field(default=None)

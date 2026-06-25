@@ -143,7 +143,7 @@ class SpaceSystem(NameDescriptionBase):
     services: list[Service] = Field(default_factory=list)
     """A logical grouping of container and/or messages."""
 
-    space_system: list["SpaceSystem"] = Field(default_factory=list)
+    space_systems: list["SpaceSystem"] = Field(default_factory=list)
     """Additional SpaceSystem elements may be used like namespaces to segregate portions
     of the space asset/device into convenient groupings or may be used to specialize a
     product line generic SpaceSystem to a specific asset instance.
@@ -165,7 +165,9 @@ class SpaceSystem(NameDescriptionBase):
     )
     """Broad name for the type of asset.
 
-    Applicable since: XTCE 1.3."""
+    Applicable since: XTCE 1.3.
+
+    """
 
     operational_status: str | None = Field(
         default=None,
@@ -270,7 +272,7 @@ class SpaceSystem(NameDescriptionBase):
 
     @classmethod
     def _from_v1_3(cls: type[Self], space_system: xtce_1_3.SpaceSystem) -> Self:
-        version = XtceVersion.V1_2
+        version = XtceVersion.V1_3
 
         kwargs = {
             f.name: getattr(space_system, f.name)
@@ -390,7 +392,7 @@ class SpaceSystem(NameDescriptionBase):
             if self.services
             else None,
             space_system=[
-                subsystem._to_v1_1(policy) for subsystem in self.space_system
+                subsystem._to_v1_1(policy) for subsystem in self.space_systems
             ],
             operational_status=self.operational_status,
         )
@@ -454,7 +456,7 @@ class SpaceSystem(NameDescriptionBase):
             if self.services
             else None,
             space_system=[
-                subsystem._to_v1_2(policy) for subsystem in self.space_system
+                subsystem._to_v1_2(policy) for subsystem in self.space_systems
             ],
             operational_status=self.operational_status,
         )
@@ -496,7 +498,7 @@ class SpaceSystem(NameDescriptionBase):
             if self.services
             else None,
             space_system=[
-                subsystem._to_v1_3(policy) for subsystem in self.space_system
+                subsystem._to_v1_3(policy) for subsystem in self.space_systems
             ],
             system_type=xtce_1_3.SystemTypeType(self.system_type.value),
             asset_type=self.asset_type,

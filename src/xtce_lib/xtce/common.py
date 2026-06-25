@@ -159,7 +159,6 @@ class NameDescriptionBase(DescriptionBase):
     )
     """The name of this defined item."""
 
-
 class OptionalNameDescriptionBase(DescriptionBase):
     """The type definition used by most elements that have an optional name with
     optional descriptions.
@@ -171,7 +170,6 @@ class OptionalNameDescriptionBase(DescriptionBase):
         examples=["SpeedCommandVerifier", "LogMessageSet"],
     )
     """The optional name of this defined item."""
-
 
 class NameReferenceNoPath(XtceBaseModel):
     """A reference that can not include a path to a named object where array and
