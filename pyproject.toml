@@ -31,6 +31,7 @@ typeCheckingMode = "strict"
 reportMatchNotExhaustive = "error"
 reportUnknownVariableType = false
 reportUnnecessaryIsInstance = false
+reportIncompatibleMethodOverride = false
 exclude = [
     "**/.*",
     ".venv",

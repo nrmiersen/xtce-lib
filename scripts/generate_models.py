@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 
 XTCE_VERSIONS = {
+    "1_0": "dtc-05-01-05.xsd",
     "1_1": "dtc-06-11-06.xsd",
     "1_2": "dtc-18-02-04.xsd",
     "1_3": "dtc-25-02-18.xsd",
