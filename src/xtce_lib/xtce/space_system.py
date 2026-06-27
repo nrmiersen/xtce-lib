@@ -192,6 +192,7 @@ class SpaceSystem(NameDescriptionBase):
         scope: XtcePath,
     ) -> None:
         """Validate this object's semantics."""
+
         # TODO call all child validate_semantics methods
 
     @classmethod

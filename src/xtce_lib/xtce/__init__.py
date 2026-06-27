@@ -2,9 +2,8 @@
 
 from typing import Any
 
-from ._base import (
-    XtceBaseModel,
-)
+from ._base import XtceBaseModel
+from ._util import unwrap
 from .alarm import (
     Alarm,
     AlarmConditions,
@@ -249,7 +248,7 @@ from .parameter import (
 from .range import (
     FloatRange,
     IntegerRange,
-    MultiRangeType,
+    MultiRange,
     ValidFloatRange,
     ValidFloatRanges,
     ValidIntegerRange,
@@ -321,6 +320,7 @@ from .verifier import (
 
 __all__ = [
     "XtceBaseModel",
+    "unwrap",
     "Alarm",
     "AlarmConditions",
     "AlarmMultiRanges",
@@ -538,7 +538,7 @@ __all__ = [
     "StringParameter",
     "FloatRange",
     "IntegerRange",
-    "MultiRangeType",
+    "MultiRange",
     "ValidFloatRange",
     "ValidFloatRanges",
     "ValidIntegerRange",

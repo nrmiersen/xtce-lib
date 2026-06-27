@@ -29,6 +29,7 @@ exclude = ["generated", "xsd"]
 [tool.pyright]
 typeCheckingMode = "strict"
 reportMatchNotExhaustive = "error"
+reportPrivateUsage = false
 reportUnknownVariableType = false
 reportUnnecessaryIsInstance = false
 reportIncompatibleMethodOverride = false

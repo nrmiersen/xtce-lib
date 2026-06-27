@@ -60,7 +60,7 @@ class ParameterRef(XtceBaseModel):
                     scope=scope,
                     message=f"reference '{self.ref}' contains an array index or "
                     "aggregate member, but a standalone ParameterRef must reference a "
-                    "parameter only.",
+                    "parameter only",
                 )
             )
 
@@ -74,7 +74,7 @@ class ParameterRef(XtceBaseModel):
                         scope=scope,
                         message=f"reference '{self.ref}' resolved to a "
                         f"'{type(result.target).__name__}' type, "
-                        f"but a 'Parameter' type was expected.",
+                        f"but a 'Parameter' type was expected",
                     )
                 )
 
@@ -177,7 +177,7 @@ class OutputParameterRef(ParameterRef):
                     scope=scope,
                     message=f"reference '{self.ref}' contains an array index or "
                     "aggregate member, but an OutputParameterRef must reference a "
-                    "parameter only.",
+                    "parameter only",
                 )
             )
 
@@ -191,7 +191,7 @@ class OutputParameterRef(ParameterRef):
                         scope=scope,
                         message=f"reference '{self.ref}' resolved to a "
                         f"'{type(result.target).__name__}' type, "
-                        f"but a 'Parameter' type was expected.",
+                        f"but a 'Parameter' type was expected",
                     )
                 )
 
@@ -616,7 +616,7 @@ class ContainerRef(XtceBaseModel):
                     scope=scope,
                     message=f"reference '{self.ref}' contains an array index or "
                     "aggregate member, but a ContainerRef must reference a sequence "
-                    "container only.",
+                    "container only",
                 )
             )
 
@@ -630,7 +630,7 @@ class ContainerRef(XtceBaseModel):
                         scope=scope,
                         message=f"reference '{self.ref}' resolved to a "
                         f"'{type(result.target).__name__}' type, "
-                        f"but a 'SequenceContainer' type was expected.",
+                        f"but a 'SequenceContainer' type was expected",
                     )
                 )
 
@@ -737,7 +737,7 @@ class ServiceRef(XtceBaseModel):
         if self.ref.contains_array or self.ref.contains_aggregate:
             raise ValueError(
                 f"reference '{self.ref}' contains an array index or aggregate member, "
-                f"but a ServiceRef must reference a service only."
+                f"but a ServiceRef must reference a service only"
             )
 
         from .space_system import Service
@@ -750,7 +750,7 @@ class ServiceRef(XtceBaseModel):
                         scope=scope,
                         message=f"reference '{self.ref}' resolved to a "
                         f"'{type(result.target).__name__}' type, "
-                        f"but a 'Service' type was expected.",
+                        f"but a 'Service' type was expected",
                     )
                 )
 
@@ -854,7 +854,7 @@ class StreamRef(XtceBaseModel):
         if self.ref.contains_array or self.ref.contains_aggregate:
             raise ValueError(
                 f"reference '{self.ref}' contains an array index or aggregate member, "
-                f"but a StreamRef must reference a stream only."
+                f"but a StreamRef must reference a stream only"
             )
 
         from .stream import CustomStream, FixedFrameStream, VariableFrameStream
@@ -870,7 +870,7 @@ class StreamRef(XtceBaseModel):
                         message=f"reference '{self.ref}' resolved to a "
                         f"'{type(result.target).__name__}' type, "
                         f"but a 'CustomStream', 'FixedFrameStream' or "
-                        f"'VariableFrameStream' type was expected.",
+                        f"'VariableFrameStream' type was expected",
                     )
                 )
 

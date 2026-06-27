@@ -24,6 +24,21 @@ class XtceBaseModel(BaseModel, ABC):
         extra="forbid",
     )
 
+    @classmethod
+    # @abstractmethod
+    def from_xsdata(cls, raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to create an XtceBaseModel from an xsdata-generated object of
+        any version.
+        """
+        pass
+
+    # @abstractmethod
+    def to_xsdata(self, version: XtceVersion) -> Any:
+        """Convert this XtceBaseModel to an xsdata-generated object of the specified
+        version.
+        """
+        pass
+
     def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""
         match policy:
@@ -72,18 +87,3 @@ class XtceBaseModel(BaseModel, ABC):
             f"{target_version.value} and will be lost during export."
         )
         self._handle_downgrade(message, policy)
-
-    @classmethod
-    # @abstractmethod
-    def from_xsdata(cls, raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an XtceBaseModel from an xsdata-generated object of
-        any version.
-        """
-        pass
-
-    # @abstractmethod
-    def to_xsdata(self, version: XtceVersion) -> Any:
-        """Convert this XtceBaseModel to an xsdata-generated object of the specified
-        version.
-        """
-        pass

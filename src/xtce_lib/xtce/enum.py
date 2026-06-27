@@ -48,19 +48,19 @@ class StringEncoding(str, Enum):
         WINDOWS_1252:
         UTF_8:
         UTF_16: With UTF-16, encoded bits must be prepended with a Byte Order
-            Mark.  This mark indicates whether the data is encoded in big or
+            Mark. This mark indicates whether the data is encoded in big or
             little endian.
         UTF_16_LE: With UTF-16LE, encoded bits will always be represented as
-            little endian.  Bits are not prepended with a Byte Order Mark.
+            little endian. Bits are not prepended with a Byte Order Mark.
         UTF_16_BE: With UTF-16BE, encoded bits will always be represented as big
-            endian.  Bits are not prepended with a Byte Order Mark.
+            endian. Bits are not prepended with a Byte Order Mark.
         UTF_32: With UTF-32, encoded bits must be prepended with a Byte Order
-            Mark.  This mark indicates whether the data is encoded in big or
+            Mark. This mark indicates whether the data is encoded in big or
             little endian.
         UTF_32_LE: With UTF-32LE, encoded bits will always be represented as
-            little endian.  Bits are not prepended with a Byte Order Mark.
+            little endian. Bits are not prepended with a Byte Order Mark.
         UTF_32_BE: With UTF-32BE, encoded bits will always be represented as big
-            endian.  Bits are not prepended with a Byte Order Mark.
+            endian. Bits are not prepended with a Byte Order Mark.
 
     """
 
@@ -91,7 +91,7 @@ class SystemType(str, Enum):
             in the data model, such as a fleet or constellation.
         ASSET_COMPONENT: Internal systems of assets permit managing the structure
             of XTCE documents by decomposing the internal structures of interest
-            to tighten the scope of an individual SpaceSystem element.  The
+            to tighten the scope of an individual SpaceSystem element. The
             XInclude facility is also available at the SpaceSystem element for
             managing the size of XTCE documents, in addition to the internal
             organization.
@@ -119,7 +119,7 @@ class UnitForm(str, Enum):
             engineer/calibrated value.
         UNCALIBRATED: The unit of measure for this value refers to the pre-
             calibrated data, after extraction from the data stream, when in the
-            local native data type.  This is unusual, but present in some cases.
+            local native data type. This is unusual, but present in some cases.
         RAW: The unit of measure for this value refers to the raw binary value
             from the data stream, prior to conversion to the local native data
             type and application of calibrators.
@@ -144,12 +144,16 @@ class ValidationStatus(str, Enum):
 
 
 class RangeForm(str, Enum):
-    """Defines inside and outside enumerated terms, where the term outside means the
-    range is (-inf, minimum) and (maximum, inf) -- that is a range where acceptable
-    values must be less than the minimum and greater than the maximum, and the term
-    inside means the range is (minimum, maximum) -- that is acceptable values are
-    between the minimum and maximum (either the min or max may be inclusive or
-    exclusive).
+    """Defines inside and outside enumerated terms.
+
+    Attributes:
+        OUTSIDE: The range is (-inf, minimum) and (maximum, inf) - that is a range where
+            acceptable values must be less than the minimum and greater than the
+            maximum.
+        INSIDE: The range is (minimum, maximum) - that is acceptable values are between
+            the minimum and maximum (either the min or max may be inclusive or
+            exclusive).
+
     """
 
     OUTSIDE = "outside"
@@ -182,40 +186,36 @@ class ConcernLevel(str, Enum):
     """Defines six levels: Normal, Watch, Warning, Distress, Critical and Severe, in
     that order of concern from least to most.
 
-    These level definitions are used throughout the alarm definitions. An
-    implementation should interpret these as best to match their uniqueness and
-    provide documentation on how this standard maps to their implementation. Not all
-    are likely to be provided, with some either ignored, promoted or demoted to
-    others, or warned on input. There exist some reasonable usage recommendations in
-    the user community.
+    These level definitions are used throughout the alarm definitions. An implementation
+    should interpret these as best to match their uniqueness and provide documentation
+    on how this standard maps to their implementation. Not all are likely to be
+    provided, with some either ignored, promoted or demoted to others, or warned on
+    input. There exist some reasonable usage recommendations in the user community.
 
     Attributes:
-        NORMAL: The case of "normal" or "no concern level" is generally the
-            default.  This value can be useful when describing an exception or
-            disabling when the more typical case is a non-normal concern level.
-        WATCH: DEPRECATED: The lowest level of concern.  Systems that support
-            only 3 or 4 concern levels have been observed to promote "watch" to
-            "warning" during data processing, if this enumeration is not
-            explicitly supported.  This value may not exist in future versions of
-            this specification.
-        WARNING: A level of concern to be interpreted by the user as less than
-            the highest possible concern.  This is intended by the specification
-            to be quite vague.  The project operational concept will explicitly
-            define how these are to be used.
-        DISTRESS: A level of concern to be interpreted by the user as greater
-            than the least concern but not yet rising to the highest possible
-            concern.  This is intended by the specification to be quite vague.
-            The project operational concept will explicitly define how these are
+        NORMAL: The case of "normal" or "no concern level" is generally the default.
+            This value can be useful when describing an exception or disabling when the
+            more typical case is a non-normal concern level.
+        WATCH: DEPRECATED: The lowest level of concern. Systems that support only 3 or 4
+            concern levels have been observed to promote "watch" to "warning" during
+            data processing, if this enumeration is not explicitly supported. This value
+            may not exist in future versions of this specification.
+        WARNING: A level of concern to be interpreted by the user as less than the
+            highest possible concern. This is intended by the specification to be quite
+            vague. The project operational concept will explicitly define how these are
             to be used.
+        DISTRESS: A level of concern to be interpreted by the user as greater than the
+            least concern but not yet rising to the highest possible concern. This is
+            intended by the specification to be quite vague. The project operational
+            concept will explicitly define how these are to be used.
         CRITICAL: A level of concern to be interpreted by the user as the highest
-            possible concern.  This is intended by the specification to be quite
-            vague.  The project operational concept will explicitly define how
-            these are to be used.
-        SEVERE: DEPRECATED: The highest level of concern.  Systems that support
-            only 3 or 4 concern levels have been observed to demote "severe" to
-            "critical" during data processing, if this enumeration is not
-            explicitly supported.  This value may not exist in future versions of
-            this specification.
+            possible concern. This is intended by the specification to be quite vague.
+            The project operational concept will explicitly define how these are to be
+            used.
+        SEVERE: DEPRECATED: The highest level of concern. Systems that support only 3 or
+            4 concern levels have been observed to demote "severe" to "critical" during
+            data processing, if this enumeration is not explicitly supported. This value
+            may not exist in future versions of this specification.
 
     """
 
@@ -514,22 +514,22 @@ class ConsequenceLevel(str, Enum):
     Criticality levels follow ISO 14950.
 
     Attributes:
-        NORMAL: Normal command.  Corresponds to ISO 14950 Level D telecommand
+        NORMAL: Normal command. Corresponds to ISO 14950 Level D telecommand
             criticality.
         VITAL: Command that is not a critical command but is essential to the
             success of the mission and, if sent at the wrong time, could cause
-            momentary loss of the mission.  Corresponds to ISO 14950 Level C
+            momentary loss of the mission. Corresponds to ISO 14950 Level C
             telecommand criticality.
         CRITICAL: Command that, if executed at the wrong time or in the wrong
             configuration, could cause irreversible loss or damage for the
-            mission.  Corresponds to ISO 14950 Level B telecommand criticality.
+            mission. Corresponds to ISO 14950 Level B telecommand criticality.
             Some space programs have called this "restricted" and may be
             implemented with a secondary confirmation before transmission.
         FORBIDDEN: Command that is not expected to be used for nominal or
             foreseeable contingency operations, that is included for unforeseen
             contingency operations, and that could cause irreversible damage if
             executed at the wrong time or in the wrong configuration.
-            Corresponds to ISO 14950 Level A telecommand criticality.  Some space
+            Corresponds to ISO 14950 Level A telecommand criticality. Some space
             programs have called this "prohibited".
         USER1: In the event that a program uses this value, that program will
             need to define the meaning of this value to their system.

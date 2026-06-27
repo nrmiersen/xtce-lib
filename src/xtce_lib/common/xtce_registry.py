@@ -80,7 +80,7 @@ class XtceRegistry:
 
         current_scope = scope
         while True:
-            candidate_path = (current_scope / path).resolve()
+            candidate_path = (current_scope / path).normalize()
 
             target = self._definitions.get(candidate_path)
             if target is not None:

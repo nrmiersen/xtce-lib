@@ -3,24 +3,20 @@
 import pytest
 from pydantic import ValidationError
 
-from xtce_lib import XtceDatabase, XtcePath, XtceVersion, xtce
-from xtce_lib.common.validation import ValidationReport, XtceSemanticError
-from xtce_lib.exceptions import XtceUnsupportedError
+from xtce_lib import (
+    ValidationReport,
+    XtceDatabase,
+    XtcePath,
+    XtceSemanticError,
+    XtceUnsupportedError,
+    XtceVersion,
+    xtce,
+)
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 from xtce_lib.xtce._pattern import (
     EXPD_NAME_REF_NO_PATH,
     EXPD_NAME_REF_W_PATH,
     NAME_REF_W_PATH,
-)
-from xtce_lib.xtce.reference import (
-    ArgumentInstanceRef,
-    ContainerRef,
-    InputParameterInstanceRef,
-    OutputParameterRef,
-    ParameterInstanceRef,
-    ParameterRef,
-    ServiceRef,
-    StreamRef,
 )
 
 
@@ -99,7 +95,7 @@ class TestParameterRef:
         valid_ref: str | XtcePath,
     ) -> None:
         """Valid parameter reference strings and XtcePath objects should be accepted."""
-        model = ParameterRef(ref=valid_ref)  # type: ignore[arg-type]
+        model = xtce.ParameterRef(ref=valid_ref)  # type: ignore[arg-type]
 
         assert model.ref == valid_ref
 
@@ -116,12 +112,12 @@ class TestParameterRef:
     def test_rejects_invalid_parameter_references(self, invalid_ref: str) -> None:
         """Malformed parameter references should fail validation."""
         with pytest.raises(ValidationError):
-            ParameterRef(ref=XtcePath(invalid_ref))
+            xtce.ParameterRef(ref=XtcePath(invalid_ref))
 
     def test_rejects_non_string_reference_values(self) -> None:
         """Reference values must be strings or XtcePath objects."""
         with pytest.raises(ValidationError):
-            ParameterRef(ref=123)  # type: ignore[arg-type]
+            xtce.ParameterRef(ref=123)  # type: ignore[arg-type]
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -146,9 +142,9 @@ class TestParameterRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map versioned ParameterRefType objects to ParameterRef."""
-        model = ParameterRef.from_xsdata(raw_obj, version)
+        model = xtce.ParameterRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, ParameterRef)
+        assert isinstance(model, xtce.ParameterRef)
         assert model.ref == "/SimpleSat/Bus/Voltage"
 
     @pytest.mark.parametrize(
@@ -165,7 +161,7 @@ class TestParameterRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the appropriate versioned ParameterRefType."""
-        model = ParameterRef(ref=XtcePath("/SimpleSat/Bus/Voltage"))
+        model = xtce.ParameterRef(ref=XtcePath("/SimpleSat/Bus/Voltage"))
 
         raw_obj = model.to_xsdata(version)
 
@@ -181,15 +177,17 @@ class TestParameterRef:
         version: XtceVersion,
     ) -> None:
         """Converting to xsdata and back should preserve the reference string."""
-        original = ParameterRef(ref=XtcePath("/SimpleSat/Bus/Voltage"))
+        original = xtce.ParameterRef(ref=XtcePath("/SimpleSat/Bus/Voltage"))
 
-        round_tripped = ParameterRef.from_xsdata(original.to_xsdata(version), version)
+        round_tripped = xtce.ParameterRef.from_xsdata(
+            original.to_xsdata(version), version
+        )
 
         assert round_tripped == original
 
     def test_json_schema_exposes_pattern_and_examples(self) -> None:
         """Schema should expose regex and examples for API/documentation tooling."""
-        schema = ParameterRef.model_json_schema()
+        schema = xtce.ParameterRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == EXPD_NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
@@ -204,7 +202,7 @@ class TestParameterRef:
     ) -> None:
         """validate_semantics should pass for a resolvable Parameter target."""
         db, scope = db_and_scope
-        model = ParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
+        model = xtce.ParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
         model.validate_semantics(report, db.registry, scope)
@@ -224,12 +222,12 @@ class TestParameterRef:
         bad_ref: str,
     ) -> None:
         """validate_semantics should reject array and aggregate references."""
-        model = ParameterRef(ref=XtcePath(bad_ref))
+        model = xtce.ParameterRef(ref=XtcePath(bad_ref))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            f"reference '{bad_ref}' contains an array index or aggregate member, but a standalone ParameterRef must reference a parameter only.",
+            f"reference '{bad_ref}' contains an array index or aggregate member, but a standalone ParameterRef must reference a parameter only",
             f"reference '{bad_ref}' does not resolve to a valid object from scope '/TestSystem'",
         ]
 
@@ -238,7 +236,7 @@ class TestParameterRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        model = ParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
+        model = xtce.ParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
@@ -251,12 +249,12 @@ class TestParameterRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Parameter."""
-        model = ParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
+        model = xtce.ParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected.",
+            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected",
         ]
 
 
@@ -277,14 +275,14 @@ class TestOutputParameterRef:
         valid_ref: str | XtcePath,
     ) -> None:
         """Valid output parameter reference values should be accepted."""
-        model = OutputParameterRef(ref=valid_ref)  # type: ignore[arg-type]
+        model = xtce.OutputParameterRef(ref=valid_ref)  # type: ignore[arg-type]
 
         assert model.ref == valid_ref
 
     @pytest.mark.parametrize("output_name", [None, "BatteryVoltageOut"])
     def test_accepts_optional_output_name(self, output_name: str | None) -> None:
         """output_name should support both omitted and explicit values."""
-        model = OutputParameterRef(
+        model = xtce.OutputParameterRef(
             ref=XtcePath("/SimpleSat/Bus/BatteryVoltage"),
             output_name=output_name,
         )
@@ -307,7 +305,7 @@ class TestOutputParameterRef:
     ) -> None:
         """Malformed output parameter references should fail validation."""
         with pytest.raises(ValidationError):
-            OutputParameterRef(ref=XtcePath(invalid_ref))
+            xtce.OutputParameterRef(ref=XtcePath(invalid_ref))
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -334,16 +332,16 @@ class TestOutputParameterRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map supported versions to OutputParameterRef."""
-        model = OutputParameterRef.from_xsdata(raw_obj, version)
+        model = xtce.OutputParameterRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, OutputParameterRef)
+        assert isinstance(model, xtce.OutputParameterRef)
         assert model.ref == "/SimpleSat/Bus/Voltage"
         assert model.output_name == "OutVoltage"
 
     def test_from_xsdata_rejects_v1_1(self) -> None:
         """v1.1 does not support OutputParameterRef."""
         with pytest.raises(XtceUnsupportedError):
-            OutputParameterRef.from_xsdata(
+            xtce.OutputParameterRef.from_xsdata(
                 xtce_1_1.ParameterRefType(parameter_ref="/SimpleSat/Bus/Voltage"),
                 XtceVersion.V1_1,
             )
@@ -361,7 +359,7 @@ class TestOutputParameterRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected supported output reference type."""
-        model = OutputParameterRef(
+        model = xtce.OutputParameterRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             output_name="OutVoltage",
         )
@@ -374,7 +372,7 @@ class TestOutputParameterRef:
 
     def test_to_xsdata_rejects_v1_1(self) -> None:
         """v1.1 export should fail for OutputParameterRef."""
-        model = OutputParameterRef(
+        model = xtce.OutputParameterRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             output_name="OutVoltage",
         )
@@ -388,12 +386,12 @@ class TestOutputParameterRef:
         version: XtceVersion,
     ) -> None:
         """Round-trip conversion should preserve ref and output_name."""
-        original = OutputParameterRef(
+        original = xtce.OutputParameterRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             output_name="OutVoltage",
         )
 
-        round_tripped = OutputParameterRef.from_xsdata(
+        round_tripped = xtce.OutputParameterRef.from_xsdata(
             original.to_xsdata(version),
             version,
         )
@@ -402,7 +400,7 @@ class TestOutputParameterRef:
 
     def test_json_schema_exposes_pattern_and_examples(self) -> None:
         """Schema should include pattern and examples inherited from ParameterRef."""
-        schema = OutputParameterRef.model_json_schema()
+        schema = xtce.OutputParameterRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == EXPD_NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
@@ -417,7 +415,7 @@ class TestOutputParameterRef:
     ) -> None:
         """validate_semantics should pass for a resolvable Parameter target."""
         db, scope = db_and_scope
-        model = OutputParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
+        model = xtce.OutputParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
         model.validate_semantics(report, db.registry, scope)
@@ -437,12 +435,12 @@ class TestOutputParameterRef:
         bad_ref: str,
     ) -> None:
         """validate_semantics should reject array and aggregate references."""
-        model = OutputParameterRef(ref=XtcePath(bad_ref))
+        model = xtce.OutputParameterRef(ref=XtcePath(bad_ref))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            f"reference '{bad_ref}' contains an array index or aggregate member, but an OutputParameterRef must reference a parameter only.",
+            f"reference '{bad_ref}' contains an array index or aggregate member, but an OutputParameterRef must reference a parameter only",
             f"reference '{bad_ref}' does not resolve to a valid object from scope '/TestSystem'",
         ]
 
@@ -451,7 +449,7 @@ class TestOutputParameterRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        model = OutputParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
+        model = xtce.OutputParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
@@ -464,12 +462,12 @@ class TestOutputParameterRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Parameter."""
-        model = OutputParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
+        model = xtce.OutputParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected.",
+            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected",
         ]
 
 
@@ -478,7 +476,7 @@ class TestParameterInstanceRef:
 
     def test_accepts_fields(self) -> None:
         """Parameter instance references should accept all explicit fields."""
-        model = ParameterInstanceRef(
+        model = xtce.ParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/BatteryVoltage"),
             instance=-1,
             use_calibrated_value=False,
@@ -523,9 +521,9 @@ class TestParameterInstanceRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map versioned parameter instance references."""
-        model = ParameterInstanceRef.from_xsdata(raw_obj, version)
+        model = xtce.ParameterInstanceRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, ParameterInstanceRef)
+        assert isinstance(model, xtce.ParameterInstanceRef)
         assert model.ref == "/SimpleSat/Bus/Voltage"
         assert model.instance == 1
         assert model.use_calibrated_value is False
@@ -544,7 +542,7 @@ class TestParameterInstanceRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected versioned parameter instance type."""
-        model = ParameterInstanceRef(
+        model = xtce.ParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             instance=-2,
             use_calibrated_value=True,
@@ -566,13 +564,13 @@ class TestParameterInstanceRef:
         version: XtceVersion,
     ) -> None:
         """Round-trip conversion should preserve all fields."""
-        original = ParameterInstanceRef(
+        original = xtce.ParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             instance=3,
             use_calibrated_value=False,
         )
 
-        round_tripped = ParameterInstanceRef.from_xsdata(
+        round_tripped = xtce.ParameterInstanceRef.from_xsdata(
             original.to_xsdata(version),
             version,
         )
@@ -596,7 +594,7 @@ class TestArgumentInstanceRef:
     )
     def test_accepts_valid_argument_references(self, valid_ref: str) -> None:
         """Valid argument names should be accepted."""
-        model = ArgumentInstanceRef(ref=valid_ref)
+        model = xtce.ArgumentInstanceRef(ref=valid_ref)
 
         assert model.ref == valid_ref
 
@@ -613,7 +611,7 @@ class TestArgumentInstanceRef:
     def test_rejects_invalid_argument_references(self, invalid_ref: str) -> None:
         """Malformed argument names should fail validation."""
         with pytest.raises(ValidationError):
-            ArgumentInstanceRef(ref=invalid_ref)
+            xtce.ArgumentInstanceRef(ref=invalid_ref)
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -640,16 +638,16 @@ class TestArgumentInstanceRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map supported versions to ArgumentInstanceRef."""
-        model = ArgumentInstanceRef.from_xsdata(raw_obj, version)
+        model = xtce.ArgumentInstanceRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, ArgumentInstanceRef)
+        assert isinstance(model, xtce.ArgumentInstanceRef)
         assert model.ref == "Arg1"
         assert model.use_calibrated_value is False
 
     def test_from_xsdata_rejects_v1_1(self) -> None:
         """v1.1 does not support ArgumentInstanceRef."""
         with pytest.raises(XtceUnsupportedError):
-            ArgumentInstanceRef.from_xsdata(
+            xtce.ArgumentInstanceRef.from_xsdata(
                 xtce_1_2.ArgumentInstanceRefType(
                     argument_ref="Arg1",
                     use_calibrated_value=True,
@@ -670,7 +668,7 @@ class TestArgumentInstanceRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected supported argument reference type."""
-        model = ArgumentInstanceRef(ref="Arg1", use_calibrated_value=False)
+        model = xtce.ArgumentInstanceRef(ref="Arg1", use_calibrated_value=False)
 
         raw_obj = model.to_xsdata(version)
 
@@ -680,7 +678,7 @@ class TestArgumentInstanceRef:
 
     def test_to_xsdata_rejects_v1_1(self) -> None:
         """v1.1 export should fail for ArgumentInstanceRef."""
-        model = ArgumentInstanceRef(ref="Arg1", use_calibrated_value=True)
+        model = xtce.ArgumentInstanceRef(ref="Arg1", use_calibrated_value=True)
 
         with pytest.raises(XtceUnsupportedError):
             model.to_xsdata(XtceVersion.V1_1)
@@ -691,9 +689,9 @@ class TestArgumentInstanceRef:
         version: XtceVersion,
     ) -> None:
         """Round-trip conversion should preserve argument instance fields."""
-        original = ArgumentInstanceRef(ref="Arg1", use_calibrated_value=False)
+        original = xtce.ArgumentInstanceRef(ref="Arg1", use_calibrated_value=False)
 
-        round_tripped = ArgumentInstanceRef.from_xsdata(
+        round_tripped = xtce.ArgumentInstanceRef.from_xsdata(
             original.to_xsdata(version),
             version,
         )
@@ -702,7 +700,7 @@ class TestArgumentInstanceRef:
 
     def test_json_schema_exposes_pattern(self) -> None:
         """Schema should include the argument-name regex pattern."""
-        schema = ArgumentInstanceRef.model_json_schema()
+        schema = xtce.ArgumentInstanceRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == EXPD_NAME_REF_NO_PATH
 
@@ -715,7 +713,7 @@ class TestInputParameterInstanceRef:
 
     def test_accepts_fields(self) -> None:
         """Input parameter instance references should accept optional input_name."""
-        model = InputParameterInstanceRef(
+        model = xtce.InputParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/BatteryVoltage"),
             input_name="InVoltage",
         )
@@ -748,16 +746,16 @@ class TestInputParameterInstanceRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map supported versions to InputParameterInstanceRef."""
-        model = InputParameterInstanceRef.from_xsdata(raw_obj, version)
+        model = xtce.InputParameterInstanceRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, InputParameterInstanceRef)
+        assert isinstance(model, xtce.InputParameterInstanceRef)
         assert model.ref == "/SimpleSat/Bus/Voltage"
         assert model.input_name == "InVoltage"
 
     def test_from_xsdata_rejects_v1_1(self) -> None:
         """v1.1 does not support InputParameterInstanceRef."""
         with pytest.raises(XtceUnsupportedError):
-            InputParameterInstanceRef.from_xsdata(
+            xtce.InputParameterInstanceRef.from_xsdata(
                 xtce_1_2.InputParameterInstanceRefType(
                     parameter_ref="/SimpleSat/Bus/Voltage",
                     input_name="InVoltage",
@@ -778,7 +776,7 @@ class TestInputParameterInstanceRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected supported input reference type."""
-        model = InputParameterInstanceRef(
+        model = xtce.InputParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             input_name="InVoltage",
         )
@@ -791,7 +789,7 @@ class TestInputParameterInstanceRef:
 
     def test_to_xsdata_rejects_v1_1(self) -> None:
         """v1.1 export should fail for InputParameterInstanceRef."""
-        model = InputParameterInstanceRef(
+        model = xtce.InputParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             input_name="InVoltage",
         )
@@ -805,12 +803,12 @@ class TestInputParameterInstanceRef:
         version: XtceVersion,
     ) -> None:
         """Round-trip conversion should preserve ref and input_name."""
-        original = InputParameterInstanceRef(
+        original = xtce.InputParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             input_name="InVoltage",
         )
 
-        round_tripped = InputParameterInstanceRef.from_xsdata(
+        round_tripped = xtce.InputParameterInstanceRef.from_xsdata(
             original.to_xsdata(version),
             version,
         )
@@ -838,7 +836,7 @@ class TestContainerRef:
         valid_ref: str | XtcePath,
     ) -> None:
         """Valid container references should be accepted."""
-        model = ContainerRef(ref=valid_ref)  # type: ignore[arg-type]
+        model = xtce.ContainerRef(ref=valid_ref)  # type: ignore[arg-type]
 
         assert model.ref == valid_ref
 
@@ -846,7 +844,7 @@ class TestContainerRef:
     def test_rejects_invalid_container_references(self, invalid_ref: str) -> None:
         """Malformed container references should fail validation."""
         with pytest.raises(ValidationError):
-            ContainerRef(ref=XtcePath(invalid_ref))
+            xtce.ContainerRef(ref=XtcePath(invalid_ref))
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -871,9 +869,9 @@ class TestContainerRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map versioned ContainerRefType objects."""
-        model = ContainerRef.from_xsdata(raw_obj, version)
+        model = xtce.ContainerRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, ContainerRef)
+        assert isinstance(model, xtce.ContainerRef)
         assert model.ref == "/SimpleSat/PowerStatus"
 
     @pytest.mark.parametrize(
@@ -890,7 +888,7 @@ class TestContainerRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected versioned ContainerRefType."""
-        model = ContainerRef(ref=XtcePath("/SimpleSat/PowerStatus"))
+        model = xtce.ContainerRef(ref=XtcePath("/SimpleSat/PowerStatus"))
 
         raw_obj = model.to_xsdata(version)
 
@@ -906,15 +904,17 @@ class TestContainerRef:
         version: XtceVersion,
     ) -> None:
         """Converting to xsdata and back should preserve the container ref."""
-        original = ContainerRef(ref=XtcePath("/SimpleSat/PowerStatus"))
+        original = xtce.ContainerRef(ref=XtcePath("/SimpleSat/PowerStatus"))
 
-        round_tripped = ContainerRef.from_xsdata(original.to_xsdata(version), version)
+        round_tripped = xtce.ContainerRef.from_xsdata(
+            original.to_xsdata(version), version
+        )
 
         assert round_tripped == original
 
     def test_json_schema_exposes_pattern_and_examples(self) -> None:
         """Schema should expose regex and examples for API/documentation tooling."""
-        schema = ContainerRef.model_json_schema()
+        schema = xtce.ContainerRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
@@ -929,7 +929,7 @@ class TestContainerRef:
     ) -> None:
         """validate_semantics should pass for a resolvable SequenceContainer target."""
         db, scope = db_and_scope
-        model = ContainerRef(ref=XtcePath("/TestSystem/TestContainer"))
+        model = xtce.ContainerRef(ref=XtcePath("/TestSystem/TestContainer"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
         model.validate_semantics(report, db.registry, scope)
@@ -952,14 +952,14 @@ class TestContainerRef:
         _db, _scope = db_and_scope
 
         with pytest.raises(ValidationError):
-            ContainerRef(ref=XtcePath(bad_ref))
+            xtce.ContainerRef(ref=XtcePath(bad_ref))
 
     def test_validate_semantics_rejects_unresolvable_reference(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        model = ContainerRef(ref=XtcePath("/TestSystem/DoesNotExist"))
+        model = xtce.ContainerRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
@@ -972,12 +972,12 @@ class TestContainerRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a SequenceContainer."""
-        model = ContainerRef(ref=XtcePath("/TestSystem/TestParam1"))
+        model = xtce.ContainerRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'SequenceContainer' type was expected.",
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'SequenceContainer' type was expected",
         ]
 
 
@@ -998,7 +998,7 @@ class TestServiceRef:
         valid_ref: str | XtcePath,
     ) -> None:
         """Valid service references should be accepted."""
-        model = ServiceRef(ref=valid_ref)  # type: ignore[arg-type]
+        model = xtce.ServiceRef(ref=valid_ref)  # type: ignore[arg-type]
 
         assert model.ref == valid_ref
 
@@ -1006,7 +1006,7 @@ class TestServiceRef:
     def test_rejects_invalid_service_references(self, invalid_ref: str) -> None:
         """Malformed service references should fail validation."""
         with pytest.raises(ValidationError):
-            ServiceRef(ref=XtcePath(invalid_ref))
+            xtce.ServiceRef(ref=XtcePath(invalid_ref))
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -1031,9 +1031,9 @@ class TestServiceRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map versioned ServiceRefType objects."""
-        model = ServiceRef.from_xsdata(raw_obj, version)
+        model = xtce.ServiceRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, ServiceRef)
+        assert isinstance(model, xtce.ServiceRef)
         assert model.ref == "/SimpleSat/PowerService"
 
     @pytest.mark.parametrize(
@@ -1050,7 +1050,7 @@ class TestServiceRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected versioned ServiceRefType."""
-        model = ServiceRef(ref=XtcePath("/SimpleSat/PowerService"))
+        model = xtce.ServiceRef(ref=XtcePath("/SimpleSat/PowerService"))
 
         raw_obj = model.to_xsdata(version)
 
@@ -1066,15 +1066,17 @@ class TestServiceRef:
         version: XtceVersion,
     ) -> None:
         """Converting to xsdata and back should preserve the service ref."""
-        original = ServiceRef(ref=XtcePath("/SimpleSat/PowerService"))
+        original = xtce.ServiceRef(ref=XtcePath("/SimpleSat/PowerService"))
 
-        round_tripped = ServiceRef.from_xsdata(original.to_xsdata(version), version)
+        round_tripped = xtce.ServiceRef.from_xsdata(
+            original.to_xsdata(version), version
+        )
 
         assert round_tripped == original
 
     def test_json_schema_exposes_pattern_and_examples(self) -> None:
         """Schema should expose regex and examples for API/documentation tooling."""
-        schema = ServiceRef.model_json_schema()
+        schema = xtce.ServiceRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
@@ -1105,14 +1107,14 @@ class TestServiceRef:
         _db, _scope = db_and_scope
 
         with pytest.raises(ValidationError):
-            ServiceRef(ref=XtcePath(bad_ref))
+            xtce.ServiceRef(ref=XtcePath(bad_ref))
 
     def test_validate_semantics_rejects_unresolvable_reference(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        model = ServiceRef(ref=XtcePath("/TestSystem/DoesNotExist"))
+        model = xtce.ServiceRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
@@ -1125,12 +1127,12 @@ class TestServiceRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Service."""
-        model = ServiceRef(ref=XtcePath("/TestSystem/TestParam1"))
+        model = xtce.ServiceRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'Service' type was expected.",
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'Service' type was expected",
         ]
 
 
@@ -1151,7 +1153,7 @@ class TestStreamRef:
         valid_ref: str | XtcePath,
     ) -> None:
         """Valid stream references should be accepted."""
-        model = StreamRef(ref=valid_ref)  # type: ignore[arg-type]
+        model = xtce.StreamRef(ref=valid_ref)  # type: ignore[arg-type]
 
         assert model.ref == valid_ref
 
@@ -1159,7 +1161,7 @@ class TestStreamRef:
     def test_rejects_invalid_stream_references(self, invalid_ref: str) -> None:
         """Malformed stream references should fail validation."""
         with pytest.raises(ValidationError):
-            StreamRef(ref=XtcePath(invalid_ref))
+            xtce.StreamRef(ref=XtcePath(invalid_ref))
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
@@ -1184,9 +1186,9 @@ class TestStreamRef:
         raw_obj: object,
     ) -> None:
         """from_xsdata should map versioned StreamRefType objects."""
-        model = StreamRef.from_xsdata(raw_obj, version)
+        model = xtce.StreamRef.from_xsdata(raw_obj, version)
 
-        assert isinstance(model, StreamRef)
+        assert isinstance(model, xtce.StreamRef)
         assert model.ref == "/SimpleSat/PowerStream"
 
     @pytest.mark.parametrize(
@@ -1203,7 +1205,7 @@ class TestStreamRef:
         expected_type: type,
     ) -> None:
         """to_xsdata should return the expected versioned StreamRefType."""
-        model = StreamRef(ref=XtcePath("/SimpleSat/PowerStream"))
+        model = xtce.StreamRef(ref=XtcePath("/SimpleSat/PowerStream"))
 
         raw_obj = model.to_xsdata(version)
 
@@ -1219,15 +1221,15 @@ class TestStreamRef:
         version: XtceVersion,
     ) -> None:
         """Converting to xsdata and back should preserve the stream ref."""
-        original = StreamRef(ref=XtcePath("/SimpleSat/PowerStream"))
+        original = xtce.StreamRef(ref=XtcePath("/SimpleSat/PowerStream"))
 
-        round_tripped = StreamRef.from_xsdata(original.to_xsdata(version), version)
+        round_tripped = xtce.StreamRef.from_xsdata(original.to_xsdata(version), version)
 
         assert round_tripped == original
 
     def test_json_schema_exposes_pattern_and_examples(self) -> None:
         """Schema should expose regex and examples for API/documentation tooling."""
-        schema = StreamRef.model_json_schema()
+        schema = xtce.StreamRef.model_json_schema()
 
         assert schema["properties"]["ref"]["pattern"] == NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
@@ -1258,14 +1260,14 @@ class TestStreamRef:
         _db, _scope = db_and_scope
 
         with pytest.raises(ValidationError):
-            StreamRef(ref=XtcePath(bad_ref))
+            xtce.StreamRef(ref=XtcePath(bad_ref))
 
     def test_validate_semantics_rejects_unresolvable_reference(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        model = StreamRef(ref=XtcePath("/TestSystem/DoesNotExist"))
+        model = xtce.StreamRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
@@ -1278,10 +1280,10 @@ class TestStreamRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a stream type."""
-        model = StreamRef(ref=XtcePath("/TestSystem/TestParam1"))
+        model = xtce.StreamRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = validate_reference_semantics(model, db_and_scope)
 
         assert [error.message for error in report.errors] == [
-            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'CustomStream', 'FixedFrameStream' or 'VariableFrameStream' type was expected.",
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'CustomStream', 'FixedFrameStream' or 'VariableFrameStream' type was expected",
         ]

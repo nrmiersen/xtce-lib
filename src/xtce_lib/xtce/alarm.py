@@ -7,7 +7,7 @@ from .algorithm import InputAlgorithm
 from .common import AncillaryData
 from .condition import ContextMatch, MatchCriteria
 from .enum import ChangeBasis, ChangeSpan, ConcernLevel, RangeForm, TimeUnits
-from .range import FloatRange, MultiRangeType
+from .range import FloatRange, MultiRange
 
 
 class BaseAlarm(XtceBaseModel):
@@ -55,7 +55,7 @@ class ChangeAlarmRanges(AlarmRanges):
 
 
 class AlarmMultiRanges(BaseAlarm):
-    range: list[MultiRangeType] = Field(default_factory=list, min_length=1)
+    range: list[MultiRange] = Field(default_factory=list, min_length=1)
 
 
 class NumericAlarm(Alarm):
