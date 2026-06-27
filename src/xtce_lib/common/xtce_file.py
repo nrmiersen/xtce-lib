@@ -3,13 +3,14 @@
 import importlib.resources
 import re
 import tempfile
-from dataclasses import dataclass
 from importlib.abc import Traversable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from lxml import etree
 from xsdata.formats.dataclass.parsers import XmlParser
+
+from xtce_lib.common.validation import ValidationReport, XtceSchemaError
 
 from .xtce_version import XtceVersion
 
@@ -21,22 +22,6 @@ if TYPE_CHECKING:
     AnySpaceSystem = SpaceSystem11 | SpaceSystem12 | SpaceSystem13
 else:
     AnySpaceSystem = Any
-
-
-@dataclass
-class XtceValidationError:
-    """Represents a single XTCE schema validation error."""
-
-    line: int
-    message: str
-
-
-@dataclass
-class ValidationResult:
-    """The result of an XTCE file validation."""
-
-    is_valid: bool
-    errors: list[XtceValidationError]
 
 
 class XtceFile:
@@ -107,40 +92,40 @@ class XtceFile:
 
         raise ValueError(f"No namespace found in XML file: {file_path}")
 
-    def validate(self) -> ValidationResult:
+    def validate(self) -> ValidationReport[XtceSchemaError]:
         """Validate the XTCE file against its corresponding XSD schema.
 
         Returns:
-            ValidationResult: The result of the validation.
+            ValidationReport[XtceSchemaError]: The result of the validation.
 
         Raises:
             ValueError: If the XML file is invalid or if validation fails.
 
         """
         validator = self._get_validator()
+        report = ValidationReport[XtceSchemaError](title="XSD Validation")
 
         try:
             xml_doc = etree.parse(self._file_path)
             is_valid = validator.validate(xml_doc)
 
             if is_valid:
-                return ValidationResult(is_valid=True, errors=[])
+                return report
 
-            errors: list[XtceValidationError] = []
             for error in validator.error_log:
                 # Strip the namespace
                 clean_message = re.sub(r"\{(?:http|urn)[^}]+\}", "", error.message)
 
-                errors.append(
-                    XtceValidationError(line=error.line, message=clean_message)
+                report.add_error(
+                    XtceSchemaError(line=error.line, message=clean_message)
                 )
 
-            return ValidationResult(is_valid=False, errors=errors)
+            return report
 
         except etree.XMLSyntaxError as e:
             # Catastrophic syntax error
-            syntax_error = XtceValidationError(line=e.lineno or 0, message=str(e))
-            return ValidationResult(is_valid=False, errors=[syntax_error])
+            report.add_error(XtceSchemaError(line=e.lineno or 0, message=str(e)))
+            return report
 
     def parse_raw(self, strict: bool = False) -> None:
         """Parse the XML file into the version-specific xsdata dataclasses.

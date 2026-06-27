@@ -5,6 +5,7 @@ from functools import cached_property
 from pathlib import Path
 from typing import Iterable
 
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath
 from xtce_lib.common.xtce_registry import XtceRegistry
 from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
@@ -53,11 +54,12 @@ class XtceDatabase:
         self._index_space_system(self.root_system, XtcePath("/"), new_registry)
         self._registry = new_registry
 
-    def validate(self):
-        """Perform semantic validation of this SpaceSystem."""
-        # TODO define dataclasses for validation return types
-        # TODO iteratively validate all sub elements
-        pass
+    def validate(self) -> ValidationReport[XtceSemanticError]:
+        """Perform semantic validation of this database."""
+        report = ValidationReport[XtceSemanticError](title="Semantic Validation")
+        self.rebuild_registry()  # Ensure registry is up to date before validation
+        self.root_system.validate_semantics(report, self.registry, XtcePath("/"))
+        return report
 
     def to_file(self, file_path: str | Path) -> XtceFile:
         """Write this SpaceSystem to an XTCE file."""

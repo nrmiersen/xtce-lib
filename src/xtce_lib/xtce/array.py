@@ -45,7 +45,7 @@ class Dimension(XtceBaseModel):
         return None
 
     @model_validator(mode="after")
-    def validate_indices(self) -> Dimension:
+    def validate_indices(self) -> "Dimension":
         """Validate that the start index is less than or equal to the end index."""
         start_index = self._resolve_index(self.start_index)
         end_index = self._resolve_index(self.end_index)

@@ -4,6 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from xtce_lib import XtceDatabase, XtcePath, XtceVersion, xtce
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.exceptions import XtceUnsupportedError
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 from xtce_lib.xtce._pattern import (
@@ -67,6 +68,17 @@ def db_and_scope() -> tuple[XtceDatabase, XtcePath]:
     db = XtceDatabase(root_system=space_system)
     scope = XtcePath("/TestSystem")
     return db, scope
+
+
+def validate_reference_semantics(
+    model: object,
+    db_and_scope: tuple[XtceDatabase, XtcePath],
+) -> ValidationReport[XtceSemanticError]:
+    """Run semantic validation and return the collected report."""
+    db, scope = db_and_scope
+    report = ValidationReport[XtceSemanticError](title="Semantic Validation")
+    model.validate_semantics(report, db.registry, scope)  # type: ignore[attr-defined]
+    return report
 
 
 class TestParameterRef:
@@ -194,7 +206,10 @@ class TestParameterRef:
         db, scope = db_and_scope
         model = ParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
-        assert model.validate_semantics(db.registry, scope) is None
+        report = ValidationReport[XtceSemanticError](title="Semantic Validation")
+        model.validate_semantics(report, db.registry, scope)
+
+        assert report.is_valid
 
     @pytest.mark.parametrize(
         "bad_ref",
@@ -209,36 +224,40 @@ class TestParameterRef:
         bad_ref: str,
     ) -> None:
         """validate_semantics should reject array and aggregate references."""
-        db, scope = db_and_scope
         model = ParameterRef(ref=XtcePath(bad_ref))
 
-        with pytest.raises(
-            ValueError,
-            match="contains an array index or aggregate member",
-        ):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            f"reference '{bad_ref}' contains an array index or aggregate member, but a standalone ParameterRef must reference a parameter only.",
+            f"reference '{bad_ref}' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_unresolvable_reference(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        db, scope = db_and_scope
         model = ParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
-        with pytest.raises(ValueError, match="does not resolve to a valid object"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/DoesNotExist' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_non_parameter_target(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Parameter."""
-        db, scope = db_and_scope
         model = ParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
 
-        with pytest.raises(ValueError, match="but a 'Parameter' type was expected"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected.",
+        ]
 
 
 class TestOutputParameterRef:
@@ -400,7 +419,10 @@ class TestOutputParameterRef:
         db, scope = db_and_scope
         model = OutputParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
-        assert model.validate_semantics(db.registry, scope) is None
+        report = ValidationReport[XtceSemanticError](title="Semantic Validation")
+        model.validate_semantics(report, db.registry, scope)
+
+        assert report.is_valid
 
     @pytest.mark.parametrize(
         "bad_ref",
@@ -415,36 +437,40 @@ class TestOutputParameterRef:
         bad_ref: str,
     ) -> None:
         """validate_semantics should reject array and aggregate references."""
-        db, scope = db_and_scope
         model = OutputParameterRef(ref=XtcePath(bad_ref))
 
-        with pytest.raises(
-            ValueError,
-            match="contains an array index or aggregate member",
-        ):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            f"reference '{bad_ref}' contains an array index or aggregate member, but an OutputParameterRef must reference a parameter only.",
+            f"reference '{bad_ref}' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_unresolvable_reference(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        db, scope = db_and_scope
         model = OutputParameterRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
-        with pytest.raises(ValueError, match="does not resolve to a valid object"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/DoesNotExist' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_non_parameter_target(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Parameter."""
-        db, scope = db_and_scope
         model = OutputParameterRef(ref=XtcePath("/TestSystem/IntParamType1"))
 
-        with pytest.raises(ValueError, match="but a 'Parameter' type was expected"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/IntParamType1' resolved to a 'IntegerParameter' type, but a 'Parameter' type was expected.",
+        ]
 
 
 class TestParameterInstanceRef:
@@ -905,7 +931,10 @@ class TestContainerRef:
         db, scope = db_and_scope
         model = ContainerRef(ref=XtcePath("/TestSystem/TestContainer"))
 
-        assert model.validate_semantics(db.registry, scope) is None
+        report = ValidationReport[XtceSemanticError](title="Semantic Validation")
+        model.validate_semantics(report, db.registry, scope)
+
+        assert report.is_valid
 
     @pytest.mark.parametrize(
         "bad_ref",
@@ -930,25 +959,26 @@ class TestContainerRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        db, scope = db_and_scope
         model = ContainerRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
-        with pytest.raises(ValueError, match="does not resolve to a valid object"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/DoesNotExist' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_non_container_target(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a SequenceContainer."""
-        db, scope = db_and_scope
         model = ContainerRef(ref=XtcePath("/TestSystem/TestParam1"))
 
-        with pytest.raises(
-            ValueError,
-            match="but a 'SequenceContainer' type was expected",
-        ):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'SequenceContainer' type was expected.",
+        ]
 
 
 class TestServiceRef:
@@ -1082,22 +1112,26 @@ class TestServiceRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        db, scope = db_and_scope
         model = ServiceRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
-        with pytest.raises(ValueError, match="does not resolve to a valid object"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/DoesNotExist' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_non_service_target(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a Service."""
-        db, scope = db_and_scope
         model = ServiceRef(ref=XtcePath("/TestSystem/TestParam1"))
 
-        with pytest.raises(ValueError, match="but a 'Service' type was expected"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'Service' type was expected.",
+        ]
 
 
 class TestStreamRef:
@@ -1231,22 +1265,23 @@ class TestStreamRef:
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the reference does not resolve."""
-        db, scope = db_and_scope
         model = StreamRef(ref=XtcePath("/TestSystem/DoesNotExist"))
 
-        with pytest.raises(ValueError, match="does not resolve to a valid object"):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/DoesNotExist' does not resolve to a valid object from scope '/TestSystem'",
+        ]
 
     def test_validate_semantics_rejects_non_stream_target(
         self,
         db_and_scope: tuple[XtceDatabase, XtcePath],
     ) -> None:
         """validate_semantics should fail when the target is not a stream type."""
-        db, scope = db_and_scope
         model = StreamRef(ref=XtcePath("/TestSystem/TestParam1"))
 
-        with pytest.raises(
-            ValueError,
-            match="but a 'CustomStream', 'FixedFrameStream' or 'VariableFrameStream' type was expected",
-        ):
-            model.validate_semantics(db.registry, scope)
+        report = validate_reference_semantics(model, db_and_scope)
+
+        assert [error.message for error in report.errors] == [
+            "reference '/TestSystem/TestParam1' resolved to a 'Parameter' type, but a 'CustomStream', 'FixedFrameStream' or 'VariableFrameStream' type was expected.",
+        ]

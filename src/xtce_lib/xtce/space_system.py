@@ -1,11 +1,15 @@
 """Top-level classes relevant to the SpaceSystem."""
 
+from __future__ import annotations
+
 import dataclasses
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from pydantic import Field
 from typing_extensions import assert_never
 
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
+from xtce_lib.common.xtce_path import XtcePath
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
@@ -16,6 +20,9 @@ from .common import Alias, AncillaryData, NameDescriptionBase
 from .enum import SystemType, ValidationStatus
 from .reference import ContainerRef
 from .telemetry import TelemetryMetadata
+
+if TYPE_CHECKING:
+    from xtce_lib.common.xtce_registry import XtceRegistry
 
 
 class Header(XtceBaseModel):
@@ -177,6 +184,15 @@ class SpaceSystem(NameDescriptionBase):
 
     base: str | None = Field(default=None)
     """Applicable since: XTCE 1.3."""
+
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
+        """Validate this object's semantics."""
+        # TODO call all child validate_semantics methods
 
     @classmethod
     def _from_v1_1(cls: type[Self], space_system: xtce_1_1.SpaceSystem) -> Self:

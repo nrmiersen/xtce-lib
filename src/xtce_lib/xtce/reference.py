@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Self, assert_never
 
 from pydantic import AfterValidator, Field
 
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath, require_regex
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
@@ -39,7 +40,12 @@ class ParameterRef(XtceBaseModel):
 
     """
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -49,9 +55,13 @@ class ParameterRef(XtceBaseModel):
 
         """
         if self.ref.contains_array or self.ref.contains_aggregate:
-            raise ValueError(
-                f"reference '{self.ref}' contains an array index or aggregate member, "
-                f"but a standalone ParameterRef must reference a parameter only."
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' contains an array index or "
+                    "aggregate member, but a standalone ParameterRef must reference a "
+                    "parameter only.",
+                )
             )
 
         from .parameter import Parameter
@@ -59,16 +69,22 @@ class ParameterRef(XtceBaseModel):
         try:
             result = registry.resolve(self.ref, scope)
             if not isinstance(result.target, Parameter):
-                raise ValueError(
-                    f"reference '{self.ref}' resolved to a "
-                    f"'{type(result.target).__name__}' type, "
-                    f"but a 'Parameter' type was expected."
+                report.add_error(
+                    XtceSemanticError(
+                        scope=scope,
+                        message=f"reference '{self.ref}' resolved to a "
+                        f"'{type(result.target).__name__}' type, "
+                        f"but a 'Parameter' type was expected.",
+                    )
                 )
 
         except KeyError:
-            raise ValueError(
-                f"reference '{self.ref}' does not resolve to a valid object "
-                f"from scope '{scope}'"
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' does not resolve to a valid object "
+                    f"from scope '{scope}'",
+                )
             )
 
     @classmethod
@@ -140,7 +156,12 @@ class OutputParameterRef(ParameterRef):
     output_name: str | None = Field(default=None)
     """An optional 'friendly' name for the output parameter."""
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -151,9 +172,13 @@ class OutputParameterRef(ParameterRef):
         """
         # TODO make sure this isn't supposed to be an array or aggregate
         if self.ref.contains_array or self.ref.contains_aggregate:
-            raise ValueError(
-                f"reference '{self.ref}' contains an array index or aggregate member, "
-                f"but an OutputParameterRef must reference a parameter only."
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' contains an array index or "
+                    "aggregate member, but an OutputParameterRef must reference a "
+                    "parameter only.",
+                )
             )
 
         from .parameter import Parameter
@@ -161,16 +186,22 @@ class OutputParameterRef(ParameterRef):
         try:
             result = registry.resolve(self.ref, scope)
             if not isinstance(result.target, Parameter):
-                raise ValueError(
-                    f"reference '{self.ref}' resolved to a "
-                    f"'{type(result.target).__name__}' type, "
-                    f"but a 'Parameter' type was expected."
+                report.add_error(
+                    XtceSemanticError(
+                        scope=scope,
+                        message=f"reference '{self.ref}' resolved to a "
+                        f"'{type(result.target).__name__}' type, "
+                        f"but a 'Parameter' type was expected.",
+                    )
                 )
 
         except KeyError:
-            raise ValueError(
-                f"reference '{self.ref}' does not resolve to a valid object "
-                f"from scope '{scope}'"
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' does not resolve to a valid object "
+                    f"from scope '{scope}'",
+                )
             )
 
     @classmethod
@@ -565,7 +596,12 @@ class ContainerRef(XtceBaseModel):
     )
     """A Unix-like path to a sequence container."""
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -575,9 +611,13 @@ class ContainerRef(XtceBaseModel):
 
         """
         if self.ref.contains_array or self.ref.contains_aggregate:
-            raise ValueError(
-                f"reference '{self.ref}' contains an array index or aggregate member, "
-                f"but a ContainerRef must reference a sequence container only."
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' contains an array index or "
+                    "aggregate member, but a ContainerRef must reference a sequence "
+                    "container only.",
+                )
             )
 
         from .container import SequenceContainer
@@ -585,16 +625,22 @@ class ContainerRef(XtceBaseModel):
         try:
             result = registry.resolve(self.ref, scope)
             if not isinstance(result.target, SequenceContainer):
-                raise ValueError(
-                    f"reference '{self.ref}' resolved to a "
-                    f"'{type(result.target).__name__}' type, "
-                    f"but a 'SequenceContainer' type was expected."
+                report.add_error(
+                    XtceSemanticError(
+                        scope=scope,
+                        message=f"reference '{self.ref}' resolved to a "
+                        f"'{type(result.target).__name__}' type, "
+                        f"but a 'SequenceContainer' type was expected.",
+                    )
                 )
 
         except KeyError:
-            raise ValueError(
-                f"reference '{self.ref}' does not resolve to a valid object "
-                f"from scope '{scope}'"
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' does not resolve to a valid "
+                    f"object from scope '{scope}'",
+                )
             )
 
     @classmethod
@@ -674,7 +720,12 @@ class ServiceRef(XtceBaseModel):
     )
     """A Unix-like path to a service."""
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -694,16 +745,22 @@ class ServiceRef(XtceBaseModel):
         try:
             result = registry.resolve(self.ref, scope)
             if not isinstance(result.target, Service):
-                raise ValueError(
-                    f"reference '{self.ref}' resolved to a "
-                    f"'{type(result.target).__name__}' type, "
-                    f"but a 'Service' type was expected."
+                report.add_error(
+                    XtceSemanticError(
+                        scope=scope,
+                        message=f"reference '{self.ref}' resolved to a "
+                        f"'{type(result.target).__name__}' type, "
+                        f"but a 'Service' type was expected.",
+                    )
                 )
 
         except KeyError:
-            raise ValueError(
-                f"reference '{self.ref}' does not resolve to a valid object "
-                f"from scope '{scope}'"
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' does not resolve to a valid "
+                    f"object from scope '{scope}'",
+                )
             )
 
     @classmethod
@@ -779,7 +836,12 @@ class StreamRef(XtceBaseModel):
     )
     """A Unix-like path to a stream."""
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -802,17 +864,23 @@ class StreamRef(XtceBaseModel):
             if not isinstance(
                 result.target, (CustomStream, FixedFrameStream, VariableFrameStream)
             ):
-                raise ValueError(
-                    f"reference '{self.ref}' resolved to a "
-                    f"'{type(result.target).__name__}' type, "
-                    f"but a 'CustomStream', 'FixedFrameStream' or "
-                    f"'VariableFrameStream' type was expected."
+                report.add_error(
+                    XtceSemanticError(
+                        scope=scope,
+                        message=f"reference '{self.ref}' resolved to a "
+                        f"'{type(result.target).__name__}' type, "
+                        f"but a 'CustomStream', 'FixedFrameStream' or "
+                        f"'VariableFrameStream' type was expected.",
+                    )
                 )
 
         except KeyError:
-            raise ValueError(
-                f"reference '{self.ref}' does not resolve to a valid object "
-                f"from scope '{scope}'"
+            report.add_error(
+                XtceSemanticError(
+                    scope=scope,
+                    message=f"reference '{self.ref}' does not resolve to a valid "
+                    f"object from scope '{scope}'",
+                )
             )
 
     @classmethod
