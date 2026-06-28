@@ -4,7 +4,7 @@ from pydantic import Field
 
 from ._base import XtceBaseModel
 from .calibrator import MathOperation
-from .common import Constant, NameDescriptionBase
+from .common import NameDescriptionBase
 from .enum import BitOrder, ChecksumTypeName, ParityForm, ReferencePoint
 from .reference import (
     ArgumentInstanceRef,
@@ -12,6 +12,13 @@ from .reference import (
     OutputParameterRef,
 )
 from .trigger import TriggerSet
+
+
+class Constant(XtceBaseModel):
+    constant_name: str = Field(...)
+    value: str = Field(
+        ...
+    )  # TODO figure out how this is represented in xsd, should I enforce some types here?
 
 
 class AlgorithmText(XtceBaseModel):

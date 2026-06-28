@@ -191,7 +191,7 @@ class TestParameterRef:
 
         assert schema["properties"]["ref"]["pattern"] == EXPD_NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
-            "/SimpleSat/Bus/BatteryVoltage",
+            "/ConkSat/Bus/BatteryVoltage",
             "../Bus/BatteryVoltage",
             "../Payload/Camera/ExposureTime",
         ]
@@ -404,7 +404,7 @@ class TestOutputParameterRef:
 
         assert schema["properties"]["ref"]["pattern"] == EXPD_NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
-            "/SimpleSat/Bus/BatteryVoltage",
+            "/ConkSat/Bus/BatteryVoltage",
             "../Bus/BatteryVoltage",
             "../Payload/Camera/ExposureTime",
         ]
@@ -1080,7 +1080,7 @@ class TestServiceRef:
 
         assert schema["properties"]["ref"]["pattern"] == NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
-            "/SimpleSat/PowerService",
+            "/ConkSat/PowerService",
             "../ThermalService",
             "CommandService",
         ]
@@ -1233,7 +1233,7 @@ class TestStreamRef:
 
         assert schema["properties"]["ref"]["pattern"] == NAME_REF_W_PATH
         assert schema["properties"]["ref"]["examples"] == [
-            "/SimpleSat/PowerStream",
+            "/ConkSat/PowerStream",
             "../ThermalStream",
             "CommandStream",
         ]

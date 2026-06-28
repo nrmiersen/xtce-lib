@@ -240,6 +240,7 @@ class BinaryDataEncoding(DataEncoding):
     to_binary_transform_algorithm: InputAlgorithm | None = Field(default=None)
     """Used to convert to binary data from an application data type."""
 
+
 class ArgumentBinaryDataEncoding(DataEncoding):
     size_in_bits: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = (
         Field(default=None, ge=1)

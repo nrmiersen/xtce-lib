@@ -1,28 +1,17 @@
 """Common base models."""
 
-import re
+from abc import ABC
+from typing import Annotated, Any, Self, assert_never
 
-from pydantic import Field, field_validator
+from pydantic import AfterValidator, Field
 
-from xtce_lib.common.xtce_path import XtcePath
+from xtce_lib.common.xtce_path import XtcePath, require_regex
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy
+from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
-
-NAME_REFERENCE_NO_PATH_PATTERN = r"[^./:\[\] ]+"
-_NAME_REFERENCE_NO_PATH_REGEX = re.compile(NAME_REFERENCE_NO_PATH_PATTERN)
-EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN = (
-    r"([^.\[\]:/ \t]+(\[[0-9]+\])*(\.[^.\[\]:/ \t]+(\[[0-9]+\])*)*)"
-)
-_EXPANDED_NAME_REFERENCE_NO_PATH_REGEX = re.compile(
-    EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN
-)
-EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN = (
-    r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
-    r"([^.\[\]:/ \t]+(\[[0-9]+\])*(\.[^.\[\]:/ \t]+(\[[0-9]+\])*)*)*"
-)
-_EXPANDED_NAME_REFERENCE_WITH_PATH_REGEX = re.compile(
-    EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN
-)
+from ._pattern import EXPD_NAME_REF_NO_PATH, EXPD_NAME_REF_W_PATH, NAME_REF_NO_PATH
 
 
 class Alias(XtceBaseModel):
@@ -32,13 +21,13 @@ class Alias(XtceBaseModel):
     by various ground software applications; all of these are aliases. Some ground
     system processing equipment has some severe naming restrictions on parameters (e.g.,
     names must be less than 12 characters, single case or integral id's only); their
-    aliases provide a means of capturing each name in a "nameSpace". Note: the name is
+    aliases provide a means of capturing each name in a "namespace". Note: the name is
     not reference-able (it cannot be used in a name reference substituting for the name
     of the item of interest).
 
     """
 
-    name_space: str = Field(..., examples=["Bus", "Payload", "Ground"])
+    namespace: str = Field(..., examples=["Bus", "Payload", "Ground"])
     """Aliases should be grouped together in a "namespace" so that they can be switched
     in and out of data extractions.
 
@@ -58,14 +47,75 @@ class Alias(XtceBaseModel):
 
     """
 
+    @classmethod
+    def _from_v1_1(cls: type[Self], alias: xtce_1_1.AliasSetType.Alias) -> Self:
+        return cls(namespace=alias.name_space, alias=alias.alias)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], alias: xtce_1_2.AliasType) -> Self:
+        return cls(namespace=alias.name_space, alias=alias.alias)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], alias: xtce_1_3.AliasType) -> Self:
+        return cls(namespace=alias.name_space, alias=alias.alias)
+
+    @classmethod
+    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to create an Alias from an xsdata-generated AliasType object
+        of any version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return cls._from_v1_1(raw_obj)
+            case XtceVersion.V1_2:
+                return cls._from_v1_2(raw_obj)
+            case XtceVersion.V1_3:
+                return cls._from_v1_3(raw_obj)
+            case _:
+                assert_never(version)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.AliasSetType.Alias:
+        return xtce_1_1.AliasSetType.Alias(name_space=self.namespace, alias=self.alias)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.AliasType:
+        return xtce_1_2.AliasType(name_space=self.namespace, alias=self.alias)
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.AliasType:
+        return xtce_1_3.AliasType(name_space=self.namespace, alias=self.alias)
+
+    def to_xsdata(
+        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.AliasSetType.Alias | xtce_1_2.AliasType | xtce_1_3.AliasType:
+        """Convert this Alias to an xsdata-generated AliasType object of the specified
+        version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return self._to_v1_1(policy)
+            case XtceVersion.V1_2:
+                return self._to_v1_2(policy)
+            case XtceVersion.V1_3:
+                return self._to_v1_3(policy)
+            case _:
+                assert_never(version)
+
 
 class AncillaryData(XtceBaseModel):
-    """Use for any other data associated with a named item.
+    """Used for any other data associated with a named item.
 
     May be used to include administrative data (e.g., version, CM or tags) or
     potentially any MIME type. Data may be included or given as an href.
 
     """
+
+    name: str = Field(..., examples=["ContainerSize", "SizeRangeDict", "SizeRangeXml"])
+    """The identifier for this ancillary data."""
 
     value: str = Field(
         default="",
@@ -75,10 +125,7 @@ class AncillaryData(XtceBaseModel):
             "<SizeRange><MinSize>1</MinSize><MaxSize>10</MaxSize></SizeRange>",
         ],
     )
-    """The value of this Ancillary Data characteristic, feature, or data."""
-
-    name: str = Field(..., examples=["ContainerSize", "SizeRangeDict", "SizeRangeXml"])
-    """Identifier for this Ancillary Data characteristic, feature, or data."""
+    """The value to store as ancillary data."""
 
     mime_type: str = Field(
         default="text/plain",
@@ -94,13 +141,96 @@ class AncillaryData(XtceBaseModel):
             "ftp://example.com/data",
         ],
     )
-    """Optional Uniform Resource Identifier for this characteristic, feature, or
-    data.
-    """
+    """Optional Uniform Resource Identifier for this ancillary data."""
+
+    @classmethod
+    def _from_v1_1(
+        cls: type[Self], alias: xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
+    ) -> Self:
+        return cls(
+            name=alias.name,
+            value=alias.value,
+            mime_type=alias.mime_type,
+            href=alias.href,
+        )
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], alias: xtce_1_2.AncillaryDataType) -> Self:
+        return cls(
+            name=alias.name,
+            value=alias.value,
+            mime_type=alias.mime_type,
+            href=alias.href,
+        )
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], alias: xtce_1_3.AncillaryDataType) -> Self:
+        return cls(
+            name=alias.name,
+            value=alias.value,
+            mime_type=alias.mime_type,
+            href=alias.href,
+        )
+
+    @classmethod
+    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to create an AncillaryData from an xsdata-generated
+        AncillaryDataType object of any version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return cls._from_v1_1(raw_obj)
+            case XtceVersion.V1_2:
+                return cls._from_v1_2(raw_obj)
+            case XtceVersion.V1_3:
+                return cls._from_v1_3(raw_obj)
+            case _:
+                assert_never(version)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData:
+        return xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData(
+            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
+        )
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.AncillaryDataType:
+        return xtce_1_2.AncillaryDataType(
+            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
+        )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.AncillaryDataType:
+        return xtce_1_3.AncillaryDataType(
+            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
+        )
+
+    def to_xsdata(
+        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> (
+        xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
+        | xtce_1_2.AncillaryDataType
+        | xtce_1_3.AncillaryDataType
+    ):
+        """Convert this AncillaryData to an xsdata-generated AncillaryDataType object of
+        the specified version.
+        """
+        match version:
+            case XtceVersion.V1_1:
+                return self._to_v1_1(policy)
+            case XtceVersion.V1_2:
+                return self._to_v1_2(policy)
+            case XtceVersion.V1_3:
+                return self._to_v1_3(policy)
+            case _:
+                assert_never(version)
 
 
-class DescriptionBase(XtceBaseModel):
-    """Defines an abstract schema type used as basis for NameDescriptionBase and
+class DescriptionBase(XtceBaseModel, ABC):
+    """An abstract schema type used as basis for NameDescriptionBase and
     OptionalNameDescriptionBase.
     """
 
@@ -113,7 +243,7 @@ class DescriptionBase(XtceBaseModel):
             "An unsigned 8-bit integer",
         ],
     )
-    """Optional short description to be used for explanation of this item."""
+    """Optional short description to be used for explanation of this element."""
 
     long_description: str | None = Field(
         default=None,
@@ -134,34 +264,33 @@ class DescriptionBase(XtceBaseModel):
         ],
     )
     """Optional long form description to be used for explanatory descriptions of this
-    item and may include HTML markup using CDATA.
+    element and may include HTML markup using CDATA.
 
-    Long Descriptions are of unbounded length.
+    Long descriptions are of unbounded length.
 
     """
 
     aliases: list[Alias] = Field(default_factory=list, min_length=1)
-    """Used to contain an alias (alternate) name or ID for this item."""
+    """Used to contain alternate names or IDs for the element."""
 
     ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
-    """Use for any non-standard data associated with this named item."""
+    """Used to contain any ancillary data associated with the element."""
 
 
-class NameDescriptionBase(DescriptionBase):
-    """Defines a base schema type definition used by many other schema types throughout
-    schema.
-    """
+class NameDescriptionBase(DescriptionBase, ABC):
+    """A base schema used by many other schema types throughout the schema."""
 
     name: str = Field(
         ...,
         pattern=r"^[^./:\[\] ]+$",
         examples=["BatteryVoltage", "setSpeed", "uint8"],
     )
-    """The name of this defined item."""
+    """The name of this element."""
 
-class OptionalNameDescriptionBase(DescriptionBase):
-    """The type definition used by most elements that have an optional name with
-    optional descriptions.
+
+class OptionalNameDescriptionBase(DescriptionBase, ABC):
+    """A base schema used by most elements that have an optional name with optional
+    descriptions.
     """
 
     name: str | None = Field(
@@ -169,102 +298,84 @@ class OptionalNameDescriptionBase(DescriptionBase):
         pattern=r"^[^.\[\]:/ \t]+$",
         examples=["SpeedCommandVerifier", "LogMessageSet"],
     )
-    """The optional name of this defined item."""
+    """The optional name of this element."""
 
-class NameReferenceNoPath(XtceBaseModel):
-    """A reference that can not include a path to a named object where array and
+
+class NameReferenceNoPath(XtceBaseModel, ABC):
+    """A reference that can not include a path to a named element where array and
     aggregate are not possible.
     """
 
     name: str = Field(
         ...,
-        json_schema_extra={"pattern": NAME_REFERENCE_NO_PATH_PATTERN},
+        pattern=NAME_REF_NO_PATH,
         examples=["Voltage"],
     )
-    """A reference to a named item that can not include a path to the item.
+    """A reference to a named element that can not include a path to the element.
 
     Can not include array or aggregate references.
 
     """
 
-    # TODO validate no array or aggregate
 
-    @field_validator("name", mode="after")
-    @classmethod
-    def _validate_name_pattern(cls, value: str) -> str:
-        if not _NAME_REFERENCE_NO_PATH_REGEX.fullmatch(value):
-            raise ValueError("name must be a valid XTCE name reference")
-        return value
-
-
-class ExpandedNameReferenceNoPath(XtceBaseModel):
-    """A reference that can not include a path to a named object where array and
+class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
+    """A reference that can not include a path to a named element where array and
     aggregate are possible.
     """
 
     name: str = Field(
         ...,
-        json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_NO_PATH_PATTERN},
+        pattern=EXPD_NAME_REF_NO_PATH,
         examples=["Voltage[12].raw[3]"],
     )
-    """A reference to a named item that can not include a path to the item.
+    """A reference to a named element that can not include a path to the element.
 
     Can include array or aggregate references.
 
     """
 
-    @field_validator("name", mode="after")
-    @classmethod
-    def _validate_name_pattern(cls, value: str) -> str:
-        if not _EXPANDED_NAME_REFERENCE_NO_PATH_REGEX.fullmatch(value):
-            raise ValueError("name must be a valid XTCE name reference")
-        return value
 
-
-class NameReferenceWithPath(XtceBaseModel):
-    """A reference that can include a path to a named object where array and aggregate
+class NameReferenceWithPath(XtceBaseModel, ABC):
+    """A reference that can include a path to a named element where array and aggregate
     are not possible.
     """
 
-    name: XtcePath = Field(
-        ...,
-        examples=["SimpleSat/Bus/EPDS/BatteryOne/Voltage"],
+    name: Annotated[XtcePath, AfterValidator(require_regex(EXPD_NAME_REF_W_PATH))] = (
+        Field(
+            ...,
+            examples=[
+                "/ConkSat/Bus/BatteryVoltage",
+                "../Bus/BatteryVoltage",
+                "../Payload/Camera/ExposureTime",
+            ],
+            json_schema_extra={"pattern": EXPD_NAME_REF_W_PATH},
+        )
     )
-    """A reference to a named item as a Unix style path to the item.
+    """A Unix-like path to a parameter.
 
     Can not include array or aggregate references.
 
     """
 
-    # TODO validate no array or aggregate
 
-
-class ExpandedNameReferenceWithPath(XtceBaseModel):
-    """A reference that can include a path to a named object where array and aggregate
+class ExpandedNameReferenceWithPath(XtceBaseModel, ABC):
+    """A reference that can include a path to a named element where array and aggregate
     are possible.
     """
 
-    name: str = Field(
-        ...,
-        json_schema_extra={"pattern": EXPANDED_NAME_REFERENCE_WITH_PATH_PATTERN},
-        examples=["SimpleSat/Bus/Voltage[12].raw[3]"],
+    name: Annotated[XtcePath, AfterValidator(require_regex(EXPD_NAME_REF_W_PATH))] = (
+        Field(
+            ...,
+            examples=[
+                "ConkSat/Bus/Battery.voltage",
+                "ConkSat/Bus/Battery[2].voltage",
+                "ConkSat/Bus/BatteryVoltage[3]",
+            ],
+            json_schema_extra={"pattern": EXPD_NAME_REF_W_PATH},
+        )
     )
-    """A reference to a named item as a Unix style path to the item.
+    """A reference to a named element as a Unix style path to the element.
 
     Can include array and aggregate references.
 
     """
-
-    @field_validator("name", mode="after")
-    @classmethod
-    def _validate_name_pattern(cls, value: str) -> str:
-        if not _EXPANDED_NAME_REFERENCE_WITH_PATH_REGEX.fullmatch(value):
-            raise ValueError("name must be a valid XTCE name reference path")
-        return value
-
-
-class Constant(XtceBaseModel):
-    constant_name: str = Field(...)
-    value: str = Field(
-        ...
-    )  # TODO figure out how this is represented in xsd, should I enforce some types here?

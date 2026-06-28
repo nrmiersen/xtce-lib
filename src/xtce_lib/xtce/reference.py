@@ -26,7 +26,7 @@ class ParameterRef(XtceBaseModel):
         Field(
             ...,
             examples=[
-                "/SimpleSat/Bus/BatteryVoltage",
+                "/ConkSat/Bus/BatteryVoltage",
                 "../Bus/BatteryVoltage",
                 "../Payload/Camera/ExposureTime",
             ],
@@ -712,7 +712,7 @@ class ServiceRef(XtceBaseModel):
     ref: Annotated[XtcePath, AfterValidator(require_regex(NAME_REF_W_PATH))] = Field(
         ...,
         examples=[
-            "/SimpleSat/PowerService",
+            "/ConkSat/PowerService",
             "../ThermalService",
             "CommandService",
         ],
@@ -828,7 +828,7 @@ class StreamRef(XtceBaseModel):
     ref: Annotated[XtcePath, AfterValidator(require_regex(NAME_REF_W_PATH))] = Field(
         ...,
         examples=[
-            "/SimpleSat/PowerStream",
+            "/ConkSat/PowerStream",
             "../ThermalStream",
             "CommandStream",
         ],
