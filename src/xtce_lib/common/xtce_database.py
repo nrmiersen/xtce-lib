@@ -3,17 +3,19 @@
 import itertools
 from functools import cached_property
 from pathlib import Path
-from typing import Iterable
+from typing import TYPE_CHECKING, Iterable
 
-from xtce_lib.common.validation import ValidationReport, XtceSemanticError
-from xtce_lib.common.xtce_path import XtcePath
-from xtce_lib.common.xtce_registry import XtceRegistry
 from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
 from xtce_lib.xtce.command import MetaCommandRef
 from xtce_lib.xtce.reference import ParameterRef
 from xtce_lib.xtce.space_system import SpaceSystem
 
-from .xtce_file import XtceFile
+from .validation import ValidationReport, XtceSemanticError
+from .xtce_path import XtcePath
+from .xtce_registry import XtceRegistry
+
+if TYPE_CHECKING:
+    from .xtce_file import XtceFile
 
 
 class XtceDatabase:
@@ -61,12 +63,14 @@ class XtceDatabase:
         self.root_system.validate_semantics(report, self.registry, XtcePath("/"))
         return report
 
-    def to_file(self, file_path: str | Path) -> XtceFile:
+    def to_file(self, file_path: str | Path) -> "XtceFile":
         """Write this SpaceSystem to an XTCE file."""
         file_path = Path(file_path)
         # TODO maybe use Pydantic validate_call
         # TODO probably want to allow passthru arguments for the file writing (pretty print, encoding, etc.)
         # TODO write to file
+        from .xtce_file import XtceFile
+
         return XtceFile(file_path)
 
     def _index_space_system(

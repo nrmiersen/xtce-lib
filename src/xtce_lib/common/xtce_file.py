@@ -10,14 +10,17 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from lxml import etree
 from xsdata.formats.dataclass.parsers import XmlParser
 
-from xtce_lib.common.validation import ValidationReport, XtceSchemaError
+from xtce_lib.xtce.space_system import SpaceSystem
 
+from .validation import ValidationReport, XtceSchemaError
 from .xtce_version import XtceVersion
 
 if TYPE_CHECKING:
     from xtce_lib.generated.xtce_1_1.models import SpaceSystem as SpaceSystem11
     from xtce_lib.generated.xtce_1_2.models import SpaceSystem as SpaceSystem12
     from xtce_lib.generated.xtce_1_3.models import SpaceSystem as SpaceSystem13
+
+    from .xtce_database import XtceDatabase
 
     AnySpaceSystem = SpaceSystem11 | SpaceSystem12 | SpaceSystem13
 else:
@@ -57,6 +60,16 @@ class XtceFile:
     def version(self) -> str:
         """Get the XTCE version of the file."""
         return self._version.value.version
+
+    @property
+    def database(self) -> "XtceDatabase":
+        """Get the XTCE database object for this file."""
+        if self._raw_model is None:
+            self.parse_raw()
+
+        from .xtce_database import XtceDatabase
+
+        return XtceDatabase(SpaceSystem.from_xsdata(self._raw_model, self._version))
 
     @property
     def raw_model(self) -> Any:
