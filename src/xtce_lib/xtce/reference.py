@@ -293,7 +293,12 @@ class ParameterInstanceRef(ParameterRef):
 
     """
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:

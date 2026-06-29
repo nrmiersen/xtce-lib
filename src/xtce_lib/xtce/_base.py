@@ -69,6 +69,25 @@ class XtceBaseModel(BaseModel, ABC):
         )
         self._handle_downgrade(message, policy)
 
+    def _enforce_restricted_type(
+        self,
+        field_name: str,
+        current_type: Any,
+        allowed_types: tuple[type[Any], ...],
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+    ) -> None:
+        """Enforce when a field's type is not allowed in the target version."""
+        if current_type in allowed_types:
+            return
+
+        message = (
+            f"Incompatible Type Warning: The attribute '{field_name}' has type "
+            f"'{current_type}' which is not allowed in XTCE version "
+            f"{target_version.value} and will be lost during export."
+        )
+        self._handle_downgrade(message, policy)
+
     def _enforce_restricted_value(
         self,
         field_name: str,

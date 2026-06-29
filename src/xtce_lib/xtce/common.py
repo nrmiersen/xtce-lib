@@ -276,7 +276,6 @@ class DescriptionBase(XtceBaseModel, ABC):
     ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
     """Used to contain any ancillary data associated with the element."""
 
-
 class NameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by many other schema types throughout the schema."""
 
@@ -286,7 +285,6 @@ class NameDescriptionBase(DescriptionBase, ABC):
         examples=["BatteryVoltage", "setSpeed", "uint8"],
     )
     """The name of this element."""
-
 
 class OptionalNameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by most elements that have an optional name with optional
@@ -299,7 +297,6 @@ class OptionalNameDescriptionBase(DescriptionBase, ABC):
         examples=["SpeedCommandVerifier", "LogMessageSet"],
     )
     """The optional name of this element."""
-
 
 class NameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and
@@ -317,7 +314,6 @@ class NameReferenceNoPath(XtceBaseModel, ABC):
 
     """
 
-
 class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and
     aggregate are possible.
@@ -333,7 +329,6 @@ class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
     Can include array or aggregate references.
 
     """
-
 
 class NameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate
@@ -356,7 +351,6 @@ class NameReferenceWithPath(XtceBaseModel, ABC):
     Can not include array or aggregate references.
 
     """
-
 
 class ExpandedNameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate

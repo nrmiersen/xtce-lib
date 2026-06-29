@@ -33,7 +33,7 @@ class IntegerRange(XtceBaseModel):
     """
 
     @model_validator(mode="after")
-    def validate_range(self) -> "IntegerRange":
+    def validate_range(self) -> Self:
         """Validate that the minimum value is less than or equal to the maximum
         value.
         """
@@ -335,7 +335,7 @@ class FloatRange(XtceBaseModel):
     """The maximum value of the range, excluding itself."""
 
     @model_validator(mode="after")
-    def validate_range(self) -> "FloatRange":
+    def validate_range(self) -> Self:
         """Validate that the minimum value is less than or equal to the maximum value,
         and that only one of the minimum options and one of the maximum options are used
         at a time.

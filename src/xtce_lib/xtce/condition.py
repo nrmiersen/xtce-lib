@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING
 
 from pydantic import Field
@@ -14,7 +15,7 @@ if TYPE_CHECKING:
     from .algorithm import ArgumentInputAlgorithm, InputAlgorithm
 
 
-class BaseComparison(XtceBaseModel):
+class BaseComparison(XtceBaseModel, ABC):
     # Nothing
     pass
 
@@ -143,7 +144,6 @@ class DiscreteLookupList(XtceBaseModel):
     """In the event that no lookup condition evaluates to true, then this value will be
     used.
     """
-
 
 class ArgumentDiscreteLookupList(XtceBaseModel):
     lookups: list[ArgumentDiscreteLookup] = Field(default_factory=list, min_length=1)

@@ -382,13 +382,13 @@ class SpaceSystem(NameDescriptionBase):
             short_description=self.short_description,
             long_description=self.long_description,
             alias_set=xtce_1_1.AliasSetType(
-                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
+                alias=[alias._to_v1_1(policy) for alias in self.aliases]
             )
             if self.aliases
             else None,
             ancillary_data_set=xtce_1_1.DescriptionType.AncillaryDataSet(
                 ancillary_data=[
-                    ancillary_data.to_xsdata(version=version)
+                    ancillary_data._to_v1_1(policy)
                     for ancillary_data in self.ancillary_data
                 ]
             )
