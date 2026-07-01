@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any, Self, assert_never
+from typing import TYPE_CHECKING, Annotated, Any, Self
 
 from pydantic import AfterValidator, Field
 
@@ -99,21 +99,6 @@ class ParameterRef(XtceBaseModel):
     def _from_v1_3(cls: type[Self], parameter_ref: xtce_1_3.ParameterRefType) -> Self:
         return cls(ref=XtcePath(parameter_ref.parameter_ref))
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ParameterRef from an xsdata-generated
-        ParameterRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.ParameterRefType:
@@ -128,26 +113,6 @@ class ParameterRef(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.ParameterRefType:
         return xtce_1_3.ParameterRefType(parameter_ref=str(self.ref))
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.ParameterRefType
-        | xtce_1_2.ParameterRefType
-        | xtce_1_3.ParameterRefType
-    ):
-        """Convert this ParameterRef to an xsdata-generated ParameterRefType object of
-        the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class OutputParameterRef(ParameterRef):
@@ -205,6 +170,10 @@ class OutputParameterRef(ParameterRef):
             )
 
     @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
     def _from_v1_2(
         cls: type[Self], parameter_ref: xtce_1_2.OutputParameterRefType
     ) -> Self:
@@ -222,20 +191,8 @@ class OutputParameterRef(ParameterRef):
             output_name=parameter_ref.output_name,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an OutputParameterRef from an xsdata-generated
-        OutputParameterRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -252,22 +209,6 @@ class OutputParameterRef(ParameterRef):
             parameter_ref=str(self.ref),
             output_name=self.output_name,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OutputParameterRefType | xtce_1_3.OutputParameterRefType:
-        """Convert this OutputParameterRef to an xsdata-generated OutputParameterRefType
-        object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ParameterInstanceRef(ParameterRef):
@@ -339,21 +280,6 @@ class ParameterInstanceRef(ParameterRef):
             use_calibrated_value=parameter_ref.use_calibrated_value,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ParameterInstanceRef from an xsdata-generated
-        ParameterInstanceRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.ParameterInstanceRefType:
@@ -380,26 +306,6 @@ class ParameterInstanceRef(ParameterRef):
             instance=self.instance,
             use_calibrated_value=self.use_calibrated_value,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.ParameterInstanceRefType
-        | xtce_1_2.ParameterInstanceRefType
-        | xtce_1_3.ParameterInstanceRefType
-    ):
-        """Convert this ParameterInstanceRef to an xsdata-generated
-        ParameterInstanceRefType object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ArgumentInstanceRef(XtceBaseModel):
@@ -448,21 +354,6 @@ class ArgumentInstanceRef(XtceBaseModel):
             use_calibrated_value=argument_ref.use_calibrated_value,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ParameterInstanceRef from an xsdata-generated
-        ParameterInstanceRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_2.ArgumentInstanceRefType:
@@ -478,22 +369,6 @@ class ArgumentInstanceRef(XtceBaseModel):
             argument_ref=str(self.ref),
             use_calibrated_value=self.use_calibrated_value,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentInstanceRefType | xtce_1_3.ArgumentInstanceRefType:
-        """Convert this ArgumentInstanceRef to an xsdata-generated
-        ArgumentInstanceRefType object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class InputParameterInstanceRef(ParameterInstanceRef):
@@ -520,6 +395,10 @@ class InputParameterInstanceRef(ParameterInstanceRef):
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
     @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
     def _from_v1_2(
         cls: type[Self], parameter_ref: xtce_1_2.InputParameterInstanceRefType
     ) -> Self:
@@ -537,20 +416,8 @@ class InputParameterInstanceRef(ParameterInstanceRef):
             input_name=parameter_ref.input_name,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an InputParameterInstanceRef from an xsdata-
-        generated InputParameterInstanceRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -567,24 +434,6 @@ class InputParameterInstanceRef(ParameterInstanceRef):
             parameter_ref=str(self.ref),
             input_name=self.input_name,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_2.InputParameterInstanceRefType | xtce_1_3.InputParameterInstanceRefType
-    ):
-        """Convert this InputParameterInstanceRef to an xsdata-generated
-        InputParameterInstanceRefType object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ContainerRef(XtceBaseModel):
@@ -660,21 +509,6 @@ class ContainerRef(XtceBaseModel):
     def _from_v1_3(cls: type[Self], container_ref: xtce_1_3.ContainerRefType) -> Self:
         return cls(ref=XtcePath(container_ref.container_ref))
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ContainerRef from an xsdata-generated
-        ContainerRefType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.ContainerRefType:
@@ -689,26 +523,6 @@ class ContainerRef(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.ContainerRefType:
         return xtce_1_3.ContainerRefType(container_ref=str(self.ref))
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.ContainerRefType
-        | xtce_1_2.ContainerRefType
-        | xtce_1_3.ContainerRefType
-    ):
-        """Convert this ContainerRef to an xsdata-generated ContainerRefType object of
-        the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ServiceRef(XtceBaseModel):
@@ -780,21 +594,6 @@ class ServiceRef(XtceBaseModel):
     def _from_v1_3(cls: type[Self], service_ref: xtce_1_3.ServiceRefType) -> Self:
         return cls(ref=XtcePath(service_ref.service_ref))
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ServiceRef from an xsdata-generated ServiceRefType
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.ServiceRefType:
@@ -809,22 +608,6 @@ class ServiceRef(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.ServiceRefType:
         return xtce_1_3.ServiceRefType(service_ref=str(self.ref))
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ServiceRefType | xtce_1_2.ServiceRefType | xtce_1_3.ServiceRefType:
-        """Convert this ServiceRef to an xsdata-generated ServiceRefType object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class StreamRef(XtceBaseModel):
@@ -900,21 +683,6 @@ class StreamRef(XtceBaseModel):
     def _from_v1_3(cls: type[Self], stream_ref: xtce_1_3.StreamRefType) -> Self:
         return cls(ref=XtcePath(stream_ref.stream_ref))
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a StreamRef from an xsdata-generated StreamRefType
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.StreamRefType:
@@ -929,19 +697,3 @@ class StreamRef(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.StreamRefType:
         return xtce_1_3.StreamRefType(stream_ref=str(self.ref))
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.StreamRefType | xtce_1_2.StreamRefType | xtce_1_3.StreamRefType:
-        """Convert this StreamRef to an xsdata-generated StreamRefType object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)

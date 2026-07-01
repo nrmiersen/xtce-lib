@@ -4,14 +4,20 @@ from __future__ import annotations
 
 import logging
 from abc import ABC
-from typing import Any, Self
+from enum import Enum
+from typing import Any, Literal, Self, TypeVar, assert_never, overload
 
 from pydantic import BaseModel, ConfigDict
 
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceDowngradeError
+from xtce_lib.exceptions import (
+    DowngradePolicy,
+    XtceDowngradeError,
+    XtceUnsupportedError,
+)
 
 log = logging.getLogger(__name__)
+T = TypeVar("T")
 
 
 class XtceBaseModel(BaseModel, ABC):
@@ -25,19 +31,54 @@ class XtceBaseModel(BaseModel, ABC):
     )
 
     @classmethod
-    # @abstractmethod
-    def from_xsdata(cls, raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an XtceBaseModel from an xsdata-generated object of
-        any version.
-        """
-        pass
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
-    # @abstractmethod
-    def to_xsdata(self, version: XtceVersion) -> Any:
-        """Convert this XtceBaseModel to an xsdata-generated object of the specified
+    @classmethod
+    def _from_v1_2(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
+
+    @classmethod
+    def _from_v1_3(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
+
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+
+    def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
+
+    def _to_v1_3(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
+
+    @classmethod
+    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to create this model from an xsdata-generated object of any
         version.
         """
-        pass
+        match version:
+            case XtceVersion.V1_1:
+                return cls._from_v1_1(raw_obj)
+            case XtceVersion.V1_2:
+                return cls._from_v1_2(raw_obj)
+            case XtceVersion.V1_3:
+                return cls._from_v1_3(raw_obj)
+            case _:
+                assert_never(version)
+
+    def to_xsdata(
+        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> Any:
+        """Convert this model to the xsdata equivalent."""
+        match version:
+            case XtceVersion.V1_1:
+                return self._to_v1_1(policy)
+            case XtceVersion.V1_2:
+                return self._to_v1_2(policy)
+            case XtceVersion.V1_3:
+                return self._to_v1_3(policy)
+            case _:
+                assert_never(version)
 
     def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""
@@ -69,25 +110,6 @@ class XtceBaseModel(BaseModel, ABC):
         )
         self._handle_downgrade(message, policy)
 
-    def _enforce_restricted_type(
-        self,
-        field_name: str,
-        current_type: Any,
-        allowed_types: tuple[type[Any], ...],
-        target_version: XtceVersion,
-        policy: DowngradePolicy,
-    ) -> None:
-        """Enforce when a field's type is not allowed in the target version."""
-        if current_type in allowed_types:
-            return
-
-        message = (
-            f"Incompatible Type Warning: The attribute '{field_name}' has type "
-            f"'{current_type}' which is not allowed in XTCE version "
-            f"{target_version.value} and will be lost during export."
-        )
-        self._handle_downgrade(message, policy)
-
     def _enforce_restricted_value(
         self,
         field_name: str,
@@ -106,3 +128,136 @@ class XtceBaseModel(BaseModel, ABC):
             f"{target_version.value} and will be lost during export."
         )
         self._handle_downgrade(message, policy)
+
+    @overload
+    def _enforce_restricted_type(
+        self,
+        field_name: str,
+        current_value: Any,
+        allowed_types: tuple[type[T], ...],
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+        *,
+        require_match: Literal[True],
+    ) -> T: ...
+
+    @overload
+    def _enforce_restricted_type(
+        self,
+        field_name: str,
+        current_value: Any,
+        allowed_types: tuple[type[Any], ...],
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+        *,
+        require_match: Literal[False] = False,
+    ) -> Any: ...
+
+    def _enforce_restricted_type(
+        self,
+        field_name: str,
+        current_value: Any,
+        allowed_types: tuple[type[Any], ...],
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+        *,
+        require_match: bool = False,
+    ) -> Any:
+        """Enforce when a field's type is not allowed in the target version."""
+        if isinstance(current_value, allowed_types):
+            return current_value
+
+        message = (
+            f"Incompatible Type Warning: The attribute '{field_name}' has type "
+            f"'{type(current_value)}' which is not allowed in XTCE version "
+            f"{target_version.value} and will be lost during export."
+        )
+        self._handle_downgrade(message, policy)
+
+        if require_match:
+            raise TypeError(
+                f"attribute '{field_name}' must be one of {allowed_types}, "
+                f"got {type(current_value)}"
+            )
+
+        return current_value
+
+
+class XtceBaseEnum(str, Enum):
+    """Base class for unified XTCE enumerations."""
+
+    @classmethod
+    def from_xsdata(cls, raw_obj: Any, version: XtceVersion) -> Self:
+        """Factory method to route xsdata parsing based on version."""
+        if version == XtceVersion.V1_1:
+            return cls._from_v1_1(raw_obj)
+        elif version == XtceVersion.V1_2:
+            return cls._from_v1_2(raw_obj)
+        elif version == XtceVersion.V1_3:
+            return cls._from_v1_3(raw_obj)
+        else:
+            raise ValueError(f"Unknown XTCE version: {version}")
+
+    def to_xsdata(
+        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> Any:
+        """Route generation to the correct version adapter."""
+        if version == XtceVersion.V1_1:
+            return self._to_v1_1(policy)
+        elif version == XtceVersion.V1_2:
+            return self._to_v1_2(policy)
+        elif version == XtceVersion.V1_3:
+            return self._to_v1_3(policy)
+        else:
+            raise ValueError(f"Unknown XTCE version: {version}")
+
+    def _enforce_unmapped_value(
+        self, target_version: XtceVersion, policy: DowngradePolicy, fallback: Any = None
+    ) -> Any:
+        """Handle an enum value that does not exist in the target XTCE version.
+
+        Args:
+            target_version: The version being exported to.
+            policy: The strictness policy for data loss.
+            fallback: An optional valid enum member for the target version if the policy allows dropping.
+
+        """
+        if policy == DowngradePolicy.STRICT:
+            raise ValueError(
+                f"Strict Downgrade Error: The value '{self.name}' in {self.__class__.__name__} "
+                f"does not exist in XTCE {target_version.value} and cannot be safely exported."
+            )
+
+        # If policy is LOOSE/IGNORE, we return a fallback or None
+        # Note: If returning None, the parent XtceBaseModel's `to_xsdata` method
+        # must be smart enough to omit the XML attribute/element entirely!
+        return fallback
+
+    # --- Abstract Routing Methods (Subclasses should override what they support) ---
+
+    @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise NotImplementedError(f"{cls.__name__} does not support XTCE 1.1")
+
+    @classmethod
+    def _from_v1_2(cls, raw_obj: Any) -> Self:
+        raise NotImplementedError(f"{cls.__name__} does not support XTCE 1.2")
+
+    @classmethod
+    def _from_v1_3(cls, raw_obj: Any) -> Self:
+        raise NotImplementedError(f"{cls.__name__} does not support XTCE 1.3")
+
+    def _to_v1_1(self, policy: DowngradePolicy) -> Any:
+        raise NotImplementedError(
+            f"{self.__class__.__name__} cannot export to XTCE 1.1"
+        )
+
+    def _to_v1_2(self, policy: DowngradePolicy) -> Any:
+        raise NotImplementedError(
+            f"{self.__class__.__name__} cannot export to XTCE 1.2"
+        )
+
+    def _to_v1_3(self, policy: DowngradePolicy) -> Any:
+        raise NotImplementedError(
+            f"{self.__class__.__name__} cannot export to XTCE 1.3"
+        )
