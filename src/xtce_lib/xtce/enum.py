@@ -1,6 +1,13 @@
 """Unified XTCE enumerations."""
 
 from enum import Enum
+from typing import Self
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy
+from xtce_lib.generated import xtce_1_2, xtce_1_3
+
+from ._base import XtceBaseEnum
 
 
 class BitOrder(str, Enum):
@@ -227,8 +234,79 @@ class ConcernLevel(str, Enum):
     SEVERE = "severe"
 
 
-class TimeUnits(str, Enum):
-    """Base time unit of measure.
+class TimeUnits(XtceBaseEnum):
+    """Base time units of measure.
+
+    It is best practice to avoid days, months, and years due to ambiguity involving leap
+    seconds and leap days. If these are used, the system should document how the leaps
+    are handled.
+
+    """
+
+    SECONDS = "seconds"
+    MILLISECONDS = "milliseconds"
+    """Not supported by XTCE 1.2."""
+
+    MICROSECONDS = "microseconds"
+    """Not supported by XTCE 1.2."""
+
+    NANOSECONDS = "nanoseconds"
+    """Not supported by XTCE 1.2."""
+
+    PICOSECONDS = "picoseconds"
+    MINUTES = "minutes"
+    """Not supported by XTCE 1.2."""
+    HOURS = "hours"
+    """Not supported by XTCE 1.2."""
+
+    DAYS = "days"
+    MONTHS = "months"
+    YEARS = "years"
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], unit: xtce_1_2.TimeUnitsType) -> Self:
+        mapping = {
+            xtce_1_2.TimeUnitsType.SECONDS: "seconds",
+            xtce_1_2.TimeUnitsType.PICO_SECONDS: "picoseconds",
+            xtce_1_2.TimeUnitsType.DAYS: "days",
+            xtce_1_2.TimeUnitsType.MONTHS: "months",
+            xtce_1_2.TimeUnitsType.YEARS: "years",
+        }
+
+        return cls(mapping[unit])
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], unit: xtce_1_3.TimeUnitsType) -> Self:
+        return cls(unit.value)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.TimeUnitsType:
+        mapping = {
+            TimeUnits.SECONDS: xtce_1_2.TimeUnitsType.SECONDS,
+            TimeUnits.PICOSECONDS: xtce_1_2.TimeUnitsType.PICO_SECONDS,
+            TimeUnits.DAYS: xtce_1_2.TimeUnitsType.DAYS,
+            TimeUnits.MONTHS: xtce_1_2.TimeUnitsType.MONTHS,
+            TimeUnits.YEARS: xtce_1_2.TimeUnitsType.YEARS,
+        }
+
+        if self in mapping:
+            return mapping[self]
+        else:
+            return self._enforce_unmapped_value(
+                XtceVersion.V1_2,
+                policy,
+                fallback=xtce_1_2.TimeUnitsType.SECONDS,
+            )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.TimeUnitsType:
+        return xtce_1_3.TimeUnitsType(self.value)
+
+
+class TimeAssociationUnits(XtceBaseEnum):
+    """Base time units of measure.
 
     It is best practice to avoid days, months, and years due to ambiguity involving leap
     seconds and leap days. If these are used, the system should document how the leaps
@@ -241,14 +319,62 @@ class TimeUnits(str, Enum):
     MICROSECONDS = "microseconds"
     NANOSECONDS = "nanoseconds"
     PICOSECONDS = "picoseconds"
+    """Not supported by XTCE 1.2."""
+
     MINUTES = "minutes"
     HOURS = "hours"
+    """Not supported by XTCE 1.2."""
+
     DAYS = "days"
     MONTHS = "months"
+    """Not supported by XTCE 1.2."""
+
     YEARS = "years"
 
+    @classmethod
+    def _from_v1_2(cls: type[Self], unit: xtce_1_2.TimeAssociationUnitType) -> Self:
+        mapping = {
+            xtce_1_2.TimeAssociationUnitType.SI_SECOND: "seconds",
+            xtce_1_2.TimeAssociationUnitType.SI_MILLSECOND: "milliseconds",
+            xtce_1_2.TimeAssociationUnitType.SI_MICROSECOND: "microseconds",
+            xtce_1_2.TimeAssociationUnitType.SI_NANOSECOND: "nanoseconds",
+            xtce_1_2.TimeAssociationUnitType.MINUTE: "minutes",
+            xtce_1_2.TimeAssociationUnitType.DAY: "days",
+            xtce_1_2.TimeAssociationUnitType.JULIAN_YEAR: "years",
+        }
 
-# TODO TimeAssociationUnitType also exists but is identical to TimeUnitType
+        return cls(mapping[unit])
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], unit: xtce_1_3.TimeAssociationUnitType) -> Self:
+        return cls(unit.value)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.TimeAssociationUnitType:
+        mapping = {
+            TimeAssociationUnits.SECONDS: xtce_1_2.TimeAssociationUnitType.SI_SECOND,
+            TimeAssociationUnits.MILLISECONDS: xtce_1_2.TimeAssociationUnitType.SI_MILLSECOND,
+            TimeAssociationUnits.MICROSECONDS: xtce_1_2.TimeAssociationUnitType.SI_MICROSECOND,
+            TimeAssociationUnits.NANOSECONDS: xtce_1_2.TimeAssociationUnitType.SI_NANOSECOND,
+            TimeAssociationUnits.MINUTES: xtce_1_2.TimeAssociationUnitType.MINUTE,
+            TimeAssociationUnits.DAYS: xtce_1_2.TimeAssociationUnitType.DAY,
+            TimeAssociationUnits.YEARS: xtce_1_2.TimeAssociationUnitType.JULIAN_YEAR,
+        }
+
+        if self in mapping:
+            return mapping[self]
+        else:
+            return self._enforce_unmapped_value(
+                XtceVersion.V1_2,
+                policy,
+                fallback=xtce_1_2.TimeAssociationUnitType.SI_SECOND,
+            )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.TimeAssociationUnitType:
+        return xtce_1_3.TimeAssociationUnitType(self.value)
 
 
 class TelemetryDataSource(str, Enum):

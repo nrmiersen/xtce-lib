@@ -257,7 +257,7 @@ class XtceBaseEnum(str, Enum):
         message = (
             f"Incompatible Value Warning: The enum value '{self.name}' in "
             f"{self.__class__.__name__} does not exist in XTCE version "
-            f"{target_version.value} and will be lost during export."
+            f"{target_version.value.version} and will be lost during export."
         )
         self._handle_downgrade(message, policy)
 

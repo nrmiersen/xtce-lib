@@ -1,7 +1,7 @@
 """Time models."""
 
 import datetime
-from typing import Any, Self, assert_never
+from typing import Self, assert_never
 
 from pydantic import Field, model_validator
 from xsdata.models.datatype import XmlDate, XmlDateTime
@@ -15,7 +15,7 @@ from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from ._util import unwrap
-from .enum import EpochTime, TimeUnits
+from .enum import EpochTime, TimeAssociationUnits
 from .reference import ParameterInstanceRef
 
 
@@ -47,8 +47,13 @@ class TimeAssociation(ParameterInstanceRef):
 
     """
 
-    unit: TimeUnits = Field(default=TimeUnits.SECONDS)
-    """The time units of the `offset` field."""
+    unit: TimeAssociationUnits = Field(default=TimeAssociationUnits.SECONDS)
+    """The time units of the `offset` field.
+
+    Only supported by XTCE 1.2 and later. If using XTCE 1.1, the `offset` field is
+    assumed to be in seconds.
+
+    """
 
     def validate_semantics(
         self,
@@ -68,6 +73,117 @@ class TimeAssociation(ParameterInstanceRef):
 
         # Verify Parameter.type_ref is a AbsoluteTimeParameter
         # TODO need parameter type classes to be defined before semantic validation can be implemented
+
+    @classmethod
+    def _from_v1_1(
+        cls: type[Self], time_association: xtce_1_1.TimeAssociationType
+    ) -> Self:
+        return cls(
+            ref=XtcePath(time_association.parameter_ref),
+            instance=time_association.instance,
+            use_calibrated_value=time_association.use_calibrated_value,
+            interpolate_time=time_association.interpolate_time,
+            offset=time_association.offset.to_date()
+            if time_association.offset is not None
+            else None,
+        )
+
+    @classmethod
+    def _from_v1_2(
+        cls: type[Self], time_association: xtce_1_2.TimeAssociationType
+    ) -> Self:
+        return cls(
+            ref=XtcePath(time_association.parameter_ref),
+            instance=time_association.instance,
+            use_calibrated_value=time_association.use_calibrated_value,
+            interpolate_time=time_association.interpolate_time,
+            offset=time_association.offset,
+            unit=TimeAssociationUnits._from_v1_2(time_association.unit),
+        )
+
+    @classmethod
+    def _from_v1_3(
+        cls: type[Self], time_association: xtce_1_3.TimeAssociationType
+    ) -> Self:
+        return cls(
+            ref=XtcePath(time_association.parameter_ref),
+            instance=time_association.instance,
+            use_calibrated_value=time_association.use_calibrated_value,
+            interpolate_time=time_association.interpolate_time,
+            offset=time_association.offset,
+            unit=TimeAssociationUnits._from_v1_3(time_association.unit),
+        )
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.TimeAssociationType:
+        version = XtceVersion.V1_1
+
+        self._enforce_unsupported_field(
+            field_name="unit",
+            current_value=self.unit,
+            empty_value=TimeAssociationUnits.SECONDS,
+            target_version=version,
+            policy=policy,
+        )
+        offset = self._enforce_restricted_type(
+            field_name="offset",
+            current_value=self.offset,
+            allowed_types=(datetime.date,),
+            target_version=version,
+            policy=policy,
+            require_match=True,
+        )
+
+        return xtce_1_1.TimeAssociationType(
+            parameter_ref=str(self.ref),
+            instance=self.instance,
+            use_calibrated_value=self.use_calibrated_value,
+            interpolate_time=self.interpolate_time,
+            offset=XmlDate.from_date(offset),
+        )
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.TimeAssociationType:
+        offset = self._enforce_restricted_type(
+            field_name="offset",
+            current_value=self.offset,
+            allowed_types=(float,),
+            target_version=XtceVersion.V1_2,
+            policy=policy,
+            require_match=True,
+        )
+
+        return xtce_1_2.TimeAssociationType(
+            parameter_ref=str(self.ref),
+            instance=self.instance,
+            use_calibrated_value=self.use_calibrated_value,
+            interpolate_time=self.interpolate_time,
+            offset=offset,
+            unit=self.unit._to_v1_2(policy),
+        )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.TimeAssociationType:
+        offset = self._enforce_restricted_type(
+            field_name="offset",
+            current_value=self.offset,
+            allowed_types=(float,),
+            target_version=XtceVersion.V1_3,
+            policy=policy,
+            require_match=True,
+        )
+
+        return xtce_1_3.TimeAssociationType(
+            parameter_ref=str(self.ref),
+            instance=self.instance,
+            use_calibrated_value=self.use_calibrated_value,
+            interpolate_time=self.interpolate_time,
+            offset=offset,
+            unit=self.unit._to_v1_3(policy),
+        )
 
 
 class ReferenceTime(XtceBaseModel):
@@ -258,36 +374,21 @@ class ReferenceTime(XtceBaseModel):
             epoch=unpack_epoch(reference_time),
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ReferenceTime from an xsdata-generated
-        ReferenceTimeType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.ReferenceTimeType:
-        version = XtceVersion.V1_1
-
-        self._enforce_restricted_type(
-            field_name="epoch",
-            current_type=type(self.epoch),
-            allowed_types=(datetime.date, EpochTime),
-            target_version=version,
-            policy=policy,
-        )
+        if self.epoch is not None:
+            self._enforce_restricted_type(
+                field_name="epoch",
+                current_value=self.epoch,
+                allowed_types=(datetime.date, EpochTime),
+                target_version=XtceVersion.V1_1,
+                policy=policy,
+                require_match=True,
+            )
 
         def pack_epoch(
-            epoch: datetime.date | datetime.datetime | EpochTime | None,
+            epoch: datetime.date | datetime.datetime | EpochTime,
         ) -> XmlDate | xtce_1_1.EpochTypeValue:
             match epoch:
                 case datetime.datetime():
@@ -299,8 +400,6 @@ class ReferenceTime(XtceBaseModel):
                     return XmlDate.from_date(epoch)
                 case EpochTime():
                     return xtce_1_1.EpochTypeValue(epoch.value)
-                case None:
-                    raise ValueError()
                 case _:
                     assert_never(epoch)
 
@@ -314,7 +413,7 @@ class ReferenceTime(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_2.ReferenceTimeType:
         def pack_epoch(
-            epoch: datetime.date | datetime.datetime | EpochTime | None,
+            epoch: datetime.date | datetime.datetime | EpochTime,
         ) -> XmlDate | XmlDateTime | xtce_1_2.EpochTimeEnumsType:
             match epoch:
                 case datetime.datetime():
@@ -323,8 +422,6 @@ class ReferenceTime(XtceBaseModel):
                     return XmlDate.from_date(epoch)
                 case EpochTime():
                     return xtce_1_2.EpochTimeEnumsType(epoch.value)
-                case None:
-                    raise ValueError()
                 case _:
                     assert_never(epoch)
 
@@ -338,7 +435,7 @@ class ReferenceTime(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.ReferenceTimeType:
         def pack_epoch(
-            epoch: datetime.date | datetime.datetime | EpochTime | None,
+            epoch: datetime.date | datetime.datetime | EpochTime,
         ) -> XmlDate | XmlDateTime | xtce_1_3.EpochTimeEnumsType:
             match epoch:
                 case datetime.datetime():
@@ -347,8 +444,6 @@ class ReferenceTime(XtceBaseModel):
                     return XmlDate.from_date(epoch)
                 case EpochTime():
                     return xtce_1_3.EpochTimeEnumsType(epoch.value)
-                case None:
-                    raise ValueError()
                 case _:
                     assert_never(epoch)
 
@@ -357,23 +452,3 @@ class ReferenceTime(XtceBaseModel):
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_3(policy)
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.ReferenceTimeType
-        | xtce_1_2.ReferenceTimeType
-        | xtce_1_3.ReferenceTimeType
-    ):
-        """Convert this ReferenceTime to an xsdata-generated ReferenceTimeType object of
-        the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
