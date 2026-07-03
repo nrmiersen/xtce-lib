@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import dataclasses
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Self
 
 from pydantic import Field
-from typing_extensions import assert_never
 
 from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath
@@ -335,21 +334,6 @@ class SpaceSystem(NameDescriptionBase):
 
         return cls(**kwargs)
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a SpaceSystem from an xsdata-generated SpaceSystem
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.SpaceSystem:
@@ -522,19 +506,3 @@ class SpaceSystem(NameDescriptionBase):
             operational_status=self.operational_status,
             base=self.base,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SpaceSystem | xtce_1_2.SpaceSystem | xtce_1_3.SpaceSystem:
-        """Convert this SpaceSystem to an xsdata-generated SpaceSystem object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)

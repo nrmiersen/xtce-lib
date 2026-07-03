@@ -1,11 +1,10 @@
 """Range models."""
 
-from typing import Any, Self, assert_never
+from typing import Any, Self
 
 from pydantic import Field, model_validator
 
-from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError, XtceVersion
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
@@ -75,21 +74,6 @@ class IntegerRange(XtceBaseModel):
             max_inclusive=integer_range.max_inclusive,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a IntegerRange from an xsdata-generated
-        IntegerRangeType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.IntegerRangeType:
@@ -113,26 +97,6 @@ class IntegerRange(XtceBaseModel):
             max_inclusive=coerce_optional_int(self.max_inclusive),
         )
 
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.IntegerRangeType
-        | xtce_1_2.IntegerRangeType
-        | xtce_1_3.IntegerRangeType
-    ):
-        """Convert this IntegerRange to an xsdata-generated IntegerRangeType object of
-        the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
-
 
 class ValidIntegerRange(IntegerRange):
     """A range of integer numbers.
@@ -148,6 +112,10 @@ class ValidIntegerRange(IntegerRange):
     If False, it applies to raw values.
 
     """
+
+    @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
     def _from_v1_2(
@@ -169,20 +137,8 @@ class ValidIntegerRange(IntegerRange):
             applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ValidIntegerRange from an xsdata-generated
-        IntegerDataType.ValidRange object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -201,22 +157,6 @@ class ValidIntegerRange(IntegerRange):
             max_inclusive=coerce_optional_int(self.max_inclusive),
             valid_range_applies_to_calibrated=self.applies_to_calibrated,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.IntegerDataType.ValidRange | xtce_1_3.IntegerDataType.ValidRange:
-        """Convert this ValidIntegerRange to an xsdata-generated
-        IntegerDataType.ValidRange object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ValidIntegerRanges(XtceBaseModel):
@@ -244,6 +184,10 @@ class ValidIntegerRanges(XtceBaseModel):
     """
 
     @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
     def _from_v1_2(
         cls: type[Self], integer_range: xtce_1_2.ValidIntegerRangeSetType
     ) -> Self:
@@ -265,20 +209,8 @@ class ValidIntegerRanges(XtceBaseModel):
             applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ValidIntegerRanges from an xsdata-generated
-        ValidIntegerRangeSetType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -295,22 +227,6 @@ class ValidIntegerRanges(XtceBaseModel):
             valid_range=[range._to_v1_3(policy) for range in self.valid_ranges],
             valid_range_applies_to_calibrated=self.applies_to_calibrated,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ValidIntegerRangeSetType | xtce_1_3.ValidIntegerRangeSetType:
-        """Convert this ValidIntegerRanges to an xsdata-generated
-        ValidIntegerRangeSetType object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class FloatRange(XtceBaseModel):
@@ -397,21 +313,6 @@ class FloatRange(XtceBaseModel):
             max_exclusive=float_range.max_exclusive,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a FloatRange from an xsdata-generated FloatRangeType
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.FloatRangeType:
@@ -442,22 +343,6 @@ class FloatRange(XtceBaseModel):
             max_exclusive=self.max_exclusive,
         )
 
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.FloatRangeType | xtce_1_2.FloatRangeType | xtce_1_3.FloatRangeType:
-        """Convert this FloatRange to an xsdata-generated FloatRangeType object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
-
 
 class ValidFloatRange(FloatRange):
     """A range of floating-point numbers.
@@ -468,6 +353,10 @@ class ValidFloatRange(FloatRange):
     """
 
     applies_to_calibrated: bool = Field(default=True)
+
+    @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
     def _from_v1_2(
@@ -493,20 +382,8 @@ class ValidFloatRange(FloatRange):
             applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ValidFloatRange from an xsdata-generated
-        FloatDataType.ValidRange object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -529,22 +406,6 @@ class ValidFloatRange(FloatRange):
             max_exclusive=self.max_exclusive,
             valid_range_applies_to_calibrated=self.applies_to_calibrated,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.FloatDataType.ValidRange | xtce_1_3.FloatDataType.ValidRange:
-        """Convert this ValidFloatRange to an xsdata-generated FloatDataType.ValidRange
-        object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ValidFloatRanges(XtceBaseModel):
@@ -572,6 +433,10 @@ class ValidFloatRanges(XtceBaseModel):
     """
 
     @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
     def _from_v1_2(
         cls: type[Self], float_range: xtce_1_2.ValidFloatRangeSetType
     ) -> Self:
@@ -593,20 +458,8 @@ class ValidFloatRanges(XtceBaseModel):
             applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a ValidFloatRanges from an xsdata-generated
-        ValidFloatRangeSetType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -623,22 +476,6 @@ class ValidFloatRanges(XtceBaseModel):
             valid_range=[range._to_v1_3(policy) for range in self.valid_ranges],
             valid_range_applies_to_calibrated=self.applies_to_calibrated,
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ValidFloatRangeSetType | xtce_1_3.ValidFloatRangeSetType:
-        """Convert this ValidFloatRanges to an xsdata-generated ValidFloatRangeSetType
-        object of the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class MultiRange(FloatRange):
@@ -673,6 +510,10 @@ class MultiRange(FloatRange):
     """The concern level of this alarm range."""
 
     @classmethod
+    def _from_v1_1(cls, raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
     def _from_v1_2(cls: type[Self], multi_range: xtce_1_2.MultiRangeType) -> Self:
         return cls(
             min_inclusive=multi_range.min_inclusive,
@@ -694,20 +535,8 @@ class MultiRange(FloatRange):
             level=ConcernLevel(unwrap(multi_range.level).value),
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a MultiRange from an xsdata-generated MultiRange
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -732,19 +561,3 @@ class MultiRange(FloatRange):
             range_form=xtce_1_3.RangeFormType(self.range_form),
             level=xtce_1_3.ConcernLevelsType(self.level),
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.MultiRangeType | xtce_1_3.MultiRangeType:
-        """Convert this MultiRange to an xsdata-generated MultiRangeType object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)

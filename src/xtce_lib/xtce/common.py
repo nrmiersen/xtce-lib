@@ -1,12 +1,11 @@
 """Common base models."""
 
 from abc import ABC
-from typing import Annotated, Any, Self, assert_never
+from typing import Annotated, Self
 
 from pydantic import AfterValidator, Field
 
 from xtce_lib.common.xtce_path import XtcePath, require_regex
-from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
@@ -59,21 +58,6 @@ class Alias(XtceBaseModel):
     def _from_v1_3(cls: type[Self], alias: xtce_1_3.AliasType) -> Self:
         return cls(namespace=alias.name_space, alias=alias.alias)
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an Alias from an xsdata-generated AliasType object
-        of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.AliasSetType.Alias:
@@ -88,22 +72,6 @@ class Alias(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.AliasType:
         return xtce_1_3.AliasType(name_space=self.namespace, alias=self.alias)
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.AliasSetType.Alias | xtce_1_2.AliasType | xtce_1_3.AliasType:
-        """Convert this Alias to an xsdata-generated AliasType object of the specified
-        version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class AncillaryData(XtceBaseModel):
@@ -172,21 +140,6 @@ class AncillaryData(XtceBaseModel):
             href=alias.href,
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create an AncillaryData from an xsdata-generated
-        AncillaryDataType object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return cls._from_v1_1(raw_obj)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_1(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData:
@@ -207,26 +160,6 @@ class AncillaryData(XtceBaseModel):
         return xtce_1_3.AncillaryDataType(
             name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> (
-        xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
-        | xtce_1_2.AncillaryDataType
-        | xtce_1_3.AncillaryDataType
-    ):
-        """Convert this AncillaryData to an xsdata-generated AncillaryDataType object of
-        the specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                return self._to_v1_1(policy)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class DescriptionBase(XtceBaseModel, ABC):
@@ -276,6 +209,7 @@ class DescriptionBase(XtceBaseModel, ABC):
     ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
     """Used to contain any ancillary data associated with the element."""
 
+
 class NameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by many other schema types throughout the schema."""
 
@@ -285,6 +219,7 @@ class NameDescriptionBase(DescriptionBase, ABC):
         examples=["BatteryVoltage", "setSpeed", "uint8"],
     )
     """The name of this element."""
+
 
 class OptionalNameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by most elements that have an optional name with optional
@@ -297,6 +232,7 @@ class OptionalNameDescriptionBase(DescriptionBase, ABC):
         examples=["SpeedCommandVerifier", "LogMessageSet"],
     )
     """The optional name of this element."""
+
 
 class NameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and
@@ -314,6 +250,7 @@ class NameReferenceNoPath(XtceBaseModel, ABC):
 
     """
 
+
 class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and
     aggregate are possible.
@@ -329,6 +266,7 @@ class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
     Can include array or aggregate references.
 
     """
+
 
 class NameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate
@@ -351,6 +289,7 @@ class NameReferenceWithPath(XtceBaseModel, ABC):
     Can not include array or aggregate references.
 
     """
+
 
 class ExpandedNameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate

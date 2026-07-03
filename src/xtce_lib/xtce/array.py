@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Self
 
 from pydantic import Field, model_validator
 from typing_extensions import assert_never
 
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
@@ -129,21 +129,6 @@ class Dimension(XtceBaseModel):
             end_index=unpack_index(dimension.ending_index),
         )
 
-    @classmethod
-    def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create a Dimension from an xsdata-generated Dimension
-        object of any version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, cls.__name__)
-            case XtceVersion.V1_2:
-                return cls._from_v1_2(raw_obj)
-            case XtceVersion.V1_3:
-                return cls._from_v1_3(raw_obj)
-            case _:
-                assert_never(version)
-
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_2.DimensionType:
@@ -221,22 +206,6 @@ class Dimension(XtceBaseModel):
                 )
             ),
         )
-
-    def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.DimensionType | xtce_1_3.DimensionType:
-        """Convert this Dimension to an xsdata-generated Dimension object of the
-        specified version.
-        """
-        match version:
-            case XtceVersion.V1_1:
-                raise XtceUnsupportedError(version, self.__class__.__name__)
-            case XtceVersion.V1_2:
-                return self._to_v1_2(policy)
-            case XtceVersion.V1_3:
-                return self._to_v1_3(policy)
-            case _:
-                assert_never(version)
 
 
 class ArgumentDimension(XtceBaseModel):
