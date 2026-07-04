@@ -280,14 +280,14 @@ class TestReferenceTime:
             (
                 XtceVersion.V1_1,
                 xtce_1_1.ReferenceTimeType(
-                    offset_from_or_epoch=XmlDate.from_date(datetime.date(2020, 1, 1))
+                    choice=XmlDate.from_date(datetime.date(2020, 1, 1))
                 ),
                 datetime.date(2020, 1, 1),
             ),
             (
                 XtceVersion.V1_2,
                 xtce_1_2.ReferenceTimeType(
-                    offset_from_or_epoch=XmlDateTime.from_datetime(
+                    choice=XmlDateTime.from_datetime(
                         datetime.datetime(2020, 1, 1, 12, 30, 0)
                     )
                 ),
@@ -295,9 +295,7 @@ class TestReferenceTime:
             ),
             (
                 XtceVersion.V1_3,
-                xtce_1_3.ReferenceTimeType(
-                    offset_from_or_epoch=xtce_1_3.EpochTimeEnumsType.J2000
-                ),
+                xtce_1_3.ReferenceTimeType(choice=xtce_1_3.EpochTimeEnumsType.J2000),
                 xtce.EpochTime.J2000,
             ),
         ],
@@ -321,7 +319,7 @@ class TestReferenceTime:
             (
                 XtceVersion.V1_1,
                 xtce_1_1.ReferenceTimeType(
-                    offset_from_or_epoch=xtce_1_1.ParameterInstanceRefType(
+                    choice=xtce_1_1.ParameterInstanceRefType(
                         parameter_ref="/SimpleSat/Clock/OnboardTime",
                         instance=2,
                         use_calibrated_value=False,
@@ -332,7 +330,7 @@ class TestReferenceTime:
             (
                 XtceVersion.V1_2,
                 xtce_1_2.ReferenceTimeType(
-                    offset_from_or_epoch=xtce_1_2.ParameterInstanceRefType(
+                    choice=xtce_1_2.ParameterInstanceRefType(
                         parameter_ref="/SimpleSat/Clock/OnboardTime",
                         instance=2,
                         use_calibrated_value=False,
@@ -343,7 +341,7 @@ class TestReferenceTime:
             (
                 XtceVersion.V1_3,
                 xtce_1_3.ReferenceTimeType(
-                    offset_from_or_epoch=xtce_1_3.ParameterInstanceRefType(
+                    choice=xtce_1_3.ParameterInstanceRefType(
                         parameter_ref="/SimpleSat/Clock/OnboardTime",
                         instance=2,
                         use_calibrated_value=False,
@@ -412,9 +410,7 @@ class TestReferenceTime:
         raw_obj = model.to_xsdata(version)
 
         assert isinstance(raw_obj, expected_type)
-        assert (
-            raw_obj.offset_from_or_epoch.parameter_ref == "/SimpleSat/Clock/OnboardTime"
-        )
+        assert raw_obj.choice.parameter_ref == "/SimpleSat/Clock/OnboardTime"
 
     def test_to_xsdata_v1_1_accepts_datetime_epoch_in_strict_mode(self) -> None:
         """XTCE 1.1 export should accept datetime epochs (as date-compatible values)."""
@@ -422,7 +418,7 @@ class TestReferenceTime:
 
         raw_obj = model.to_xsdata(XtceVersion.V1_1, DowngradePolicy.STRICT)
 
-        assert isinstance(raw_obj.offset_from_or_epoch, XmlDate)
+        assert isinstance(raw_obj.choice, XmlDate)
 
     def test_to_xsdata_v1_1_datetime_epoch_allowed_in_ignore_mode(self) -> None:
         """XTCE 1.1 ignore downgrade should allow datetime epoch export."""
@@ -430,17 +426,17 @@ class TestReferenceTime:
 
         raw_obj = model.to_xsdata(XtceVersion.V1_1, DowngradePolicy.IGNORE)
 
-        assert isinstance(raw_obj.offset_from_or_epoch, XmlDate)
+        assert isinstance(raw_obj.choice, XmlDate)
 
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
         [
-            (XtceVersion.V1_1, xtce_1_1.ReferenceTimeType(offset_from_or_epoch=None)),
-            (XtceVersion.V1_2, xtce_1_2.ReferenceTimeType(offset_from_or_epoch=None)),
-            (XtceVersion.V1_3, xtce_1_3.ReferenceTimeType(offset_from_or_epoch=None)),
+            (XtceVersion.V1_1, xtce_1_1.ReferenceTimeType(choice=None)),
+            (XtceVersion.V1_2, xtce_1_2.ReferenceTimeType(choice=None)),
+            (XtceVersion.V1_3, xtce_1_3.ReferenceTimeType(choice=None)),
         ],
     )
-    def test_from_xsdata_rejects_missing_offset_from_or_epoch(
+    def test_from_xsdata_rejects_missing_choice(
         self,
         version: XtceVersion,
         raw_obj: object,

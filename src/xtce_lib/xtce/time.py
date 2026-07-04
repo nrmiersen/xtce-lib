@@ -274,11 +274,11 @@ class ReferenceTime(XtceBaseModel):
         def unpack_epoch(
             reference_time: xtce_1_1.ReferenceTimeType,
         ) -> datetime.date | EpochTime | None:
-            match reference_time.offset_from_or_epoch:
+            match reference_time.choice:
                 case XmlDate():
-                    return reference_time.offset_from_or_epoch.to_date()
+                    return reference_time.choice.to_date()
                 case xtce_1_1.EpochTypeValue():
-                    return EpochTime(reference_time.offset_from_or_epoch.value)
+                    return EpochTime(reference_time.choice.value)
                 case xtce_1_1.ParameterInstanceRefType():
                     return None
                 case None:
@@ -286,15 +286,15 @@ class ReferenceTime(XtceBaseModel):
                         "invalid XTCE XML: missing a value for OffsetFrom and Epoch"
                     )
                 case _:
-                    assert_never(reference_time.offset_from_or_epoch)
+                    assert_never(reference_time.choice)
 
         return cls(
             offset_from=(
                 ParameterInstanceRef.from_xsdata(
-                    reference_time.offset_from_or_epoch, XtceVersion.V1_1
+                    reference_time.choice, XtceVersion.V1_1
                 )
                 if isinstance(
-                    reference_time.offset_from_or_epoch,
+                    reference_time.choice,
                     xtce_1_1.ParameterInstanceRefType,
                 )
                 else None
@@ -308,13 +308,13 @@ class ReferenceTime(XtceBaseModel):
         def unpack_epoch(
             reference_time: xtce_1_2.ReferenceTimeType,
         ) -> datetime.date | datetime.datetime | EpochTime | None:
-            match reference_time.offset_from_or_epoch:
+            match reference_time.choice:
                 case XmlDate():
-                    return reference_time.offset_from_or_epoch.to_date()
+                    return reference_time.choice.to_date()
                 case XmlDateTime():
-                    return reference_time.offset_from_or_epoch.to_datetime()
+                    return reference_time.choice.to_datetime()
                 case xtce_1_2.EpochTimeEnumsType():
-                    return EpochTime(reference_time.offset_from_or_epoch.value)
+                    return EpochTime(reference_time.choice.value)
                 case xtce_1_2.ParameterInstanceRefType():
                     return None
                 case None:
@@ -322,15 +322,15 @@ class ReferenceTime(XtceBaseModel):
                         "invalid XTCE XML: missing a value for OffsetFrom and Epoch"
                     )
                 case _:
-                    assert_never(reference_time.offset_from_or_epoch)
+                    assert_never(reference_time.choice)
 
         return cls(
             offset_from=(
                 ParameterInstanceRef.from_xsdata(
-                    reference_time.offset_from_or_epoch, XtceVersion.V1_2
+                    reference_time.choice, XtceVersion.V1_2
                 )
                 if isinstance(
-                    reference_time.offset_from_or_epoch,
+                    reference_time.choice,
                     xtce_1_2.ParameterInstanceRefType,
                 )
                 else None
@@ -344,13 +344,13 @@ class ReferenceTime(XtceBaseModel):
         def unpack_epoch(
             reference_time: xtce_1_3.ReferenceTimeType,
         ) -> datetime.date | datetime.datetime | EpochTime | None:
-            match reference_time.offset_from_or_epoch:
+            match reference_time.choice:
                 case XmlDate():
-                    return reference_time.offset_from_or_epoch.to_date()
+                    return reference_time.choice.to_date()
                 case XmlDateTime():
-                    return reference_time.offset_from_or_epoch.to_datetime()
+                    return reference_time.choice.to_datetime()
                 case xtce_1_3.EpochTimeEnumsType():
-                    return EpochTime(reference_time.offset_from_or_epoch.value)
+                    return EpochTime(reference_time.choice.value)
                 case xtce_1_3.ParameterInstanceRefType():
                     return None
                 case None:
@@ -358,15 +358,15 @@ class ReferenceTime(XtceBaseModel):
                         "invalid XTCE XML: missing a value for OffsetFrom and Epoch"
                     )
                 case _:
-                    assert_never(reference_time.offset_from_or_epoch)
+                    assert_never(reference_time.choice)
 
         return cls(
             offset_from=(
                 ParameterInstanceRef.from_xsdata(
-                    reference_time.offset_from_or_epoch, XtceVersion.V1_3
+                    reference_time.choice, XtceVersion.V1_3
                 )
                 if isinstance(
-                    reference_time.offset_from_or_epoch,
+                    reference_time.choice,
                     xtce_1_3.ParameterInstanceRefType,
                 )
                 else None
@@ -404,7 +404,7 @@ class ReferenceTime(XtceBaseModel):
                     assert_never(epoch)
 
         return xtce_1_1.ReferenceTimeType(
-            offset_from_or_epoch=pack_epoch(self.epoch)
+            choice=pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_1(policy)
         )
@@ -426,7 +426,7 @@ class ReferenceTime(XtceBaseModel):
                     assert_never(epoch)
 
         return xtce_1_2.ReferenceTimeType(
-            offset_from_or_epoch=pack_epoch(self.epoch)
+            choice=pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_2(policy)
         )
@@ -448,7 +448,7 @@ class ReferenceTime(XtceBaseModel):
                     assert_never(epoch)
 
         return xtce_1_3.ReferenceTimeType(
-            offset_from_or_epoch=pack_epoch(self.epoch)
+            choice=pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_3(policy)
         )

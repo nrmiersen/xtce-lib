@@ -2442,7 +2442,7 @@ class ArgumentComparisonCheckType(BaseConditionsType):
     Identical to ComparisonCheckType but supports argument instance references.
 
     Attributes:
-        parameter_instance_ref_or_argument_instance_ref:
+        choice:
         comparison_operator: Comparison operator.
         value: Specify as: integer data type using xs:integer, float data type
             using xs:double, string data type using xs:string, boolean data type
@@ -2454,9 +2454,7 @@ class ArgumentComparisonCheckType(BaseConditionsType):
             are calibrated unless there is an option to override it.
     """
 
-    parameter_instance_ref_or_argument_instance_ref: list[
-        ParameterInstanceRefType | ArgumentInstanceRefType
-    ] = field(
+    choice: list[ParameterInstanceRefType | ArgumentInstanceRefType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -2500,7 +2498,7 @@ class ArgumentComparisonType:
     Identical to ComparisonType but supports argument instance references.
 
     Attributes:
-        parameter_instance_ref_or_argument_instance_ref:
+        choice:
         comparison_operator: Comparison operator to use with equality being the
             common default.
         value: Specify as: integer data type using xs:integer, float data type
@@ -2513,9 +2511,7 @@ class ArgumentComparisonType:
             are calibrated unless there is an option to override it.
     """
 
-    parameter_instance_ref_or_argument_instance_ref: (
-        None | ParameterInstanceRefType | ArgumentInstanceRefType
-    ) = field(
+    choice: None | ParameterInstanceRefType | ArgumentInstanceRefType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -2553,14 +2549,12 @@ class ArgumentDynamicValueType:
     Identical to DynamicValueType but supports argument instance references.
 
     Attributes:
-        argument_instance_ref_or_parameter_instance_ref:
+        choice:
         linear_adjustment: A slope and intercept may be applied to scale or shift
             the value selected from the argument or parameter.
     """
 
-    argument_instance_ref_or_parameter_instance_ref: (
-        None | ArgumentInstanceRefType | ParameterInstanceRefType
-    ) = field(
+    choice: None | ArgumentInstanceRefType | ParameterInstanceRefType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -2708,7 +2702,7 @@ class ComparisonCheckType(BaseConditionsType):
     either a specified value or another parameter instance.
 
     Attributes:
-        parameter_instance_ref_or_comparison_operator:
+        choice:
         value: Right hand side value.  Specify as: integer data type using
             xs:integer, float data type using xs:double, string data type using
             xs:string, boolean data type using xs:boolean, binary data type using
@@ -2720,9 +2714,7 @@ class ComparisonCheckType(BaseConditionsType):
             override it.
     """
 
-    parameter_instance_ref_or_comparison_operator: list[
-        ParameterInstanceRefType | ComparisonOperatorsType
-    ] = field(
+    choice: list[ParameterInstanceRefType | ComparisonOperatorsType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -3010,7 +3002,7 @@ class ReferenceTimeType:
     parameter.
     """
 
-    offset_from_or_epoch: (
+    choice: (
         None | ParameterInstanceRefType | XmlDate | XmlDateTime | EpochTimeEnumsType
     ) = field(
         default=None,
@@ -3123,7 +3115,7 @@ class TriggerSetType:
     trigger can be invoked.
 
     Attributes:
-        on_parameter_update_trigger_or_on_container_update_trigger_or_on_periodic_rate_trigger:
+        choice:
         name: Triggers may optionally be named.
         trigger_rate: This attribute is a maximum rate that constrains how
             quickly this trigger may evaluate the algorithm to avoid flooding the
@@ -3131,7 +3123,7 @@ class TriggerSetType:
             results in no maximum.
     """
 
-    on_parameter_update_trigger_or_on_container_update_trigger_or_on_periodic_rate_trigger: list[
+    choice: list[
         OnParameterUpdateTriggerType
         | OnContainerUpdateTriggerType
         | OnPeriodicRateTriggerType
@@ -3210,26 +3202,24 @@ class AndedConditionsType(BaseConditionsType):
     class Meta:
         name = "ANDedConditionsType"
 
-    condition_or_ored_conditions: list[ComparisonCheckType | OredConditionsType] = (
-        field(
-            default_factory=list,
-            metadata={
-                "type": "Elements",
-                "choices": (
-                    {
-                        "name": "Condition",
-                        "type": ComparisonCheckType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                    {
-                        "name": "ORedConditions",
-                        "type": ForwardRef("OredConditionsType"),
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                ),
-                "min_occurs": 2,
-            },
-        )
+    choice: list[ComparisonCheckType | OredConditionsType] = field(
+        default_factory=list,
+        metadata={
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "Condition",
+                    "type": ComparisonCheckType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+                {
+                    "name": "ORedConditions",
+                    "type": ForwardRef("OredConditionsType"),
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+            ),
+            "min_occurs": 2,
+        },
     )
 
 
@@ -3352,9 +3342,7 @@ class ArgumentAndedConditionsType(BaseConditionsType):
     class Meta:
         name = "ArgumentANDedConditionsType"
 
-    condition_or_ored_conditions: list[
-        ArgumentComparisonCheckType | ArgumentOredConditionsType
-    ] = field(
+    choice: list[ArgumentComparisonCheckType | ArgumentOredConditionsType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -3402,9 +3390,7 @@ class ArgumentInputSetType:
     Identical to InputSetType but supports argument instance references.
     """
 
-    input_parameter_instance_ref_or_input_argument_instance_ref: list[
-        InputParameterInstanceRefType | ArgumentInstanceRefType
-    ] = field(
+    choice: list[InputParameterInstanceRefType | ArgumentInstanceRefType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -3447,9 +3433,7 @@ class ComparisonListType:
 
 @dataclass(kw_only=True)
 class InputSetType:
-    input_parameter_instance_ref_or_constant: list[
-        InputParameterInstanceRefType | ConstantType
-    ] = field(
+    choice: list[InputParameterInstanceRefType | ConstantType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -3597,7 +3581,7 @@ class PercentCompleteType:
     See ExecutionVerifierType.
     """
 
-    fixed_value_or_dynamic_value: None | float | DynamicValueType = field(
+    choice: None | float | DynamicValueType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -3714,9 +3698,7 @@ class ArgumentOredConditionsType(BaseConditionsType):
     class Meta:
         name = "ArgumentORedConditionsType"
 
-    condition_or_anded_conditions: list[
-        ArgumentComparisonCheckType | ArgumentAndedConditionsType
-    ] = field(
+    choice: list[ArgumentComparisonCheckType | ArgumentAndedConditionsType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -3829,7 +3811,7 @@ class CalibratorType(BaseCalibratorType):
     value for users (e.g. a float).
     """
 
-    spline_calibrator_or_polynomial_calibrator_or_math_operation_calibrator: (
+    choice: (
         None
         | SplineCalibratorType
         | PolynomialCalibratorType
@@ -3986,26 +3968,24 @@ class OredConditionsType(BaseConditionsType):
     class Meta:
         name = "ORedConditionsType"
 
-    condition_or_anded_conditions: list[ComparisonCheckType | AndedConditionsType] = (
-        field(
-            default_factory=list,
-            metadata={
-                "type": "Elements",
-                "choices": (
-                    {
-                        "name": "Condition",
-                        "type": ComparisonCheckType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                    {
-                        "name": "ANDedConditions",
-                        "type": AndedConditionsType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                ),
-                "min_occurs": 2,
-            },
-        )
+    choice: list[ComparisonCheckType | AndedConditionsType] = field(
+        default_factory=list,
+        metadata={
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "Condition",
+                    "type": ComparisonCheckType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+                {
+                    "name": "ANDedConditions",
+                    "type": AndedConditionsType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+            ),
+            "min_occurs": 2,
+        },
     )
 
 
@@ -4047,9 +4027,7 @@ class ServiceType(NameDescriptionType):
     Holds a set of services, logical groups of containers OR messages (not both).
     """
 
-    message_ref_set_or_container_ref_set: (
-        None | MessageRefSetType | ContainerRefSetType
-    ) = field(
+    choice: None | MessageRefSetType | ContainerRefSetType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -4116,7 +4094,7 @@ class ArgumentBooleanExpressionType:
     Identical to BooleanExpressionType but supports argument instance references.
     """
 
-    condition_or_anded_conditions_or_ored_conditions: (
+    choice: (
         None
         | ArgumentComparisonCheckType
         | ArgumentAndedConditionsType
@@ -4194,30 +4172,30 @@ class BooleanExpressionType:
     Holds an arbitrarily complex boolean expression.
     """
 
-    condition_or_anded_conditions_or_ored_conditions: (
-        None | ComparisonCheckType | AndedConditionsType | OredConditionsType
-    ) = field(
-        default=None,
-        metadata={
-            "type": "Elements",
-            "choices": (
-                {
-                    "name": "Condition",
-                    "type": ComparisonCheckType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "ANDedConditions",
-                    "type": AndedConditionsType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "ORedConditions",
-                    "type": OredConditionsType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-            ),
-        },
+    choice: None | ComparisonCheckType | AndedConditionsType | OredConditionsType = (
+        field(
+            default=None,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "Condition",
+                        "type": ComparisonCheckType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "ANDedConditions",
+                        "type": AndedConditionsType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "ORedConditions",
+                        "type": OredConditionsType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                ),
+            },
+        )
     )
 
 
@@ -4227,12 +4205,12 @@ class FrameStreamType(PcmstreamType):
     The top level type definition for all data streams that are frame based.
 
     Attributes:
-        container_ref_or_service_ref:
+        choice:
         stream_ref: This is a reference to a connecting stream - say a custom
             stream.
     """
 
-    container_ref_or_service_ref: None | ContainerRefType | ServiceRefType = field(
+    choice: None | ContainerRefType | ServiceRefType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -4308,13 +4286,13 @@ class ParameterToSetType(ParameterRefType):
     the command has been verified (all verifications have passed).
 
     Attributes:
-        derivation_or_new_value:
+        choice:
         set_on_verification: This attribute provides more specific control over
             when the Parameter value is set.  By default, it is when the command
             have all verifications complete.  See VerifierEnumerationType.
     """
 
-    derivation_or_new_value: None | MathOperationType | str = field(
+    choice: None | MathOperationType | str = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -4847,9 +4825,7 @@ class CommandVerifierType(OptionalNameDescriptionType):
             ),
         },
     )
-    check_window_or_check_window_algorithms: (
-        None | CheckWindowType | CheckWindowAlgorithmsType
-    ) = field(
+    choice_1: None | CheckWindowType | CheckWindowAlgorithmsType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -4945,7 +4921,7 @@ class ErrorDetectCorrectType:
     Describe error detection/correction algorithm.
     """
 
-    checksum_or_crc_or_parity: None | ChecksumType | Crctype | ParityType = field(
+    choice: None | ChecksumType | Crctype | ParityType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -5256,7 +5232,7 @@ class AlarmType(BaseAlarmType):
     NumericAlarmType, StringAlarmType, TimeAlarmType, TimeAlarmConditionType.
 
     Attributes:
-        alarm_conditions_or_custom_alarm:
+        choice:
         min_violations: The number of successive instances that meet the alarm
             conditions for the alarm to trigger. The default is 1.
         min_conformance: Optionally specify the number of successive instances
@@ -5265,25 +5241,23 @@ class AlarmType(BaseAlarmType):
             minViolations (symmetric).
     """
 
-    alarm_conditions_or_custom_alarm: None | AlarmConditionsType | CustomAlarmType = (
-        field(
-            default=None,
-            metadata={
-                "type": "Elements",
-                "choices": (
-                    {
-                        "name": "AlarmConditions",
-                        "type": AlarmConditionsType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                    {
-                        "name": "CustomAlarm",
-                        "type": CustomAlarmType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                ),
-            },
-        )
+    choice: None | AlarmConditionsType | CustomAlarmType = field(
+        default=None,
+        metadata={
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "AlarmConditions",
+                    "type": AlarmConditionsType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+                {
+                    "name": "CustomAlarm",
+                    "type": CustomAlarmType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+            ),
+        },
     )
     min_violations: int = field(
         default=1,
@@ -5309,9 +5283,7 @@ class AlgorithmSetType:
     An unordered collection of algorithms.
     """
 
-    custom_algorithm_or_math_algorithm: list[
-        InputOutputTriggerAlgorithmType | MathAlgorithmType
-    ] = field(
+    choice: list[InputOutputTriggerAlgorithmType | MathAlgorithmType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -5713,30 +5685,30 @@ class ArgumentIntegerValueType:
     Identical to IntegerValueType but supports argument instance references.
     """
 
-    fixed_value_or_dynamic_value_or_discrete_lookup_list: (
-        None | int | ArgumentDynamicValueType | ArgumentDiscreteLookupListType
-    ) = field(
-        default=None,
-        metadata={
-            "type": "Elements",
-            "choices": (
-                {
-                    "name": "FixedValue",
-                    "type": int,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "DynamicValue",
-                    "type": ArgumentDynamicValueType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "DiscreteLookupList",
-                    "type": ArgumentDiscreteLookupListType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-            ),
-        },
+    choice: None | int | ArgumentDynamicValueType | ArgumentDiscreteLookupListType = (
+        field(
+            default=None,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "FixedValue",
+                        "type": int,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "DynamicValue",
+                        "type": ArgumentDynamicValueType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "DiscreteLookupList",
+                        "type": ArgumentDiscreteLookupListType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                ),
+            },
+        )
     )
 
 
@@ -5746,7 +5718,7 @@ class ArgumentVariableStringType:
     Identical to VariableStringType but supports argument instance references.
 
     Attributes:
-        dynamic_value_or_discrete_lookup_list:
+        choice:
         leading_size: In some string implementations, the size of the string
             contents (not the memory allocation size) is determined by a leading
             numeric value.  This is sometimes referred to as Pascal strings.  If
@@ -5760,9 +5732,7 @@ class ArgumentVariableStringType:
             all reported instances of the string.
     """
 
-    dynamic_value_or_discrete_lookup_list: (
-        None | ArgumentDynamicValueType | ArgumentDiscreteLookupListType
-    ) = field(
+    choice: None | ArgumentDynamicValueType | ArgumentDiscreteLookupListType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -5973,9 +5943,7 @@ class IntegerValueType:
     parameter.
     """
 
-    fixed_value_or_dynamic_value_or_discrete_lookup_list: (
-        None | int | DynamicValueType | DiscreteLookupListType
-    ) = field(
+    choice: None | int | DynamicValueType | DiscreteLookupListType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -6054,7 +6022,7 @@ class ParameterSetType:
     TelemetryMetaDataType and CommandMetaDataType.
     """
 
-    parameter_or_parameter_ref: list[ParameterType | ParameterRefType] = field(
+    choice: list[ParameterType | ParameterRefType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",
@@ -6158,7 +6126,7 @@ class VariableStringType:
     Describe a variable string whose length may change between samples.
 
     Attributes:
-        dynamic_value_or_discrete_lookup_list:
+        choice:
         leading_size: In some string implementations, the size of the string
             contents (not the memory allocation size) is determined by a leading
             numeric value.  This is sometimes referred to as Pascal strings.  If
@@ -6172,9 +6140,7 @@ class VariableStringType:
             all reported instances of the string.
     """
 
-    dynamic_value_or_discrete_lookup_list: (
-        None | DynamicValueType | DiscreteLookupListType
-    ) = field(
+    choice: None | DynamicValueType | DiscreteLookupListType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -6418,29 +6384,27 @@ class ArgumentStringDataEncodingType(DataEncodingType):
     Identical to StringDataEncodingType but supports argument instance references.
 
     Attributes:
-        size_in_bits_or_variable:
+        choice:
         encoding: The character set encoding of this string data type.
     """
 
-    size_in_bits_or_variable: None | SizeInBitsType | ArgumentVariableStringType = (
-        field(
-            default=None,
-            metadata={
-                "type": "Elements",
-                "choices": (
-                    {
-                        "name": "SizeInBits",
-                        "type": SizeInBitsType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                    {
-                        "name": "Variable",
-                        "type": ArgumentVariableStringType,
-                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                    },
-                ),
-            },
-        )
+    choice: None | SizeInBitsType | ArgumentVariableStringType = field(
+        default=None,
+        metadata={
+            "type": "Elements",
+            "choices": (
+                {
+                    "name": "SizeInBits",
+                    "type": SizeInBitsType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+                {
+                    "name": "Variable",
+                    "type": ArgumentVariableStringType,
+                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                },
+            ),
+        },
     )
     encoding: StringEncodingType = field(
         default=StringEncodingType.UTF_8,
@@ -6794,30 +6758,30 @@ class StreamSetType:
     Contains an unordered set of Streams.
     """
 
-    fixed_frame_stream_or_variable_frame_stream_or_custom_stream: list[
-        FixedFrameStreamType | VariableFrameStreamType | CustomStreamType
-    ] = field(
-        default_factory=list,
-        metadata={
-            "type": "Elements",
-            "choices": (
-                {
-                    "name": "FixedFrameStream",
-                    "type": FixedFrameStreamType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "VariableFrameStream",
-                    "type": VariableFrameStreamType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-                {
-                    "name": "CustomStream",
-                    "type": CustomStreamType,
-                    "namespace": "http://www.omg.org/spec/XTCE/20180204",
-                },
-            ),
-        },
+    choice: list[FixedFrameStreamType | VariableFrameStreamType | CustomStreamType] = (
+        field(
+            default_factory=list,
+            metadata={
+                "type": "Elements",
+                "choices": (
+                    {
+                        "name": "FixedFrameStream",
+                        "type": FixedFrameStreamType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "VariableFrameStream",
+                        "type": VariableFrameStreamType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                    {
+                        "name": "CustomStream",
+                        "type": CustomStreamType,
+                        "namespace": "http://www.omg.org/spec/XTCE/20180204",
+                    },
+                ),
+            },
+        )
     )
 
 
@@ -6846,11 +6810,11 @@ class StringDataEncodingType(DataEncodingType):
     See StringDataType.
 
     Attributes:
-        size_in_bits_or_variable:
+        choice:
         encoding: The character set encoding of this string data type.
     """
 
-    size_in_bits_or_variable: None | SizeInBitsType | VariableStringType = field(
+    choice: None | SizeInBitsType | VariableStringType = field(
         default=None,
         metadata={
             "type": "Elements",
@@ -9712,9 +9676,7 @@ class MetaCommandSetType:
     BlockMetaCommand. See MetaCommandType and BlockMetaCommandType.
     """
 
-    meta_command_or_meta_command_ref_or_block_meta_command: list[
-        MetaCommandType | str | BlockMetaCommandType
-    ] = field(
+    choice: list[MetaCommandType | str | BlockMetaCommandType] = field(
         default_factory=list,
         metadata={
             "type": "Elements",

@@ -6,7 +6,7 @@
     <Structure>single-package</Structure>
     <DocstringStyle>Google</DocstringStyle>
     <RelativeImports>false</RelativeImports>
-    <CompoundFields defaultName="choice" useSubstitutionGroups="false" forceDefaultName="false" maxNameParts="3">true</CompoundFields>
+    <CompoundFields defaultName="choice" useSubstitutionGroups="false" forceDefaultName="true" maxNameParts="3">true</CompoundFields>
     <WrapperFields>false</WrapperFields>
     <UnnestClasses>false</UnnestClasses>
     <IgnorePatterns>false</IgnorePatterns>
