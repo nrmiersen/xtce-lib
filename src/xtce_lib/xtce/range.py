@@ -114,7 +114,7 @@ class ValidIntegerRange(IntegerRange):
     """
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
@@ -184,7 +184,7 @@ class ValidIntegerRanges(XtceBaseModel):
     """
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
@@ -355,7 +355,7 @@ class ValidFloatRange(FloatRange):
     applies_to_calibrated: bool = Field(default=True)
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
@@ -433,7 +433,7 @@ class ValidFloatRanges(XtceBaseModel):
     """
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
@@ -510,7 +510,7 @@ class MultiRange(FloatRange):
     """The concern level of this alarm range."""
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod

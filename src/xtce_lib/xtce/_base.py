@@ -5,16 +5,22 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum
-from typing import Any, Literal, Self, TypeVar, assert_never, overload
+from typing import TYPE_CHECKING, Any, Literal, Self, TypeVar, assert_never, overload
 
 from pydantic import BaseModel, ConfigDict
 
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
+from xtce_lib.common.xtce_path import XtcePath
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import (
     DowngradePolicy,
     XtceDowngradeError,
     XtceUnsupportedError,
 )
+
+if TYPE_CHECKING:
+    from xtce_lib.common.xtce_registry import XtceRegistry
+
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -29,6 +35,16 @@ class XtceBaseModel(BaseModel, ABC):
         from_attributes=True,
         extra="forbid",
     )
+
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
+        """Validate this object's semantics."""
+        # If no subclass overrides this, nothing happens here
+        pass
 
     @classmethod
     def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
@@ -60,15 +76,15 @@ class XtceBaseModel(BaseModel, ABC):
                 assert_never(version)
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
-    def _from_v1_2(cls, raw_obj: Any) -> Self:
+    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
 
     @classmethod
-    def _from_v1_3(cls, raw_obj: Any) -> Self:
+    def _from_v1_3(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
 
     def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
@@ -187,15 +203,15 @@ class XtceBaseEnum(str, Enum):
     """Base class for unified XTCE enumerations."""
 
     @classmethod
-    def _from_v1_1(cls, raw_obj: Any) -> Self:
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
 
     @classmethod
-    def _from_v1_2(cls, raw_obj: Any) -> Self:
+    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
 
     @classmethod
-    def _from_v1_3(cls, raw_obj: Any) -> Self:
+    def _from_v1_3(cls: type[Self], raw_obj: Any) -> Self:
         raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
 
     def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:

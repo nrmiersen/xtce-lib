@@ -256,6 +256,7 @@ class TimeUnits(XtceBaseEnum):
     PICOSECONDS = "picoseconds"
     MINUTES = "minutes"
     """Not supported by XTCE 1.2."""
+
     HOURS = "hours"
     """Not supported by XTCE 1.2."""
 

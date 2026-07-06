@@ -40,5 +40,5 @@ class XtceUnsupportedError(ValueError):
     def __init__(self, version: XtceVersion, element_name: str) -> None:
         """Initialize the exception with the unsupported element and version."""
         super().__init__(
-            f"XTCE {version.value} does not support the '{element_name}' element."
+            f"XTCE {version.value.module_name} does not support the '{element_name}' element."
         )
