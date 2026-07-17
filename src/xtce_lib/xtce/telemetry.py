@@ -25,7 +25,7 @@ from .stream import CustomStream, FixedFrameStream, VariableFrameStream
 
 
 class Message(NameDescriptionBase):
-    match_criteria: MatchCriteria = Field(...)
+    match_criteria: MatchCriteria
     container_ref: str = Field(
         ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
     )

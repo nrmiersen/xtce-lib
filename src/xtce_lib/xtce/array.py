@@ -68,17 +68,17 @@ class Dimension(XtceBaseModel):
         def unpack_index(
             integer_value: xtce_1_2.IntegerValueType,
         ) -> int | DynamicValue | DiscreteLookupList:
-            match integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list:
+            match integer_value.choice:
                 case int():
-                    return integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list
+                    return integer_value.choice
                 case xtce_1_2.DynamicValueType():
                     return DynamicValue.from_xsdata(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list,
+                        integer_value.choice,
                         version,
                     )
                 case xtce_1_2.DiscreteLookupListType():
                     return DiscreteLookupList.from_xsdata(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list,
+                        integer_value.choice,
                         version,
                     )
                 case None:
@@ -86,9 +86,7 @@ class Dimension(XtceBaseModel):
                         "invalid XTCE XML: dimension index is missing a value"
                     )
                 case _:
-                    assert_never(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list
-                    )
+                    assert_never(integer_value.choice)
 
         return cls(
             start_index=unpack_index(dimension.starting_index),
@@ -102,17 +100,17 @@ class Dimension(XtceBaseModel):
         def unpack_index(
             integer_value: xtce_1_3.IntegerValueType,
         ) -> int | DynamicValue | DiscreteLookupList:
-            match integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list:
+            match integer_value.choice:
                 case int():
-                    return integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list
+                    return integer_value.choice
                 case xtce_1_3.DynamicValueType():
                     return DynamicValue.from_xsdata(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list,
+                        integer_value.choice,
                         version,
                     )
                 case xtce_1_3.DiscreteLookupListType():
                     return DiscreteLookupList.from_xsdata(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list,
+                        integer_value.choice,
                         version,
                     )
                 case None:
@@ -120,9 +118,7 @@ class Dimension(XtceBaseModel):
                         "invalid XTCE XML: dimension index is missing a value"
                     )
                 case _:
-                    assert_never(
-                        integer_value.fixed_value_or_dynamic_value_or_discrete_lookup_list
-                    )
+                    assert_never(integer_value.choice)
 
         return cls(
             start_index=unpack_index(dimension.starting_index),
@@ -139,33 +135,21 @@ class Dimension(XtceBaseModel):
         ) -> xtce_1_2.IntegerValueType:
             match value:
                 case int():
-                    return xtce_1_2.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value
-                    )
+                    return xtce_1_2.IntegerValueType(choice=value)
                 case DynamicValue():
                     return xtce_1_2.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value.to_xsdata(
-                            version, policy
-                        )
+                        choice=value.to_xsdata(version, policy)
                     )
                 case DiscreteLookupList():
                     return xtce_1_2.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value.to_xsdata(
-                            version, policy
-                        )
+                        choice=value.to_xsdata(version, policy)
                     )
 
         return xtce_1_2.DimensionType(
             starting_index=xtce_1_2.IntegerValueType(
-                fixed_value_or_dynamic_value_or_discrete_lookup_list=pack_index(
-                    self.start_index
-                )
+                choice=pack_index(self.start_index)
             ),
-            ending_index=xtce_1_2.IntegerValueType(
-                fixed_value_or_dynamic_value_or_discrete_lookup_list=pack_index(
-                    self.end_index
-                )
-            ),
+            ending_index=xtce_1_2.IntegerValueType(choice=pack_index(self.end_index)),
         )
 
     def _to_v1_3(
@@ -178,33 +162,21 @@ class Dimension(XtceBaseModel):
         ) -> xtce_1_3.IntegerValueType:
             match value:
                 case int():
-                    return xtce_1_3.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value
-                    )
+                    return xtce_1_3.IntegerValueType(choice=value)
                 case DynamicValue():
                     return xtce_1_3.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value.to_xsdata(
-                            version, policy
-                        )
+                        choice=value.to_xsdata(version, policy)
                     )
                 case DiscreteLookupList():
                     return xtce_1_3.IntegerValueType(
-                        fixed_value_or_dynamic_value_or_discrete_lookup_list=value.to_xsdata(
-                            version, policy
-                        )
+                        choice=value.to_xsdata(version, policy)
                     )
 
         return xtce_1_3.DimensionType(
             starting_index=xtce_1_3.IntegerValueType(
-                fixed_value_or_dynamic_value_or_discrete_lookup_list=pack_index(
-                    self.start_index
-                )
+                choice=pack_index(self.start_index)
             ),
-            ending_index=xtce_1_3.IntegerValueType(
-                fixed_value_or_dynamic_value_or_discrete_lookup_list=pack_index(
-                    self.end_index
-                )
-            ),
+            ending_index=xtce_1_3.IntegerValueType(choice=pack_index(self.end_index)),
         )
 
 

@@ -57,7 +57,7 @@ class ArgumentAssignment(XtceBaseModel):
     name: str = Field(
         ..., pattern=r"([^\.\[\]:/ \t]+(\[[0-9]+\])*(\.[^\.\[\]:/ \t]+(\[[0-9]+\])*)*)"
     )
-    value: str = Field(...)  # TODO figure out typing
+    value: str  # TODO figure out typing
     # TODO validate type of value, validate ranges, validate enumerations
 
 
@@ -87,8 +87,8 @@ class Significance(XtceBaseModel):
 
 
 class ContextSignificance(XtceBaseModel):
-    context_match: ContextMatch = Field(...)
-    significance: Significance = Field(...)
+    context_match: ContextMatch
+    significance: Significance
 
 
 class Interlock(XtceBaseModel):
@@ -106,7 +106,7 @@ class ParameterToSet(XtceBaseModel):
 
 
 class ParameterToSuspendAlarmsOn(ParameterRef):
-    suspense_time: datetime.timedelta = Field(...)  # XmlDuration
+    suspense_time: datetime.timedelta  # XmlDuration
     verifier_to_trigger_on: VerifierType = Field(default=VerifierType.RELEASE)
 
 

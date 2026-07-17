@@ -304,7 +304,6 @@ from .trigger import (
 )
 from .verifier import (
     AcceptedVerifier,
-    ChangeValue,
     CheckWindow,
     CheckWindowAlgorithms,
     CommandVerifier,
@@ -581,7 +580,6 @@ __all__ = [
     "OnPeriodicRateTrigger",
     "TriggerSet",
     "AcceptedVerifier",
-    "ChangeValue",
     "CheckWindow",
     "CheckWindowAlgorithms",
     "CommandVerifier",

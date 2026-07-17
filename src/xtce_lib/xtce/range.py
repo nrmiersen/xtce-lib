@@ -506,7 +506,7 @@ class MultiRange(FloatRange):
 
     """
 
-    level: ConcernLevel = Field(...)
+    level: ConcernLevel
     """The concern level of this alarm range."""
 
     @classmethod

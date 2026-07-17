@@ -89,7 +89,7 @@ class BaseData(NameDescriptionBase):
         | StringDataEncoding
         | BinaryDataEncoding
         | None
-    ) = Field(...)
+    )
     """Optional encoding information for this data type.
 
     This is only necessary if this data type is telemetered in some form. Local
@@ -111,7 +111,7 @@ class ArgumentBaseData(NameDescriptionBase):
         | ArgumentStringDataEncoding
         | ArgumentBinaryDataEncoding
         | None
-    ) = Field(...)
+    )
     base_type: str | None = Field(
         default=None, pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
     )
@@ -132,7 +132,7 @@ class NumberFormat(XtceBaseModel):
 
 
 class ToString(XtceBaseModel):
-    number_format: NumberFormat = Field(...)
+    number_format: NumberFormat
 
 
 class IntegerData(BaseData):
@@ -202,9 +202,9 @@ class ArgumentBooleanData(ArgumentBaseData):
 
 
 class ValueEnumeration(XtceBaseModel):
-    value: int = Field(...)
+    value: int
     max_value: int | None = Field(default=None)
-    label: str = Field(...)
+    label: str
     short_description: str | None = Field(default=None)
 
 

@@ -1,6 +1,12 @@
 """Calibrator models."""
 
+from typing import Any, Self
+
 from pydantic import Field
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from .common import AncillaryData
@@ -31,8 +37,8 @@ class MathOperationCalibrator(XtceBaseModel):
 
 class SplinePoint(XtceBaseModel):
     order: int = Field(default=1, ge=0)
-    raw: float = Field(...)
-    calibrated: float = Field(...)
+    raw: float
+    calibrated: float
 
 
 class SplineCalibrator(BaseCalibrator):
@@ -42,7 +48,7 @@ class SplineCalibrator(BaseCalibrator):
 
 
 class Term(XtceBaseModel):
-    coefficient: float = Field(...)
+    coefficient: float
     exponent: int = Field(..., ge=0)
 
 
@@ -57,12 +63,47 @@ class Calibrator(BaseCalibrator):
 
 
 class ContextCalibrator(XtceBaseModel):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class LinearAdjustment(XtceBaseModel):
-    slope: float = Field(default=1.0)
-    intercept: float = Field(default=0.0)
+    """A linear adjustment to apply to a parameter value.
+
+    The default values of slope=1.0 and intercept=0.0 result in no adjustment being
+    applied.
+
+    """
+
+    slope: float = 1.0
+    """The slope of the linear adjustment."""
+
+    intercept: float = 0.0
+    """The intercept of the linear adjustment."""
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.LinearAdjustmentType) -> Self:
+        return cls(slope=(raw_obj.slope or 1.0), intercept=raw_obj.intercept)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.LinearAdjustmentType) -> Self:
+        return cls(slope=raw_obj.slope, intercept=raw_obj.intercept)
+
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.LinearAdjustmentType:
+        return xtce_1_2.LinearAdjustmentType(slope=self.slope, intercept=self.intercept)
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.LinearAdjustmentType:
+        return xtce_1_3.LinearAdjustmentType(slope=self.slope, intercept=self.intercept)
 
 
 class MathOperation(MathOperationCalibrator):

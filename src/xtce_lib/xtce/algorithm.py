@@ -15,7 +15,7 @@ from .trigger import TriggerSet
 
 
 class Constant(XtceBaseModel):
-    constant_name: str = Field(...)
+    constant_name: str
     value: str = Field(
         ...
     )  # TODO figure out how this is represented in xsd, should I enforce some types here?
@@ -27,8 +27,8 @@ class AlgorithmText(XtceBaseModel):
 
 
 class ExternalAlgorithm(XtceBaseModel):
-    implementation_name: str = Field(...)
-    algorithm_location: str = Field(...)
+    implementation_name: str
+    algorithm_location: str
 
 
 class SimpleAlgorithm(NameDescriptionBase):
@@ -49,7 +49,7 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
 
 
 class TriggeredMathOperation(MathOperation):
-    trigger_set: TriggerSet = Field(...)
+    trigger_set: TriggerSet
     output_parameter_ref: str = Field(
         ...,
         pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+([^\.\[\]:/ \t]+(\[[0-9]+\])*(\.[^\.\[\]:/ \t]+(\[[0-9]+\])*)*)*",
@@ -57,7 +57,7 @@ class TriggeredMathOperation(MathOperation):
 
 
 class MathAlgorithm(NameDescriptionBase):
-    math_operation: TriggeredMathOperation = Field(...)
+    math_operation: TriggeredMathOperation
 
 
 class InputOutputAlgorithm(InputAlgorithm):
@@ -78,7 +78,7 @@ class Checksum(XtceBaseModel):
     input_algorithm: InputAlgorithm | None = Field(default=None)
     bits_from_reference: int = Field(default=0, ge=0)
     reference: ReferencePoint = Field(default=ReferencePoint.START)
-    name: ChecksumTypeName = Field(...)
+    name: ChecksumTypeName
     hash_size_in_bits: int | None = Field(default=None, ge=1)
     parameter_ref: str | None = Field(
         default=None,
@@ -87,7 +87,7 @@ class Checksum(XtceBaseModel):
 
 
 class CRC(XtceBaseModel):
-    polynomial: bytes = Field(...)
+    polynomial: bytes
     init_remainder: bytes | None = Field(default=None)
     final_xor: bytes | None = Field(default=None)
     width: int = Field(..., ge=1)
@@ -112,7 +112,7 @@ class XOR(XtceBaseModel):
 
 
 class Parity(XtceBaseModel):
-    parity_form: ParityForm = Field(...)
+    parity_form: ParityForm
     bits_from_reference: int = Field(default=0, ge=0)
     reference: ReferencePoint = Field(default=ReferencePoint.START)
     parameter_ref: str | None = Field(

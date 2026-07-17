@@ -156,12 +156,12 @@ class ArgumentStreamSegmentEntry(ArgumentSequenceEntry):
 
 
 class IndirectParameterRefEntry(SequenceEntry):
-    parameter_instance: ParameterInstanceRef = Field(...)
+    parameter_instance: ParameterInstanceRef
     alias_name_space: str | None = Field(default=None)
 
 
 class ArgumentIndirectParameterRefEntry(ArgumentSequenceEntry):
-    parameter_instance: ParameterInstanceRef = Field(...)
+    parameter_instance: ParameterInstanceRef
     alias_name_space: str | None = Field(default=None)
 
 
@@ -243,8 +243,8 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
 
 class ArgumentFixedValueEntry(ArgumentSequenceEntry):
     name: str | None = Field(default=None)
-    binary_value: bytes = Field(...)
-    size_in_bits: int = Field(...)
+    binary_value: bytes
+    size_in_bits: int
 
 
 class CommandContainer(Container):

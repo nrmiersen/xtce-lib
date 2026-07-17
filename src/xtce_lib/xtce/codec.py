@@ -1,8 +1,12 @@
 """Encoding/decoding models."""
 
-from typing import Literal
+from typing import Any, Literal, Self
 
 from pydantic import Field
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from .algorithm import (
@@ -29,19 +33,72 @@ from .reference import ArgumentInstanceRef, ParameterInstanceRef
 class DynamicValue(XtceBaseModel):
     """A value obtained by a reference to a parameter instance.
 
-    The parameter value may be optionally adjusted by a linear function or use a series
-    of boolean expressions to lookup the value. Anything more complex and a DynamicValue
-    with a CustomAlgorithm may be used.
+    The parameter value may be optionally adjusted by a linear function.
 
     """
 
-    parameter_instance: ParameterInstanceRef = Field(...)
-    """Retrieve the value by referencing the value of a parameter."""
+    parameter_instance: ParameterInstanceRef
+    """The parameter instance being referenced."""
 
-    linear_adjustment: LinearAdjustment | None = Field(default=None)
-    """A slope and intercept may be applied to scale or shift the value selected from
-    the parameter.
-    """
+    linear_adjustment: LinearAdjustment | None = None
+    """An optional linear adjustment applied to the referenced parameter value."""
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.DynamicValueType) -> Self:
+        return cls(
+            parameter_instance=ParameterInstanceRef.from_xsdata(
+                raw_obj.parameter_instance_ref, XtceVersion.V1_2
+            ),
+            linear_adjustment=LinearAdjustment.from_xsdata(
+                raw_obj.linear_adjustment, XtceVersion.V1_2
+            )
+            if raw_obj.linear_adjustment
+            else None,
+        )
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.DynamicValueType) -> Self:
+        return cls(
+            parameter_instance=ParameterInstanceRef.from_xsdata(
+                raw_obj.parameter_instance_ref, XtceVersion.V1_3
+            ),
+            linear_adjustment=LinearAdjustment.from_xsdata(
+                raw_obj.linear_adjustment, XtceVersion.V1_3
+            )
+            if raw_obj.linear_adjustment
+            else None,
+        )
+
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.DynamicValueType:
+        return xtce_1_2.DynamicValueType(
+            parameter_instance_ref=self.parameter_instance.to_xsdata(
+                XtceVersion.V1_2, policy
+            ),
+            linear_adjustment=self.linear_adjustment.to_xsdata(XtceVersion.V1_2, policy)
+            if self.linear_adjustment
+            else None,
+        )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.DynamicValueType:
+        return xtce_1_3.DynamicValueType(
+            parameter_instance_ref=self.parameter_instance.to_xsdata(
+                XtceVersion.V1_3, policy
+            ),
+            linear_adjustment=self.linear_adjustment.to_xsdata(XtceVersion.V1_3, policy)
+            if self.linear_adjustment
+            else None,
+        )
 
 
 class ArgumentDynamicValue(XtceBaseModel):
@@ -66,7 +123,7 @@ class VariableString(XtceBaseModel):
     table.
     """
 
-    string_boundary: LeadingSize | TerminationCharacter = Field(...)
+    string_boundary: LeadingSize | TerminationCharacter
     """The method used to determine the end of the string, either by a leading size or a
     termination character.
     """
@@ -82,7 +139,7 @@ class ArgumentVariableString(XtceBaseModel):
     length_source: ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(
         default=None
     )
-    string_boundary: LeadingSize | TerminationCharacter = Field(...)
+    string_boundary: LeadingSize | TerminationCharacter
     max_size_in_bits: int = Field(..., ge=1)
 
 
@@ -120,7 +177,6 @@ class DataEncoding(XtceBaseModel):
     (0x0D), 1 (0x0C), 2 (0x0B), 3 (0x0A) with 0 being first in the list.
 
     """
-
 
 class IntegerDataEncoding(DataEncoding):
     """Describes how an integer value is sent or received from some device."""
@@ -239,7 +295,6 @@ class BinaryDataEncoding(DataEncoding):
 
     to_binary_transform_algorithm: InputAlgorithm | None = Field(default=None)
     """Used to convert to binary data from an application data type."""
-
 
 class ArgumentBinaryDataEncoding(DataEncoding):
     size_in_bits: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = (

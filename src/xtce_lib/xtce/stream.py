@@ -16,8 +16,8 @@ class PcmStream(NameDescriptionBase):
 
 
 class CustomStream(PcmStream):
-    encoding_algorithm: InputAlgorithm = Field(...)
-    decoding_algorithm: InputOutputAlgorithm = Field(...)
+    encoding_algorithm: InputAlgorithm
+    decoding_algorithm: InputOutputAlgorithm
     encoded_stream_ref: str = Field(
         ..., pattern=r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
     )
@@ -52,13 +52,13 @@ class SyncPattern(XtceBaseModel):
 
 
 class FixedFrameSyncStrategy(SyncStrategy):
-    sync_pattern: SyncPattern = Field(...)
+    sync_pattern: SyncPattern
 
 
 class FixedFrameStream(FrameStream):
-    sync_strategy: FixedFrameSyncStrategy = Field(...)
+    sync_strategy: FixedFrameSyncStrategy
     sync_aperture_in_bits: int = Field(default=0, ge=0)
-    frame_length_in_bits: int = Field(...)
+    frame_length_in_bits: int
 
 
 class Flag(XtceBaseModel):
@@ -67,11 +67,11 @@ class Flag(XtceBaseModel):
 
 
 class VariableFrameSyncStrategy(SyncStrategy):
-    flag: Flag = Field(...)
+    flag: Flag
 
 
 class VariableFrameStream(FrameStream):
-    sync_strategy: VariableFrameSyncStrategy = Field(...)
+    sync_strategy: VariableFrameSyncStrategy
 
 
 class RateInStream(XtceBaseModel):

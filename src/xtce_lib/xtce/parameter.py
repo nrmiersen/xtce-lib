@@ -106,7 +106,7 @@ class ParameterProperties(XtceBaseModel):
     validity_condition: MatchCriteria | None = Field(default=None)
     physical_addresses: list[PhysicalAddress] = Field(default_factory=list)
     time_association: TimeAssociation | None = Field(default=None)
-    data_source: TelemetryDataSource = Field(...)
+    data_source: TelemetryDataSource
     read_only: bool = Field(default=False)
     persistence: bool = Field(default=True)
 

@@ -1,30 +1,31 @@
 """Unified XTCE enumerations."""
 
-from enum import Enum
-from typing import Self
+import operator
+from enum import StrEnum
+from typing import Any, Callable, Self
 
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
-from xtce_lib.generated import xtce_1_2, xtce_1_3
+from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseEnum
 
 
-class BitOrder(str, Enum):
+class BitOrder(StrEnum):
     """The bit order of the data encoding."""
 
     MOST_SIGNIFICANT_BIT_FIRST = "mostSignificantBitFirst"
     LEAST_SIGNIFICANT_BIT_FIRST = "leastSignificantBitFirst"
 
 
-class Endian(str, Enum):
+class Endian(StrEnum):
     """The endianness of the data encoding."""
 
     BIG = "mostSignificantByteFirst"
     LITTLE = "leastSignificantByteFirst"
 
 
-class FloatEncoding(str, Enum):
+class FloatEncoding(StrEnum):
     """The encoding of a floating point value."""
 
     IEEE754_1985 = "IEEE754_1985"
@@ -35,7 +36,7 @@ class FloatEncoding(str, Enum):
     TI = "TI"
 
 
-class IntegerEncoding(str, Enum):
+class IntegerEncoding(StrEnum):
     """The encoding of an integer value."""
 
     UNSIGNED = "unsigned"
@@ -46,7 +47,7 @@ class IntegerEncoding(str, Enum):
     PACKED_BCD = "packedBCD"
 
 
-class StringEncoding(str, Enum):
+class StringEncoding(StrEnum):
     """The encoding of a string value.
 
     Attributes:
@@ -83,7 +84,7 @@ class StringEncoding(str, Enum):
     UTF_32_BE = "UTF-32BE"
 
 
-class SystemType(str, Enum):
+class SystemType(StrEnum):
     """The type attribute represents what from a space enterprise this SpaceSystem
     element represents.
 
@@ -113,7 +114,7 @@ class SystemType(str, Enum):
     UNKNOWN = "unknown"
 
 
-class UnitForm(str, Enum):
+class UnitForm(StrEnum):
     """Defines enumerated values to categorize a unit associated with a telemetered
     value.
 
@@ -138,7 +139,7 @@ class UnitForm(str, Enum):
     RAW = "raw"
 
 
-class ValidationStatus(str, Enum):
+class ValidationStatus(StrEnum):
     """The validation status of the document."""
 
     UNKNOWN = "Unknown"
@@ -150,7 +151,7 @@ class ValidationStatus(str, Enum):
     WITHDRAWN = "Withdrawn"
 
 
-class RangeForm(str, Enum):
+class RangeForm(StrEnum):
     """Defines inside and outside enumerated terms.
 
     Attributes:
@@ -167,7 +168,7 @@ class RangeForm(str, Enum):
     INSIDE = "inside"
 
 
-class ChangeSpan(str, Enum):
+class ChangeSpan(StrEnum):
     """Defines a changePerSecond and changePerSample for use in rate of change alarms.
 
     Used by ChangeAlarmRangesType.
@@ -178,7 +179,7 @@ class ChangeSpan(str, Enum):
     CHANGE_PER_SAMPLE = "changePerSample"
 
 
-class ChangeBasis(str, Enum):
+class ChangeBasis(StrEnum):
     """Defines absoluteChange and percentageChange for use in rate of change alarms.
 
     Used by ChangeAlarmRangesType.
@@ -189,7 +190,7 @@ class ChangeBasis(str, Enum):
     PERCENTAGE_CHANGE = "percentageChange"
 
 
-class ConcernLevel(str, Enum):
+class ConcernLevel(StrEnum):
     """Defines six levels: Normal, Watch, Warning, Distress, Critical and Severe, in
     that order of concern from least to most.
 
@@ -378,7 +379,7 @@ class TimeAssociationUnits(XtceBaseEnum):
         return xtce_1_3.TimeAssociationUnitType(self.value)
 
 
-class TelemetryDataSource(str, Enum):
+class TelemetryDataSource(StrEnum):
     """A telemetered Parameter is one that will have values in telemetry.
 
     A derived Parameter is one that is calculated, usually by an Algorithm. A constant
@@ -396,7 +397,7 @@ class TelemetryDataSource(str, Enum):
     GROUND = "ground"
 
 
-class ReferenceLocation(str, Enum):
+class ReferenceLocation(StrEnum):
     """The location may be relative to the start of the container (containerStart),
     relative to the end of the previous entry (previousEntry), relative to the end of
     the container (containerEnd), or relative to the entry that follows this one
@@ -414,7 +415,7 @@ class ReferenceLocation(str, Enum):
     NEXT_ENTRY = "nextEntry"
 
 
-class Basis(str, Enum):
+class Basis(StrEnum):
     """Defines to type of update rates: perSecond and perContainerUpdate.
 
     See RateInStreamType.
@@ -425,7 +426,7 @@ class Basis(str, Enum):
     PER_CONTAINER_UPDATE = "perContainerUpdate"
 
 
-class PcmType(str, Enum):
+class PcmType(StrEnum):
     NRZL = "NRZL"
     NRZM = "NRZM"
     NRZS = "NRZS"
@@ -434,17 +435,17 @@ class PcmType(str, Enum):
     BI_PHASE_S = "BiPhaseS"
 
 
-class FlagBit(str, Enum):
+class FlagBit(StrEnum):
     ZEROS = "zeros"
     ONES = "ones"
 
 
-class ReferencePoint(str, Enum):
+class ReferencePoint(StrEnum):
     START = "start"
     END = "end"
 
 
-class ChecksumTypeName(Enum):
+class ChecksumTypeName(StrEnum):
     """Attributes:
     UNIX_SUM:
     SUM8:
@@ -480,12 +481,12 @@ class ChecksumTypeName(Enum):
     CUSTOM = "custom"
 
 
-class ParityForm(str, Enum):
+class ParityForm(StrEnum):
     EVEN = "Even"
     ODD = "Odd"
 
 
-class MathOperators(str, Enum):
+class MathOperators(StrEnum):
     """Mathematical operators used in the math operation.
 
     Behavior of each operator on the stack is described using notation (before --
@@ -600,18 +601,73 @@ class MathOperators(str, Enum):
     TILDE = "~"
 
 
-class ComparisonOperator(str, Enum):
-    """Operators to use when testing a boolean condition for a validity check."""
+class ComparisonOperator(StrEnum):
+    """Comparison operators for use in conditions."""
 
-    EQUALS_SIGN_EQUALS_SIGN = "=="
-    EXCLAMATION_MARK_EQUALS_SIGN = "!="
-    LESS_THAN_SIGN = "<"
-    LESS_THAN_SIGN_EQUALS_SIGN = "<="
-    GREATER_THAN_SIGN = ">"
-    GREATER_THAN_SIGN_EQUALS_SIGN = ">="
+    EQ = "=="
+    """Equal to."""
+
+    NEQ = "!="
+    """Not equal to."""
+
+    LT = "<"
+    """Less than."""
+
+    LTE = "<="
+    """Less than or equal to."""
+
+    GT = ">"
+    """Greater than."""
+
+    GTE = ">="
+    """Greater than or equal to."""
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], unit: xtce_1_1.ComparisonOperatorsType) -> Self:
+        return cls(unit.value)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], unit: xtce_1_2.ComparisonOperatorsType) -> Self:
+        return cls(unit.value)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], unit: xtce_1_3.ComparisonOperatorsType) -> Self:
+        return cls(unit.value)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.ComparisonOperatorsType:
+        return xtce_1_1.ComparisonOperatorsType(self.value)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.ComparisonOperatorsType:
+        return xtce_1_2.ComparisonOperatorsType(self.value)
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.ComparisonOperatorsType:
+        return xtce_1_3.ComparisonOperatorsType(self.value)
+
+    @property
+    def func(self) -> Callable[[Any, Any], bool]:
+        """Return the Python operator module function for this comparison."""
+        mapping = {
+            self.EQ: operator.eq,
+            self.NEQ: operator.ne,
+            self.LT: operator.lt,
+            self.LTE: operator.le,
+            self.GT: operator.gt,
+            self.GTE: operator.ge,
+        }
+        return mapping[self]
+
+    def __call__(self, left: Any, right: Any) -> bool:
+        """Evaluate this comparison operator for two operands."""
+        return self.func(left, right)
 
 
-class Radix(str, Enum):
+class Radix(StrEnum):
     """Specifies the number base."""
 
     DECIMAL = "Decimal"
@@ -620,13 +676,13 @@ class Radix(str, Enum):
     BINARY = "Binary"
 
 
-class FloatingPointNotation(str, Enum):
+class FloatingPointNotation(StrEnum):
     NORMAL = "normal"
     SCIENTIFIC = "scientific"
     ENGINEERING = "engineering"
 
 
-class EpochTime(str, Enum):
+class EpochTime(StrEnum):
     """Union values of common epoch definitions for document convenience."""
 
     TAI = "TAI"
@@ -635,7 +691,7 @@ class EpochTime(str, Enum):
     GPS = "GPS"
 
 
-class ConsequenceLevel(str, Enum):
+class ConsequenceLevel(StrEnum):
     """Defines the criticality level of a command.
 
     Criticality levels follow ISO 14950.
@@ -673,7 +729,7 @@ class ConsequenceLevel(str, Enum):
     USER2 = "user2"
 
 
-class VerifierType(str, Enum):
+class VerifierType(StrEnum):
     """An enumerated list of verifier types."""
 
     RELEASE = "release"
@@ -687,6 +743,11 @@ class VerifierType(str, Enum):
     FAILED = "failed"
 
 
-class TimeWindowIsRelativeTo(str, Enum):
+class TimeWindowIsRelativeTo(StrEnum):
+    """Defines the reference point for a time window."""
+
     COMMAND_RELEASE = "commandRelease"
+    """Reference point is the command release time."""
+
     TIME_LAST_VERIFIER_PASSED = "timeLastVerifierPassed"
+    """Reference point is the time the last verifier passed."""

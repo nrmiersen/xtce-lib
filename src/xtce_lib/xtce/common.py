@@ -209,6 +209,103 @@ class DescriptionBase(XtceBaseModel, ABC):
     ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
     """Used to contain any ancillary data associated with the element."""
 
+    @classmethod
+    def _aliases_from_v1_1(
+        cls: type[Self], alias_set: xtce_1_1.AliasSetType | None
+    ) -> list[Alias]:
+        if alias_set is None:
+            return []
+        return [Alias._from_v1_1(alias) for alias in alias_set.alias]
+
+    @classmethod
+    def _aliases_from_v1_2(
+        cls: type[Self], alias_set: xtce_1_2.AliasSetType | None
+    ) -> list[Alias]:
+        if alias_set is None:
+            return []
+        return [Alias._from_v1_2(alias) for alias in alias_set.alias]
+
+    @classmethod
+    def _aliases_from_v1_3(
+        cls: type[Self], alias_set: xtce_1_3.AliasSetType | None
+    ) -> list[Alias]:
+        if alias_set is None:
+            return []
+        return [Alias._from_v1_3(alias) for alias in alias_set.alias]
+
+    def _aliases_to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.AliasSetType:
+        return xtce_1_1.AliasSetType(
+            alias=[alias._to_v1_1(policy) for alias in self.aliases]
+        )
+
+    def _aliases_to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.AliasSetType:
+        return xtce_1_2.AliasSetType(
+            alias=[alias._to_v1_2(policy) for alias in self.aliases]
+        )
+
+    def _aliases_to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.AliasSetType:
+        return xtce_1_3.AliasSetType(
+            alias=[alias._to_v1_3(policy) for alias in self.aliases]
+        )
+
+    @classmethod
+    def _ancillary_data_from_v1_1(
+        cls: type[Self],
+        ancillary_data_set: xtce_1_1.DescriptionType.AncillaryDataSet | None,
+    ) -> list[AncillaryData]:
+        if ancillary_data_set is None:
+            return []
+        return [
+            AncillaryData._from_v1_1(data) for data in ancillary_data_set.ancillary_data
+        ]
+
+    @classmethod
+    def _ancillary_data_from_v1_2(
+        cls: type[Self], ancillary_data_set: xtce_1_2.AncillaryDataSetType | None
+    ) -> list[AncillaryData]:
+        if ancillary_data_set is None:
+            return []
+        return [
+            AncillaryData._from_v1_2(data) for data in ancillary_data_set.ancillary_data
+        ]
+
+    @classmethod
+    def _ancillary_data_from_v1_3(
+        cls: type[Self], ancillary_data_set: xtce_1_3.AncillaryDataSetType | None
+    ) -> list[AncillaryData]:
+        if ancillary_data_set is None:
+            return []
+        return [
+            AncillaryData._from_v1_3(data) for data in ancillary_data_set.ancillary_data
+        ]
+
+    def _ancillary_data_to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.DescriptionType.AncillaryDataSet:
+        return xtce_1_1.DescriptionType.AncillaryDataSet(
+            ancillary_data=[data._to_v1_1(policy) for data in self.ancillary_data]
+        )
+
+    def _ancillary_data_to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.AncillaryDataSetType:
+        return xtce_1_2.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+        )
+
+    def _ancillary_data_to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.AncillaryDataSetType:
+        return xtce_1_3.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+        )
+
 
 class NameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by many other schema types throughout the schema."""
@@ -219,7 +316,6 @@ class NameDescriptionBase(DescriptionBase, ABC):
         examples=["BatteryVoltage", "setSpeed", "uint8"],
     )
     """The name of this element."""
-
 
 class OptionalNameDescriptionBase(DescriptionBase, ABC):
     """A base schema used by most elements that have an optional name with optional
@@ -232,7 +328,6 @@ class OptionalNameDescriptionBase(DescriptionBase, ABC):
         examples=["SpeedCommandVerifier", "LogMessageSet"],
     )
     """The optional name of this element."""
-
 
 class NameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and
@@ -249,7 +344,6 @@ class NameReferenceNoPath(XtceBaseModel, ABC):
     Can not include array or aggregate references.
 
     """
-
 
 class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
     """A reference that can not include a path to a named element where array and

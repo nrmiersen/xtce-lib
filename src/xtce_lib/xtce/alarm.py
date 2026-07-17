@@ -28,7 +28,7 @@ class AlarmConditions(XtceBaseModel):
 
 
 class CustomAlarm(BaseAlarm):
-    input_algorithm: InputAlgorithm = Field(...)
+    input_algorithm: InputAlgorithm
 
 
 class Alarm(BaseAlarm):
@@ -65,12 +65,12 @@ class NumericAlarm(Alarm):
 
 
 class NumericContextAlarm(NumericAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class StringAlarmLevel(XtceBaseModel):
-    level: ConcernLevel = Field(...)
-    match_pattern: str = Field(...)  # TODO check xsd
+    level: ConcernLevel
+    match_pattern: str  # TODO check xsd
 
 
 class StringAlarm(Alarm):
@@ -79,7 +79,7 @@ class StringAlarm(Alarm):
 
 
 class StringContextAlarm(StringAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class BinaryAlarm(Alarm):
@@ -88,7 +88,7 @@ class BinaryAlarm(Alarm):
 
 
 class BinaryContextAlarm(BinaryAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class BooleanAlarm(Alarm):
@@ -97,12 +97,12 @@ class BooleanAlarm(Alarm):
 
 
 class BooleanContextAlarm(BooleanAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class EnumerationAlarmLevel(XtceBaseModel):
-    level: ConcernLevel = Field(...)
-    enumeration_label: str = Field(...)  # TODO validate label exists
+    level: ConcernLevel
+    enumeration_label: str  # TODO validate label exists
 
 
 class EnumerationAlarm(Alarm):
@@ -111,7 +111,7 @@ class EnumerationAlarm(Alarm):
 
 
 class EnumerationContextAlarm(EnumerationAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
 
 
 class TimeAlarmRanges(AlarmRanges):
@@ -124,4 +124,4 @@ class TimeAlarm(Alarm):
 
 
 class TimeContextAlarm(TimeAlarm):
-    context_match: ContextMatch = Field(...)
+    context_match: ContextMatch
