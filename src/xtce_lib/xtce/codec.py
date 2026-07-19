@@ -9,6 +9,7 @@ from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
+from ._util import unwrap
 from .algorithm import (
     CRC,
     XOR,
@@ -37,7 +38,7 @@ class DynamicValue(XtceBaseModel):
 
     """
 
-    parameter_instance: ParameterInstanceRef
+    instance: ParameterInstanceRef
     """The parameter instance being referenced."""
 
     linear_adjustment: LinearAdjustment | None = None
@@ -50,12 +51,8 @@ class DynamicValue(XtceBaseModel):
     @classmethod
     def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.DynamicValueType) -> Self:
         return cls(
-            parameter_instance=ParameterInstanceRef.from_xsdata(
-                raw_obj.parameter_instance_ref, XtceVersion.V1_2
-            ),
-            linear_adjustment=LinearAdjustment.from_xsdata(
-                raw_obj.linear_adjustment, XtceVersion.V1_2
-            )
+            instance=ParameterInstanceRef._from_v1_2(raw_obj.parameter_instance_ref),
+            linear_adjustment=LinearAdjustment._from_v1_2(raw_obj.linear_adjustment)
             if raw_obj.linear_adjustment
             else None,
         )
@@ -63,12 +60,8 @@ class DynamicValue(XtceBaseModel):
     @classmethod
     def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.DynamicValueType) -> Self:
         return cls(
-            parameter_instance=ParameterInstanceRef.from_xsdata(
-                raw_obj.parameter_instance_ref, XtceVersion.V1_3
-            ),
-            linear_adjustment=LinearAdjustment.from_xsdata(
-                raw_obj.linear_adjustment, XtceVersion.V1_3
-            )
+            instance=ParameterInstanceRef._from_v1_3(raw_obj.parameter_instance_ref),
+            linear_adjustment=LinearAdjustment._from_v1_3(raw_obj.linear_adjustment)
             if raw_obj.linear_adjustment
             else None,
         )
@@ -80,10 +73,8 @@ class DynamicValue(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_2.DynamicValueType:
         return xtce_1_2.DynamicValueType(
-            parameter_instance_ref=self.parameter_instance.to_xsdata(
-                XtceVersion.V1_2, policy
-            ),
-            linear_adjustment=self.linear_adjustment.to_xsdata(XtceVersion.V1_2, policy)
+            parameter_instance_ref=self.instance._to_v1_2(policy),
+            linear_adjustment=self.linear_adjustment._to_v1_2(policy)
             if self.linear_adjustment
             else None,
         )
@@ -92,18 +83,82 @@ class DynamicValue(XtceBaseModel):
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_3.DynamicValueType:
         return xtce_1_3.DynamicValueType(
-            parameter_instance_ref=self.parameter_instance.to_xsdata(
-                XtceVersion.V1_3, policy
-            ),
-            linear_adjustment=self.linear_adjustment.to_xsdata(XtceVersion.V1_3, policy)
+            parameter_instance_ref=self.instance._to_v1_3(policy),
+            linear_adjustment=self.linear_adjustment._to_v1_3(policy)
             if self.linear_adjustment
             else None,
         )
 
 
 class ArgumentDynamicValue(XtceBaseModel):
-    instance: ArgumentInstanceRef | ParameterInstanceRef | None = Field(default=None)
-    linear_adjustment: LinearAdjustment | None = Field(default=None)
+    """A value obtained by a reference to an argument or parameter instance.
+
+    The argument or parameter value may be optionally adjusted by a linear function.
+
+    """
+
+    instance: ArgumentInstanceRef | ParameterInstanceRef
+    """The argument or parameter instance being referenced."""
+
+    linear_adjustment: LinearAdjustment | None = None
+    """An optional linear adjustment applied to the referenced argument or parameter
+    value.
+    """
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ArgumentDynamicValueType) -> Self:
+        if isinstance(raw_obj.choice, xtce_1_2.ArgumentInstanceRefType):
+            instance = ArgumentInstanceRef._from_v1_2(raw_obj.choice)
+        else:
+            instance = ParameterInstanceRef._from_v1_2(unwrap(raw_obj.choice))
+
+        return cls(
+            instance=instance,
+            linear_adjustment=LinearAdjustment._from_v1_2(raw_obj.linear_adjustment)
+            if raw_obj.linear_adjustment
+            else None,
+        )
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ArgumentDynamicValueType) -> Self:
+        if isinstance(raw_obj.choice, xtce_1_3.ArgumentInstanceRefType):
+            instance = ArgumentInstanceRef._from_v1_3(raw_obj.choice)
+        else:
+            instance = ParameterInstanceRef._from_v1_3(unwrap(raw_obj.choice))
+
+        return cls(
+            instance=instance,
+            linear_adjustment=LinearAdjustment._from_v1_3(raw_obj.linear_adjustment)
+            if raw_obj.linear_adjustment
+            else None,
+        )
+
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.ArgumentDynamicValueType:
+        return xtce_1_2.ArgumentDynamicValueType(
+            choice=self.instance._to_v1_2(policy),
+            linear_adjustment=self.linear_adjustment._to_v1_2(policy)
+            if self.linear_adjustment
+            else None,
+        )
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.ArgumentDynamicValueType:
+        return xtce_1_3.ArgumentDynamicValueType(
+            choice=self.instance._to_v1_3(policy),
+            linear_adjustment=self.linear_adjustment._to_v1_3(policy)
+            if self.linear_adjustment
+            else None,
+        )
 
 
 class LeadingSize(XtceBaseModel):
@@ -133,7 +188,6 @@ class VariableString(XtceBaseModel):
     can reserve/allocate enough memory to capture all reported instances of the
     string.
     """
-
 
 class ArgumentVariableString(XtceBaseModel):
     length_source: ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(

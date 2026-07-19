@@ -99,6 +99,33 @@ True
 - [x] Write a class to represent the unified XTCE model (`XtceDatabase`)
 - [x] Scaffold the structure of the unified XTCE model
 - [ ] Fully implement all subclasses in the unified model, including translation and validation methods
+  - [ ] Alarm models
+  - [ ] Algorithm models
+  - [ ] Argument models
+  - [ ] Array models
+  - [ ] Calibrator models
+  - [ ] Codec models
+  - [ ] Command models
+  - [x] Common models
+  - [x] Condition models
+  - [ ] Container models
+  - [ ] Datatype models
+  - [ ] Enum models
+  - [ ] Parameter models
+  - [x] Range models
+  - [x] Reference models
+  - [ ] Space system
+  - [ ] Stream models
+  - [ ] Telemetry models
+  - [x] Time models
+  - [x] Trigger models
+  - [x] Verifier models
 - [ ] Implement unified model serialization and deserialization
 - [ ] Implement full model semantic validation
 - [ ] Write end-to-end tests for generating and parsing XTCE files
+- [ ] Write documentation
+  - [ ] Add examples to all applicable model Fields
+  - [ ] Automate API documentation generation
+
+## Disclaimer
+This project is an independent open-source implementation and is not affiliated with, endorsed by, or sponsored by the Object Management Group (OMG). XTCE is a specification developed by OMG. All trademarks are the property of their respective owners.

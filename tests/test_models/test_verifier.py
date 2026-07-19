@@ -37,7 +37,7 @@ def make_check_window() -> xtce.CheckWindow:
 def make_dynamic_percent_complete() -> xtce.DynamicValue:
     """Build a DynamicValue for execution percent completion."""
     return xtce.DynamicValue(
-        parameter_instance=xtce.ParameterInstanceRef(
+        instance=xtce.ParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/PercentComplete"),
             instance=0,
             use_calibrated_value=True,

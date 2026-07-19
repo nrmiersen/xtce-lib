@@ -111,9 +111,10 @@ class XtceBaseModel(BaseModel, ABC):
         self,
         field_name: str,
         current_value: Any,
-        empty_value: Any,
         target_version: XtceVersion,
         policy: DowngradePolicy,
+        *,
+        empty_value: Any = None,
     ) -> None:
         """Enforce when a field does not exist in the target version."""
         if current_value == empty_value:

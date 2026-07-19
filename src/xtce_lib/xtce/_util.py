@@ -1,11 +1,20 @@
 """Various utility functions."""
 
 import datetime
-from typing import Optional, TypeVar
+from typing import Optional, TypeAlias, TypeVar
 
-from xsdata.models.datatype import DS_MONTH, DS_YEAR, XmlDateTime, XmlDuration
+from xsdata.models.datatype import (
+    DS_MONTH,
+    DS_YEAR,
+    XmlDateTime,
+    XmlDuration,
+)
 
 T = TypeVar("T")
+
+XtceValue: TypeAlias = (
+    int | float | str | bool | bytes | datetime.timedelta | datetime.datetime
+)
 
 
 def unwrap(value: Optional[T]) -> T:
@@ -24,21 +33,13 @@ def unwrap(value: Optional[T]) -> T:
     return value
 
 
-def coerce_optional_int(value: int | str | None) -> int | None:
-    """Convert an XTCE integer attribute to a Python int when present."""
-    if value is None:
-        return None
-
-    if isinstance(value, str):
-        return int(value, 0)
-
-    return int(value)
-
-
 def coerce(
     value: str,
-) -> int | float | str | bool | bytes | datetime.timedelta | datetime.datetime:
+) -> XtceValue:
     """Coerce an xs string value to a concrete Python type."""
+    if isinstance(value, bytes):
+        return value
+
     raw = value.strip()
 
     try:
@@ -73,6 +74,29 @@ def coerce(
         pass
 
     return value
+
+
+def uncoerce(value: XtceValue) -> str:
+    """Convert a concrete XTCE value to an xs string value."""
+    if isinstance(value, bytes):
+        return value.hex()
+    if isinstance(value, datetime.timedelta):
+        return str(timedelta_to_xml_duration(value))
+    if isinstance(value, datetime.datetime):
+        return str(XmlDateTime.from_datetime(value))
+
+    return str(value)
+
+
+def coerce_optional_int(value: int | str | None) -> int | None:
+    """Convert an XTCE integer attribute to a Python int when present."""
+    if value is None:
+        return None
+
+    if isinstance(value, str):
+        return int(value, 0)
+
+    return int(value)
 
 
 def timedelta_to_xml_duration(td: datetime.timedelta) -> XmlDuration:

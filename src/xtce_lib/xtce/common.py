@@ -361,7 +361,6 @@ class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
 
     """
 
-
 class NameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate
     are not possible.
@@ -383,7 +382,6 @@ class NameReferenceWithPath(XtceBaseModel, ABC):
     Can not include array or aggregate references.
 
     """
-
 
 class ExpandedNameReferenceWithPath(XtceBaseModel, ABC):
     """A reference that can include a path to a named element where array and aggregate

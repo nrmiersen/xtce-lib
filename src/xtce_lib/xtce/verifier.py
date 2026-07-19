@@ -871,6 +871,7 @@ class VerifierSet(XtceBaseModel):
     """A set of verifiers that indicate the command has been successfully executed by
     the spacecraft.
     """
+
     failed_verifier: FailedVerifier | None = None
     """A verifier that indicates the command has failed to be executed by the
     spacecraft.
