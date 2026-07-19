@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Self
+from typing import Any, Self
 
-from pydantic import Field, model_validator
+from pydantic import model_validator
 from typing_extensions import assert_never
 
 from xtce_lib.common.xtce_version import XtceVersion
@@ -12,23 +12,21 @@ from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
+from .codec import ArgumentDynamicValue, DynamicValue
 from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
-
-if TYPE_CHECKING:
-    from .codec import ArgumentDynamicValue, DynamicValue
 
 
 class Dimension(XtceBaseModel):
     """Used to define a subset of an array."""
 
-    start_index: int | DynamicValue | DiscreteLookupList = Field(..., ge=0)
+    start_index: int | DynamicValue | DiscreteLookupList
     """The start index of the array.
 
     Must be less than or equal to the end index.
 
     """
 
-    end_index: int | DynamicValue | DiscreteLookupList = Field(..., ge=0)
+    end_index: int | DynamicValue | DiscreteLookupList
     """The end index of the array.
 
     Must be greater than or equal to the start index.
@@ -39,8 +37,12 @@ class Dimension(XtceBaseModel):
     def _resolve_index(value: int | DynamicValue | DiscreteLookupList) -> int | None:
         """Return an index value when validation is possible."""
         if isinstance(value, int):
+            if value < 0:
+                raise ValueError("array index must be greater than or equal to 0")
             return value
         if isinstance(value, DiscreteLookupList):
+            if value.default_value < 0:
+                raise ValueError("array index must be greater than or equal to 0")
             return value.default_value
         return None
 
@@ -175,20 +177,14 @@ class Dimension(XtceBaseModel):
 class ArgumentDimension(XtceBaseModel):
     """Used to define a subset of an array."""
 
-    start_index: int | ArgumentDynamicValue | ArgumentDiscreteLookupList = Field(
-        ...,
-        ge=0,
-    )
+    start_index: int | ArgumentDynamicValue | ArgumentDiscreteLookupList
     """The start index of the array.
 
     Must be less than or equal to the end index.
 
     """
 
-    end_index: int | ArgumentDynamicValue | ArgumentDiscreteLookupList = Field(
-        ...,
-        ge=0,
-    )
+    end_index: int | ArgumentDynamicValue | ArgumentDiscreteLookupList
     """The end index of the array.
 
     Must be greater than or equal to the start index.
@@ -201,8 +197,12 @@ class ArgumentDimension(XtceBaseModel):
     ) -> int | None:
         """Return an index value when validation is possible."""
         if isinstance(value, int):
+            if value < 0:
+                raise ValueError("array index must be greater than or equal to 0")
             return value
         if isinstance(value, ArgumentDiscreteLookupList):
+            if value.default_value < 0:
+                raise ValueError("array index must be greater than or equal to 0")
             return value.default_value
         return None
 
