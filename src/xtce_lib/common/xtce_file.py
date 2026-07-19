@@ -69,7 +69,9 @@ class XtceFile:
 
         from .xtce_database import XtceDatabase
 
-        return XtceDatabase(SpaceSystem.from_xsdata(self._raw_model, self._version))
+        return XtceDatabase.from_space_system(
+            SpaceSystem.from_xsdata(self._raw_model, self._version)
+        )
 
     @property
     def raw_model(self) -> Any:

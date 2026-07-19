@@ -29,14 +29,14 @@ pip install xtce-lib
 
 ## Quick Start
 
-### Create an XTCE model
+### Create an XTCE database
 
 ```python
-from xtce_lib import xtce
+from xtce_lib import XtceDatabase, xtce
 
-system = xtce.SpaceSystem(name="CONKSAT1")
+db = XtceDatabase(name="CONKSAT1")
 
-system.command_metadata = xtce.CommandMetadata(
+db.command_metadata = xtce.CommandMetadata(
     argument_types=[
         xtce.IntegerArgument(
             name="uint32",
@@ -57,11 +57,19 @@ system.command_metadata = xtce.CommandMetadata(
 )
 ```
 
-The unified model removes XML-only intermediate nodes, so you can work with the model directly:
+The database model removes XML-only intermediate nodes, so you can work with the model directly:
 
 ```python
-for argument in system.command_metadata.argument_types:
+for argument in db.command_metadata.argument_types:
     print(argument.name)
+```
+
+After creating the database, writing to an XTCE document is as simple as:
+```python
+from pathlib import Path
+from xtce_lib import XtceFile, XtceVersion
+
+xtce_file: XtceFile = db.to_file(Path("CONKSAT1_XTCE.xml"), XtceVersion.V1_2)
 ```
 
 ### Parse an XTCE file
@@ -102,7 +110,7 @@ True
   - [ ] Alarm models
   - [ ] Algorithm models
   - [ ] Argument models
-  - [ ] Array models
+  - [x] Array models
   - [ ] Calibrator models
   - [ ] Codec models
   - [ ] Command models

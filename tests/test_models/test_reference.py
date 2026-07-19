@@ -61,7 +61,7 @@ def db_and_scope() -> tuple[XtceDatabase, XtcePath]:
         ],
     )
 
-    db = XtceDatabase(root_system=space_system)
+    db = XtceDatabase.from_space_system(space_system)
     scope = XtcePath("/TestSystem")
     return db, scope
 

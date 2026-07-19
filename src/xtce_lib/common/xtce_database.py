@@ -3,44 +3,182 @@
 import itertools
 from functools import cached_property
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterable
+from typing import Any, Iterable, Self
 
+from pydantic import validate_call
+from xsdata.formats.dataclass.serializers import XmlSerializer
+from xsdata.formats.dataclass.serializers.config import SerializerConfig
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
-from xtce_lib.xtce.command import MetaCommandRef
+from xtce_lib.xtce.command import CommandMetadata, MetaCommandRef
+from xtce_lib.xtce.common import Alias, AncillaryData
+from xtce_lib.xtce.enum import SystemType
 from xtce_lib.xtce.reference import ParameterRef
-from xtce_lib.xtce.space_system import SpaceSystem
+from xtce_lib.xtce.space_system import Header, Service, SpaceSystem
+from xtce_lib.xtce.telemetry import TelemetryMetadata
 
 from .validation import ValidationReport, XtceSemanticError
+from .xtce_file import XtceFile
 from .xtce_path import XtcePath
 from .xtce_registry import XtceRegistry
 
-if TYPE_CHECKING:
-    from .xtce_file import XtceFile
-
 
 class XtceDatabase:
-    """The top level object representing an XTCE database."""
+    """An XTCE database."""
 
-    def __init__(self, root_system: SpaceSystem) -> None:
-        """Initialize the XTCE database wrapper around an existing SpaceSystem model."""
-        if not isinstance(root_system, SpaceSystem):
-            raise TypeError(
-                f"root_system must be an instance of SpaceSystem, got {type(root_system).__name__}"
-            )
-
-        self.root_system = root_system
+    @validate_call
+    def __init__(self, name: str) -> None:
+        """Initialize a new XTCE database."""
+        self._root_system = SpaceSystem(name=name)
         self._registry: XtceRegistry | None = None
 
     @classmethod
-    def create_new(cls, name: str) -> "XtceDatabase":
-        """Create a new XTCE database with a root SpaceSystem."""
-        root_system = SpaceSystem(name=name)
-        return cls(root_system=root_system)
+    @validate_call
+    def from_space_system(cls, space_system: SpaceSystem) -> Self:
+        """Create a new XTCE database from an existing SpaceSystem."""
+        # Bypass __init__
+        instance = cls.__new__(cls)
+        instance._root_system = space_system
+        instance._registry = None
+        return instance
+
+    # TODO maybe from_file(), not sure how to handle XtceFile vs XtceDatabase yet
+
+    # The below methods allow for accessing the properties of the root SpaceSystem
+    # directly from the database, makes for a slightly cleaner API
 
     @property
     def name(self) -> str:
-        """Get the name of the root SpaceSystem."""
-        return self.root_system.name
+        """The name of the SpaceSystem."""
+        return self._root_system.name
+
+    @name.setter
+    def name(self, value: str) -> None:
+        self._root_system.name = value
+
+    @property
+    def short_description(self) -> str | None:
+        """The short description of the SpaceSystem."""
+        return self._root_system.short_description
+
+    @short_description.setter
+    def short_description(self, value: str | None) -> None:
+        self._root_system.short_description = value
+
+    @property
+    def long_description(self) -> str | None:
+        """The long description of the SpaceSystem."""
+        return self._root_system.long_description
+
+    @long_description.setter
+    def long_description(self, value: str | None) -> None:
+        self._root_system.long_description = value
+
+    @property
+    def aliases(self) -> list[Alias]:
+        """The aliases of the SpaceSystem."""
+        return self._root_system.aliases
+
+    @aliases.setter
+    def aliases(self, value: list[Alias]) -> None:
+        self._root_system.aliases = value
+
+    @property
+    def ancillary_data(self) -> list[AncillaryData]:
+        """The ancillary data of the SpaceSystem."""
+        return self._root_system.ancillary_data
+
+    @ancillary_data.setter
+    def ancillary_data(self, value: list[AncillaryData]) -> None:
+        self._root_system.ancillary_data = value
+
+    @property
+    def header(self) -> Header | None:
+        """The header of the SpaceSystem."""
+        return self._root_system.header
+
+    @header.setter
+    def header(self, value: Header | None) -> None:
+        self._root_system.header = value
+
+    @property
+    def telemetry_metadata(self) -> TelemetryMetadata | None:
+        """The telemetry metadata of the SpaceSystem."""
+        return self._root_system.telemetry_metadata
+
+    @telemetry_metadata.setter
+    def telemetry_metadata(self, value: TelemetryMetadata | None) -> None:
+        self._root_system.telemetry_metadata = value
+
+    @property
+    def command_metadata(self) -> CommandMetadata | None:
+        """The command metadata of the SpaceSystem."""
+        return self._root_system.command_metadata
+
+    @command_metadata.setter
+    def command_metadata(self, value: CommandMetadata | None) -> None:
+        self._root_system.command_metadata = value
+
+    @property
+    def services(self) -> list[Service]:
+        """The services of the SpaceSystem."""
+        return self._root_system.services
+
+    @services.setter
+    def services(self, value: list[Service]) -> None:
+        self._root_system.services = value
+
+    @property
+    def space_systems(self) -> list[SpaceSystem]:
+        """The child SpaceSystems of the SpaceSystem."""
+        return self._root_system.space_systems
+
+    @space_systems.setter
+    def space_systems(self, value: list[SpaceSystem]) -> None:
+        self._root_system.space_systems = value
+
+    @property
+    def system_type(self) -> SystemType:
+        """The system type of the SpaceSystem."""
+        return self._root_system.system_type
+
+    @system_type.setter
+    def system_type(self, value: SystemType) -> None:
+        self._root_system.system_type = value
+
+    @property
+    def asset_type(self) -> str:
+        """The asset type of the SpaceSystem."""
+        return self._root_system.asset_type
+
+    @asset_type.setter
+    def asset_type(self, value: str) -> None:
+        self._root_system.asset_type = value
+
+    @property
+    def operational_status(self) -> str | None:
+        """The operational status of the SpaceSystem."""
+        return self._root_system.operational_status
+
+    @operational_status.setter
+    def operational_status(self, value: str | None) -> None:
+        self._root_system.operational_status = value
+
+    @property
+    def base(self) -> str | None:
+        """The base of the SpaceSystem."""
+        return self._root_system.base
+
+    @base.setter
+    def base(self, value: str | None) -> None:
+        self._root_system.base = value
+
+    @property
+    def root_system(self) -> SpaceSystem:
+        """The root SpaceSystem of the database."""
+        return self._root_system
 
     @cached_property
     def registry(self) -> XtceRegistry:
@@ -63,20 +201,50 @@ class XtceDatabase:
         self.root_system.validate_semantics(report, self.registry, XtcePath("/"))
         return report
 
-    def to_file(self, file_path: str | Path) -> "XtceFile":
-        """Write this SpaceSystem to an XTCE file."""
-        file_path = Path(file_path)
-        # TODO maybe use Pydantic validate_call
-        # TODO probably want to allow passthru arguments for the file writing (pretty print, encoding, etc.)
-        # TODO write to file
-        from .xtce_file import XtceFile
+    @validate_call
+    def to_file(
+        self,
+        path: Path,
+        xtce_version: XtceVersion,
+        *,
+        downgrade_policy: DowngradePolicy = DowngradePolicy.STRICT,
+        **kwargs: Any,
+    ) -> XtceFile:
+        """Write the database to an XTCE XML file.
 
-        return XtceFile(file_path)
+        Any keyword arguments override the default serializer configuration.
+        """
+        # Translate the SpaceSystem
+        space_system = self._root_system.to_xsdata(
+            version=xtce_version,
+            policy=downgrade_policy,
+        )
+
+        # Serialize to file
+        config_kwargs: dict[str, Any] = {
+            "pretty_print": True,
+            "pretty_print_indent": "    ",
+        }
+        config_kwargs.update(kwargs)
+        config = SerializerConfig(**config_kwargs)
+        serializer = XmlSerializer(config=config)
+
+        with path.open("w", encoding="utf-8") as f:
+            serializer.write(  # type: ignore[reportUnknownMemberType]
+                f,
+                space_system,
+                ns_map={"xtce": xtce_version.value.namespace},
+            )
+
+        return XtceFile(path)
 
     def _index_space_system(
-        self, space_system: SpaceSystem, parent_path: XtcePath, registry: XtceRegistry
+        self,
+        space_system: SpaceSystem,
+        parent_path: XtcePath,
+        registry: XtceRegistry,
     ) -> None:
-        """Recursively walk the SpaceSystem hierarchy and index all definitions."""
+        """Recursively walk the SpaceSystem hierarchy and index all elements."""
         current_path = parent_path / space_system.name
         registry.register(current_path, space_system)
 
