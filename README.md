@@ -79,7 +79,7 @@ from pathlib import Path
 from xtce_lib import XtceDatabase, XtceFile
 
 xtce_file = XtceFile(Path("CONKSAT1-XTCE.xml"))
-xtce_database: XtceDatabase = xtce_file.database
+db: XtceDatabase = xtce_file.database
 ```
 
 `XtceFile` can validate the XTCE against the XML schema and parse the XML into the unified `XtceDatabase` model.
@@ -106,7 +106,7 @@ True
 - [x] Write a class to represent an XTCE file (`XtceFile`)
 - [x] Write a class to represent the unified XTCE model (`XtceDatabase`)
 - [x] Scaffold the structure of the unified XTCE model
-- [ ] Fully implement all subclasses in the unified model, including translation and validation methods
+- [ ] Implement all base subclasses in the unified model, including translation methods
   - [ ] Alarm models
   - [x] Algorithm models
   - [ ] Argument models
@@ -123,7 +123,7 @@ True
   - [x] Range models
   - [x] Reference models
   - [ ] Space system
-  - [ ] Stream models
+  - [x] Stream models
   - [ ] Telemetry models
   - [x] Time models
   - [x] Trigger models

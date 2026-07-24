@@ -43,7 +43,8 @@ def db_and_scope() -> tuple[XtceDatabase, XtcePath]:
             streams=[
                 xtce.FixedFrameStream(
                     name="TestStream",
-                    frame_length_in_bits=32,
+                    ref=xtce.ContainerRef(ref=XtcePath("/TestSystem/TestContainer")),
+                    frame_length_bits=32,
                     sync_strategy=xtce.FixedFrameSyncStrategy(
                         sync_pattern=xtce.SyncPattern(
                             pattern=b"\xaa",

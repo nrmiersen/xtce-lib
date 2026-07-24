@@ -416,28 +416,67 @@ class ReferenceLocation(StrEnum):
 
 
 class Basis(StrEnum):
-    """Defines to type of update rates: perSecond and perContainerUpdate.
+    """The basis for the rate of updates.
 
-    See RateInStreamType.
+    Attributes:
+        PER_SECOND: The rate is measured per second.
+        PER_CONTAINER_UPDATE: The rate is measured per container update.
 
     """
 
     PER_SECOND = "perSecond"
+    """The rate is measured per second."""
+
     PER_CONTAINER_UPDATE = "perContainerUpdate"
+    """The rate is measured per container update."""
 
 
 class PcmType(StrEnum):
+    """The type of PCM encoding.
+
+    Attributes:
+        NRZL: Non-return-to-zero-level encoding.
+        NRZM: Non-return-to-zero-mark encoding.
+        NRZS: Non-return-to-zero-space encoding.
+        BI_PHASE_L: Bi-phase-level encoding.
+        BI_PHASE_M: Bi-phase-mark encoding.
+        BI_PHASE_S: Bi-phase-space encoding.
+
+    """
+
     NRZL = "NRZL"
+    """Non-return-to-zero-level encoding."""
+
     NRZM = "NRZM"
+    """Non-return-to-zero-mark encoding."""
+
     NRZS = "NRZS"
+    """Non-return-to-zero-space encoding."""
+
     BI_PHASE_L = "BiPhaseL"
+    """Bi-phase-level encoding."""
+
     BI_PHASE_M = "BiPhaseM"
+    """Bi-phase-mark encoding."""
+
     BI_PHASE_S = "BiPhaseS"
+    """Bi-phase-space encoding."""
 
 
 class FlagBit(StrEnum):
+    """The type of bits used in a flag.
+
+    Attributes:
+        ZEROS: The flag is composed of zeros.
+        ONES: The flag is composed of ones.
+
+    """
+
     ZEROS = "zeros"
+    """The flag is composed of zeros."""
+
     ONES = "ones"
+    """The flag is composed of ones."""
 
 
 class ReferencePoint(StrEnum):
@@ -507,6 +546,7 @@ class ParityForm(StrEnum):
 
     ODD = "Odd"
     """Odd parity."""
+
 
 class MathOperator(StrEnum):
     """Mathematical operators used in math operations.
@@ -708,7 +748,6 @@ class MathOperator(StrEnum):
             self.LOGICAL_NOT,
         }:
             return 1
-
         if self in {
             self.ADD,
             self.SUBTRACT,
@@ -737,7 +776,6 @@ class MathOperator(StrEnum):
             self.LESS_THAN_OR_EQUAL,
         }:
             return 2
-
         raise ValueError(f"unknown operator: {self}")
 
     @property
@@ -751,7 +789,6 @@ class MathOperator(StrEnum):
             return 2  # (x1 x2 -- x2 x1)
         if self == self.OVER:
             return 3  # (x1 x2 -- x1 x2 x1)
-
         return 1
 
 

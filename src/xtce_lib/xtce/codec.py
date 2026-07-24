@@ -189,6 +189,7 @@ class VariableString(XtceBaseModel):
     string.
     """
 
+
 class ArgumentVariableString(XtceBaseModel):
     length_source: ArgumentDynamicValue | ArgumentDiscreteLookupList | None = Field(
         default=None
@@ -231,6 +232,7 @@ class DataEncoding(XtceBaseModel):
     (0x0D), 1 (0x0C), 2 (0x0B), 3 (0x0A) with 0 being first in the list.
 
     """
+
 
 class IntegerDataEncoding(DataEncoding):
     """Describes how an integer value is sent or received from some device."""
@@ -349,6 +351,7 @@ class BinaryDataEncoding(DataEncoding):
 
     to_binary_transform_algorithm: InputAlgorithm | None = Field(default=None)
     """Used to convert to binary data from an application data type."""
+
 
 class ArgumentBinaryDataEncoding(DataEncoding):
     size_in_bits: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None = (
