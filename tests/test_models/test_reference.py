@@ -338,13 +338,19 @@ class TestOutputParameterRef:
         assert model.ref == "/SimpleSat/Bus/Voltage"
         assert model.output_name == "OutVoltage"
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support OutputParameterRef."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.OutputParameterRef.from_xsdata(
-                xtce_1_1.ParameterRefType(parameter_ref="/SimpleSat/Bus/Voltage"),
-                XtceVersion.V1_1,
-            )
+    def test_from_xsdata_v1_1(self) -> None:
+        """v1.1 should map to OutputParameterRef via the nested OutputSet type."""
+        model = xtce.OutputParameterRef.from_xsdata(
+            xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef(
+                parameter_ref="/SimpleSat/Bus/Voltage",
+                output_name="OutVoltage",
+            ),
+            XtceVersion.V1_1,
+        )
+
+        assert isinstance(model, xtce.OutputParameterRef)
+        assert model.ref == "/SimpleSat/Bus/Voltage"
+        assert model.output_name == "OutVoltage"
 
     @pytest.mark.parametrize(
         ("version", "expected_type"),
@@ -370,15 +376,20 @@ class TestOutputParameterRef:
         assert raw_obj.parameter_ref == "/SimpleSat/Bus/Voltage"
         assert raw_obj.output_name == "OutVoltage"
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for OutputParameterRef."""
+    def test_to_xsdata_v1_1(self) -> None:
+        """v1.1 export should return the nested OutputSet.OutputParameterRef type."""
         model = xtce.OutputParameterRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             output_name="OutVoltage",
         )
 
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
+        raw_obj = model.to_xsdata(XtceVersion.V1_1)
+
+        assert isinstance(
+            raw_obj, xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef
+        )
+        assert raw_obj.parameter_ref == "/SimpleSat/Bus/Voltage"
+        assert raw_obj.output_name == "OutVoltage"
 
     @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
     def test_round_trip_through_xsdata_preserves_fields(
@@ -752,16 +763,19 @@ class TestInputParameterInstanceRef:
         assert model.ref == "/SimpleSat/Bus/Voltage"
         assert model.input_name == "InVoltage"
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support InputParameterInstanceRef."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.InputParameterInstanceRef.from_xsdata(
-                xtce_1_2.InputParameterInstanceRefType(
-                    parameter_ref="/SimpleSat/Bus/Voltage",
-                    input_name="InVoltage",
-                ),
-                XtceVersion.V1_1,
-            )
+    def test_from_xsdata_v1_1(self) -> None:
+        """v1.1 should map to InputParameterInstanceRef via the nested InputSet type."""
+        model = xtce.InputParameterInstanceRef.from_xsdata(
+            xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef(
+                parameter_ref="/SimpleSat/Bus/Voltage",
+                input_name="InVoltage",
+            ),
+            XtceVersion.V1_1,
+        )
+
+        assert isinstance(model, xtce.InputParameterInstanceRef)
+        assert model.ref == "/SimpleSat/Bus/Voltage"
+        assert model.input_name == "InVoltage"
 
     @pytest.mark.parametrize(
         ("version", "expected_type"),
@@ -787,15 +801,20 @@ class TestInputParameterInstanceRef:
         assert raw_obj.parameter_ref == "/SimpleSat/Bus/Voltage"
         assert raw_obj.input_name == "InVoltage"
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for InputParameterInstanceRef."""
+    def test_to_xsdata_v1_1(self) -> None:
+        """v1.1 export should return the nested InputSet.ParameterInstanceRef type."""
         model = xtce.InputParameterInstanceRef(
             ref=XtcePath("/SimpleSat/Bus/Voltage"),
             input_name="InVoltage",
         )
 
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
+        raw_obj = model.to_xsdata(XtceVersion.V1_1)
+
+        assert isinstance(
+            raw_obj, xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
+        )
+        assert raw_obj.parameter_ref == "/SimpleSat/Bus/Voltage"
+        assert raw_obj.input_name == "InVoltage"
 
     @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
     def test_round_trip_through_xsdata_preserves_fields(

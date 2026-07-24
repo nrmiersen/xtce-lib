@@ -50,7 +50,7 @@ class TimeAssociation(ParameterInstanceRef):
     unit: TimeAssociationUnits = Field(default=TimeAssociationUnits.SECONDS)
     """The time units of the `offset` field.
 
-    Only supported by XTCE 1.2 and later. If using XTCE 1.1, the `offset` field is
+    Applicable since: XTCE 1.2. If using XTCE 1.1, the `offset` field is
     assumed to be in seconds.
 
     """

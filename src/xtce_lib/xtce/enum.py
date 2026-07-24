@@ -441,27 +441,39 @@ class FlagBit(StrEnum):
 
 
 class ReferencePoint(StrEnum):
+    """The reference point from which the bits are counted.
+
+    Attributes:
+        START: The start of the reference.
+        END: The end of the reference.
+
+    """
+
     START = "start"
+    """The start of the reference."""
+
     END = "end"
+    """The end of the reference."""
 
 
-class ChecksumTypeName(StrEnum):
-    """Attributes:
-    UNIX_SUM:
-    SUM8:
-    SUM16:
-    SUM24:
-    SUM32:
-    FLETCHER4:
-    FLETCHER8:
-    FLETCHER16:
-    FLETCHER32:
-    ADLER32:
-    LUHN:
-    VERHOEFF:
-    DAMM:
-    CUSTOM: Document a custom checksum algorithm in the InputAlgorithm
-        element.
+class ChecksumType(StrEnum):
+    """The available checksum types.
+
+    Attributes:
+        UNIX_SUM
+        SUM8
+        SUM16
+        SUM24
+        SUM32
+        FLETCHER4
+        FLETCHER8
+        FLETCHER16
+        FLETCHER32
+        ADLER32
+        LUHN
+        VERHOEFF
+        DAMM
+        CUSTOM
 
     """
 
@@ -482,123 +494,265 @@ class ChecksumTypeName(StrEnum):
 
 
 class ParityForm(StrEnum):
-    EVEN = "Even"
-    ODD = "Odd"
-
-
-class MathOperators(StrEnum):
-    """Mathematical operators used in the math operation.
-
-    Behavior of each operator on the stack is described using notation (before --
-    after), where "before" represents the stack before execution of the operator and
-    "after" represent the stack after execution.
+    """Defines the form of parity.
 
     Attributes:
-        PLUS_SIGN: addition (x1 x2 -- x1+x2)
-        HYPHEN_MINUS: subtraction (x1 x2 -- x1-x2)
-        ASTERISK: multiplication (x1 x2 -- x1*x2)
-        SOLIDUS: division (x1 x2 -- x1/x2)
-        PERCENT_SIGN: modulo (x1 x2 -- x3) Divide x1 by x2, giving the modulo x3
-        CIRCUMFLEX_ACCENT: power function (x1 x2 -- x1**x2)
-        Y_X: reverse power function (x1 x2 -- x2**x1)
-        LN: natural (base e) logarithm (x -- ln(x))
-        LOG: base-10 logarithm (x-- log(x))
-        E_X: exponentiation (x -- exp(x))
-        VALUE_1_X: inversion (x -- 1/x)
-        X: factorial (x -- x!)
-        TAN: tangent (x -- tan(x)) radians
-        COS: cosine (x -- cos(x)) radians
-        SIN: sine (x -- sin(x)) radians
-        ATAN: arctangent (x -- atan(x)) radians
-        ATAN2: arctangent (x1 x2 -- atan2(x2, x1)) radians
-        ACOS: arccosine (x -- acos(x)) radians
-        ASIN: arcsine (x -- asin(x)) radians
-        TANH: hyperbolic tangent (x -- tanh(x))
-        COSH: hyperbolic cosine (x -- cosh(x))
-        SINH: hyperbolic sine (x -- sinh(x))
-        ATANH: hyperbolic arctangent (x -- atanh(x))
-        ACOSH: hyperbolic arccosine (x -- acosh(x))
-        ASINH: hyperbolic arcsine (x -- asinh(x))
-        SWAP: swap the top two stack items (x1 x2 -- x2 x1)
-        DROP: Remove top item from the stack (x -- )
-        DUP: Duplicate top item on the stack (x -- x x)
-        OVER: Duplicate top item on the stack (x1 x2 -- x1 x2 x1)
-        LESS_THAN_SIGN_LESS_THAN_SIGN: signed bitwise left shift (x1 x2 -- x1
-            &lt;&lt; x2)
-        GREATER_THAN_SIGN_GREATER_THAN_SIGN: signed bitwise right shift (x1 x2 --
-            x1 &gt;&gt; x2)
-        AMPERSAND: bitwise and (x1 x2 -- x1 &amp; x2)
-        VERTICAL_LINE: bitwise or (x1 x2 -- x1 | x2)
-        AMPERSAND_AMPERSAND: logical and (x1 x2 -- x1 &amp;&amp; x2)
-        VERTICAL_LINE_VERTICAL_LINE: logical or (x1 x2 -- x1 || x2)
-        EXCLAMATION_MARK: logical not (x1 x2 -- x1 ! x2)
-        ABS: absolute value (x1 -- abs(x1))
-        DIV: Euclidean division quotient (x1 -- div(x1))
-        INT: integer part (x1 -- int(x1))
-        GREATER_THAN_SIGN: greater than x,y (x1 x2 -- x1 &gt; x2)
-        GREATER_THAN_SIGN_EQUALS_SIGN: greater than or equal x,y (x1 x2 -- x1
-            &gt;= x2)
-        LESS_THAN_SIGN: less than x,y (x1 x2 -- x1 &lt; x2)
-        LESS_THAN_SIGN_EQUALS_SIGN: less than or equal x,y (x1 x2 -- x1 &lt;= x2)
-        EQUALS_SIGN_EQUALS_SIGN: equal x,y (x1 x2 -- x1 == x2)
-        EXCLAMATION_MARK_EQUALS_SIGN: not equal x,y (x1 x2 -- x1 != x2)
-        MIN: minimum of x,y (x1 x2 -- min(x1, x2))
-        MAX: maximum of x,y (x1 x2 -- max(x1, x2))
-        XOR: Bitwise exclusive or (XOR) (x1 x2 -- x1 xor x2)
-        TILDE: Bitwise not operation (x1 x2 -- x1 ~ x2) The result of this can
-            only be 0 or 1
+        EVEN: Even parity.
+        ODD: Odd parity.
 
     """
 
-    PLUS_SIGN = "+"
-    HYPHEN_MINUS = "-"
-    ASTERISK = "*"
-    SOLIDUS = "/"
-    PERCENT_SIGN = "%"
-    CIRCUMFLEX_ACCENT = "^"
-    Y_X = "y^x"
-    LN = "ln"
-    LOG = "log"
-    E_X = "e^x"
-    VALUE_1_X = "1/x"
-    X = "x!"
-    TAN = "tan"
-    COS = "cos"
-    SIN = "sin"
-    ATAN = "atan"
-    ATAN2 = "atan2"
-    ACOS = "acos"
-    ASIN = "asin"
-    TANH = "tanh"
-    COSH = "cosh"
-    SINH = "sinh"
-    ATANH = "atanh"
-    ACOSH = "acosh"
-    ASINH = "asinh"
-    SWAP = "swap"
-    DROP = "drop"
-    DUP = "dup"
-    OVER = "over"
-    LESS_THAN_SIGN_LESS_THAN_SIGN = "<<"
-    GREATER_THAN_SIGN_GREATER_THAN_SIGN = ">>"
-    AMPERSAND = "&"
-    VERTICAL_LINE = "|"
-    AMPERSAND_AMPERSAND = "&&"
-    VERTICAL_LINE_VERTICAL_LINE = "||"
-    EXCLAMATION_MARK = "!"
-    ABS = "abs"
-    DIV = "div"
-    INT = "int"
-    GREATER_THAN_SIGN = ">"
-    GREATER_THAN_SIGN_EQUALS_SIGN = ">="
-    LESS_THAN_SIGN = "<"
-    LESS_THAN_SIGN_EQUALS_SIGN = "<="
-    EQUALS_SIGN_EQUALS_SIGN = "=="
-    EXCLAMATION_MARK_EQUALS_SIGN = "!="
+    EVEN = "Even"
+    """Even parity."""
+
+    ODD = "Odd"
+    """Odd parity."""
+
+class MathOperator(StrEnum):
+    """Mathematical operators used in math operations.
+
+        Available operator groups:
+        - Arithmetic: ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO, POWER, REVERSE_POWER
+        - Scalar math: MIN, MAX, EXP, LN, LOG, RECIPROCAL, FACTORIAL, ABS, DIV, INT
+        - Trigonometric: COS, SIN, TAN, ACOS, ASIN, ATAN, ATAN2
+        - Hyperbolic: COSH, SINH, TANH, ACOSH, ASINH, ATANH
+        - Stack: DROP, DUP, OVER, SWAP
+        - Bitwise: LEFT_SHIFT, RIGHT_SHIFT, BITWISE_AND, BITWISE_OR, BITWISE_XOR,
+            BITWISE_NOT
+        - Logical: LOGICAL_AND, LOGICAL_OR, LOGICAL_NOT
+        - Comparison: EQUAL, NOT_EQUAL, GREATER_THAN, GREATER_THAN_OR_EQUAL,
+            LESS_THAN, LESS_THAN_OR_EQUAL
+
+    Stack behavior is described using the notation ``before -- after``.
+
+    """
+
+    ADD = "+"
+    """Addition: ``x1 x2 -- x1+x2``."""
+
+    SUBTRACT = "-"
+    """Subtraction: ``x1 x2 -- x1-x2``."""
+
+    MULTIPLY = "*"
+    """Multiplication: ``x1 x2 -- x1*x2``."""
+
+    DIVIDE = "/"
+    """Division: ``x1 x2 -- x1/x2``."""
+
+    MODULO = "%"
+    """Modulo: ``x1 x2 -- x3`` where ``x3`` is the remainder of ``x1 / x2``."""
+
+    POWER = "^"
+    """Power function: ``x1 x2 -- x1**x2``."""
+
+    REVERSE_POWER = "y^x"
+    """Reverse power function: ``x1 x2 -- x2**x1``."""
+
     MIN = "min"
+    """Minimum of two values: ``x1 x2 -- min(x1, x2)``."""
+
     MAX = "max"
-    XOR = "xor"
-    TILDE = "~"
+    """Maximum of two values: ``x1 x2 -- max(x1, x2)``."""
+
+    EXP = "e^x"
+    """Exponentiation: ``x -- exp(x)``."""
+
+    LN = "ln"
+    """Natural logarithm: ``x -- ln(x)``."""
+
+    LOG = "log"
+    """Base-10 logarithm: ``x -- log(x)``."""
+
+    RECIPROCAL = "1/x"
+    """Inversion: ``x -- 1/x``."""
+
+    FACTORIAL = "x!"
+    """Factorial: ``x -- x!``."""
+
+    ABS = "abs"
+    """Absolute value: ``x -- abs(x)``."""
+
+    DIV = "div"
+    """Euclidean division quotient: ``x -- div(x)``."""
+
+    INT = "int"
+    """Integer part: ``x -- int(x)``."""
+
+    COS = "cos"
+    """Cosine in radians: ``x -- cos(x)``."""
+
+    SIN = "sin"
+    """Sine in radians: ``x -- sin(x)``."""
+
+    TAN = "tan"
+    """Tangent in radians: ``x -- tan(x)``."""
+
+    ACOS = "acos"
+    """Arccosine in radians: ``x -- acos(x)``."""
+
+    ASIN = "asin"
+    """Arcsine in radians: ``x -- asin(x)``."""
+
+    ATAN = "atan"
+    """Arctangent in radians: ``x -- atan(x)``."""
+
+    ATAN2 = "atan2"
+    """Two-argument arctangent in radians: ``x1 x2 -- atan2(x2, x1)``."""
+
+    COSH = "cosh"
+    """Hyperbolic cosine: ``x -- cosh(x)``."""
+
+    SINH = "sinh"
+    """Hyperbolic sine: ``x -- sinh(x)``."""
+
+    TANH = "tanh"
+    """Hyperbolic tangent: ``x -- tanh(x)``."""
+
+    ACOSH = "acosh"
+    """Hyperbolic arccosine: ``x -- acosh(x)``."""
+
+    ASINH = "asinh"
+    """Hyperbolic arcsine: ``x -- asinh(x)``."""
+
+    ATANH = "atanh"
+    """Hyperbolic arctangent: ``x -- atanh(x)``."""
+
+    DROP = "drop"
+    """Remove the top item from the stack: ``x --``."""
+
+    DUP = "dup"
+    """Duplicate the top item on the stack: ``x -- x x``."""
+
+    OVER = "over"
+    """Duplicate the second item onto the top of the stack: ``x1 x2 -- x1 x2 x1``."""
+
+    SWAP = "swap"
+    """Swap the top two stack items: ``x1 x2 -- x2 x1``."""
+
+    LEFT_SHIFT = "<<"
+    """Signed bitwise left shift: ``x1 x2 -- x1 << x2``."""
+
+    RIGHT_SHIFT = ">>"
+    """Signed bitwise right shift: ``x1 x2 -- x1 >> x2``."""
+
+    BITWISE_AND = "&"
+    """Bitwise and: ``x1 x2 -- x1 & x2``."""
+
+    BITWISE_OR = "|"
+    """Bitwise or: ``x1 x2 -- x1 | x2``."""
+
+    BITWISE_XOR = "xor"
+    """Bitwise exclusive or: ``x1 x2 -- x1 xor x2``."""
+
+    BITWISE_NOT = "~"
+    """Bitwise not: ``x -- ~x``.
+
+    The result can only be 0 or 1.
+
+    """
+
+    LOGICAL_AND = "&&"
+    """Logical and: ``x1 x2 -- x1 && x2``."""
+
+    LOGICAL_OR = "||"
+    """Logical or: ``x1 x2 -- x1 || x2``."""
+
+    LOGICAL_NOT = "!"
+    """Logical not: ``x -- !x``."""
+
+    EQUAL = "=="
+    """Equal to: ``x1 x2 -- x1 == x2``."""
+
+    NOT_EQUAL = "!="
+    """Not equal to: ``x1 x2 -- x1 != x2``."""
+
+    GREATER_THAN = ">"
+    """Greater than: ``x1 x2 -- x1 > x2``."""
+
+    GREATER_THAN_OR_EQUAL = ">="
+    """Greater than or equal to: ``x1 x2 -- x1 >= x2``."""
+
+    LESS_THAN = "<"
+    """Less than: ``x1 x2 -- x1 < x2``."""
+
+    LESS_THAN_OR_EQUAL = "<="
+    """Less than or equal to: ``x1 x2 -- x1 <= x2``."""
+
+    @property
+    def required_operands(self) -> int:
+        """The number of operands this operator pops off the stack."""
+        if self in {
+            self.EXP,
+            self.LN,
+            self.LOG,
+            self.RECIPROCAL,
+            self.FACTORIAL,
+            self.ABS,
+            self.DIV,
+            self.INT,
+            self.COS,
+            self.SIN,
+            self.TAN,
+            self.ACOS,
+            self.ASIN,
+            self.ATAN,
+            self.COSH,
+            self.SINH,
+            self.TANH,
+            self.ACOSH,
+            self.ASINH,
+            self.ATANH,
+            self.DROP,
+            self.DUP,
+            self.BITWISE_NOT,
+            self.LOGICAL_NOT,
+        }:
+            return 1
+
+        if self in {
+            self.ADD,
+            self.SUBTRACT,
+            self.MULTIPLY,
+            self.DIVIDE,
+            self.MODULO,
+            self.POWER,
+            self.REVERSE_POWER,
+            self.MIN,
+            self.MAX,
+            self.ATAN2,
+            self.OVER,
+            self.SWAP,
+            self.LEFT_SHIFT,
+            self.RIGHT_SHIFT,
+            self.BITWISE_AND,
+            self.BITWISE_OR,
+            self.BITWISE_XOR,
+            self.LOGICAL_AND,
+            self.LOGICAL_OR,
+            self.EQUAL,
+            self.NOT_EQUAL,
+            self.GREATER_THAN,
+            self.GREATER_THAN_OR_EQUAL,
+            self.LESS_THAN,
+            self.LESS_THAN_OR_EQUAL,
+        }:
+            return 2
+
+        raise ValueError(f"unknown operator: {self}")
+
+    @property
+    def pushed_operands(self) -> int:
+        """The number of results this operator pushes back onto the stack."""
+        if self == self.DROP:
+            return 0  # (x -- )
+        if self == self.DUP:
+            return 2  # (x -- x x)
+        if self == self.SWAP:
+            return 2  # (x1 x2 -- x2 x1)
+        if self == self.OVER:
+            return 3  # (x1 x2 -- x1 x2 x1)
+
+        return 1
 
 
 class ComparisonOperator(StrEnum):

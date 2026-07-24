@@ -161,7 +161,7 @@ class SpaceSystem(NameDescriptionBase):
     Represents what from a space enterprise this SpaceSystem element represents. See the
     individual enumeration descriptions in SystemType.
 
-    Applicable since: XTCE 1.3.
+    Applicable since: XTCE 1.3
 
     """
 
@@ -171,7 +171,7 @@ class SpaceSystem(NameDescriptionBase):
     )
     """Broad name for the type of asset.
 
-    Applicable since: XTCE 1.3.
+    Applicable since: XTCE 1.3
 
     """
 

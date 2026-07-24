@@ -203,10 +203,10 @@ class DescriptionBase(XtceBaseModel, ABC):
 
     """
 
-    aliases: list[Alias] = Field(default_factory=list, min_length=1)
+    aliases: list[Alias] = Field(default_factory=list)
     """Used to contain alternate names or IDs for the element."""
 
-    ancillary_data: list[AncillaryData] = Field(default_factory=list, min_length=1)
+    ancillary_data: list[AncillaryData] = Field(default_factory=list)
     """Used to contain any ancillary data associated with the element."""
 
     @classmethod

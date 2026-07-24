@@ -69,7 +69,7 @@ After creating the database, writing to an XTCE document is as simple as:
 from pathlib import Path
 from xtce_lib import XtceFile, XtceVersion
 
-xtce_file: XtceFile = db.to_file(Path("CONKSAT1_XTCE.xml"), XtceVersion.V1_2)
+db.to_file(Path("CONKSAT1_XTCE.xml"), XtceVersion.V1_2)
 ```
 
 ### Parse an XTCE file
@@ -108,10 +108,10 @@ True
 - [x] Scaffold the structure of the unified XTCE model
 - [ ] Fully implement all subclasses in the unified model, including translation and validation methods
   - [ ] Alarm models
-  - [ ] Algorithm models
+  - [x] Algorithm models
   - [ ] Argument models
   - [x] Array models
-  - [ ] Calibrator models
+  - [x] Calibrator models
   - [ ] Codec models
   - [ ] Command models
   - [x] Common models

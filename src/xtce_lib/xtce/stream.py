@@ -1,6 +1,12 @@
 """Stream models."""
 
+from abc import ABC
+from typing import Any, Self
+
 from pydantic import Field
+
+from xtce_lib.common.xtce_version import XtceVersion
+from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
 
 from ._base import XtceBaseModel
 from .algorithm import InputAlgorithm, InputOutputAlgorithm
@@ -9,10 +15,31 @@ from .enum import Basis, FlagBit, PcmType
 from .reference import ContainerRef, ServiceRef, StreamRef
 
 
-class PcmStream(NameDescriptionBase):
+class PcmStream(NameDescriptionBase, ABC):
     bit_rate_bps: float | None = Field(default=None)
     pcm_type: PcmType = Field(default=PcmType.NRZL)
     inverted: bool = Field(default=False)
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], raw_obj: Any) -> Self:
+        raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
+
+    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+
+    def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
+
+    def _to_v1_3(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
+        raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
 
 
 class CustomStream(PcmStream):

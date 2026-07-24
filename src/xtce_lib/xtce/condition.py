@@ -1114,7 +1114,7 @@ class DiscreteLookup(MatchCriteria):
     """Define one discrete lookup mapping from condition criteria to a value."""
 
     value: int
-    """The value to use when the lookup conditions are true"""
+    """The value to use when the lookup conditions are true."""
 
     @classmethod
     def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
@@ -1272,6 +1272,9 @@ class DiscreteLookupList(XtceBaseModel):
     default_value: int
     """In the event that no lookup condition evaluates to true, then this value will be
     used.
+
+    Applicable since: XTCE 1.3
+
     """
 
     @classmethod

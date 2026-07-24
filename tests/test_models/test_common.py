@@ -271,22 +271,6 @@ class TestDescriptionBase:
         assert len(model.aliases) == 1
         assert len(model.ancillary_data) == 1
 
-    def test_rejects_empty_aliases(self) -> None:
-        """Aliases must contain at least one entry when provided."""
-        with pytest.raises(ValidationError):
-            xtce.DescriptionBase(
-                aliases=[],
-                ancillary_data=[xtce.AncillaryData(name="ContainerSize")],
-            )
-
-    def test_rejects_empty_ancillary_data(self) -> None:
-        """ancillary_data must contain at least one entry when provided."""
-        with pytest.raises(ValidationError):
-            xtce.DescriptionBase(
-                aliases=[xtce.Alias(namespace="Bus", alias="BatteryVoltage")],
-                ancillary_data=[],
-            )
-
 
 class TestNameDescriptionBase:
     """Test NameDescriptionBase model."""

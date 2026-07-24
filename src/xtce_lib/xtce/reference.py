@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any, Self
+from typing import TYPE_CHECKING, Annotated, Self
 
 from pydantic import AfterValidator, Field
 
 from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath, require_regex
-from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
@@ -170,8 +169,14 @@ class OutputParameterRef(ParameterRef):
             )
 
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    def _from_v1_1(
+        cls: type[Self],
+        raw_obj: xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef,
+    ) -> Self:
+        return cls(
+            ref=XtcePath(raw_obj.parameter_ref),
+            output_name=raw_obj.output_name,
+        )
 
     @classmethod
     def _from_v1_2(
@@ -191,8 +196,13 @@ class OutputParameterRef(ParameterRef):
             output_name=parameter_ref.output_name,
         )
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef:
+        return xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef(
+            parameter_ref=str(self.ref),
+            output_name=self.output_name,
+        )
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
@@ -395,8 +405,16 @@ class InputParameterInstanceRef(ParameterInstanceRef):
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    def _from_v1_1(
+        cls: type[Self],
+        raw_obj: xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef,
+    ) -> Self:
+        return cls(
+            ref=XtcePath(raw_obj.parameter_ref),
+            instance=raw_obj.instance,
+            use_calibrated_value=raw_obj.use_calibrated_value,
+            input_name=raw_obj.input_name,
+        )
 
     @classmethod
     def _from_v1_2(
@@ -416,8 +434,15 @@ class InputParameterInstanceRef(ParameterInstanceRef):
             input_name=parameter_ref.input_name,
         )
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef:
+        return xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef(
+            parameter_ref=str(self.ref),
+            instance=self.instance,
+            use_calibrated_value=self.use_calibrated_value,
+            input_name=self.input_name,
+        )
 
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
