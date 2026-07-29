@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Annotated, Any, Self, assert_never
 from pydantic import Field
 
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 from xtce_lib.xtce._util import timedelta_to_xml_duration, xml_duration_to_timedelta
 
@@ -34,42 +34,39 @@ class ParameterValueChange(XtceBaseModel):
     change: float
     """The change in value for the parameter required to satisfy the verifier."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ParameterValueChangeType
+    _v1_3_type = xtce_1_3.ParameterValueChangeType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ParameterValueChangeType) -> Self:
-        return cls(
-            ref=ParameterRef._from_v1_2(raw_obj.parameter_ref),
-            change=raw_obj.change.value,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ParameterValueChangeType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = ParameterRef._from_v1_2(obj.parameter_ref)
+        kwargs["change"] = obj.change.value
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ParameterValueChangeType) -> Self:
-        return cls(
-            ref=ParameterRef._from_v1_3(raw_obj.parameter_ref),
-            change=raw_obj.change.value,
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ParameterValueChangeType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = ParameterRef._from_v1_3(obj.parameter_ref)
+        kwargs["change"] = obj.change.value
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["parameter_ref"] = self.ref._to_v1_2()
+        kwargs["change"] = xtce_1_2.ChangeValueType(value=self.change)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ParameterValueChangeType:
-        return xtce_1_2.ParameterValueChangeType(
-            parameter_ref=self.ref._to_v1_2(),
-            change=xtce_1_2.ChangeValueType(value=self.change),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ParameterValueChangeType:
-        return xtce_1_3.ParameterValueChangeType(
-            parameter_ref=self.ref._to_v1_3(),
-            change=xtce_1_3.ChangeValueType(value=self.change),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["parameter_ref"] = self.ref._to_v1_3()
+        kwargs["change"] = xtce_1_3.ChangeValueType(value=self.change)
+        return kwargs
 
 
 class CheckWindow(XtceBaseModel):
@@ -90,66 +87,63 @@ class CheckWindow(XtceBaseModel):
     )
     """Specifies what the start and stop times are relative to."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.CheckWindowType
+    _v1_3_type = xtce_1_3.CheckWindowType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.CheckWindowType) -> Self:
-        return cls(
-            start_time=(
-                xml_duration_to_timedelta(raw_obj.time_to_start_checking)
-                if raw_obj.time_to_start_checking is not None
-                else None
-            ),
-            stop_time=xml_duration_to_timedelta(raw_obj.time_to_stop_checking),
-            is_relative_to=TimeWindowIsRelativeTo(
-                raw_obj.time_window_is_relative_to.value
-            ),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.CheckWindowType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["start_time"] = (
+            xml_duration_to_timedelta(obj.time_to_start_checking)
+            if obj.time_to_start_checking is not None
+            else None
         )
+        kwargs["stop_time"] = xml_duration_to_timedelta(obj.time_to_stop_checking)
+        kwargs["is_relative_to"] = TimeWindowIsRelativeTo(
+            obj.time_window_is_relative_to.value
+        )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.CheckWindowType) -> Self:
-        return cls(
-            start_time=(
-                xml_duration_to_timedelta(raw_obj.time_to_start_checking)
-                if raw_obj.time_to_start_checking is not None
-                else None
-            ),
-            stop_time=xml_duration_to_timedelta(raw_obj.time_to_stop_checking),
-            is_relative_to=TimeWindowIsRelativeTo(
-                raw_obj.time_window_is_relative_to.value
-            ),
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.CheckWindowType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["start_time"] = (
+            xml_duration_to_timedelta(obj.time_to_start_checking)
+            if obj.time_to_start_checking is not None
+            else None
         )
+        kwargs["stop_time"] = xml_duration_to_timedelta(obj.time_to_stop_checking)
+        kwargs["is_relative_to"] = TimeWindowIsRelativeTo(
+            obj.time_window_is_relative_to.value
+        )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.CheckWindowType:
-        return xtce_1_2.CheckWindowType(
-            time_to_start_checking=timedelta_to_xml_duration(self.start_time)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["time_to_start_checking"] = (
+            timedelta_to_xml_duration(self.start_time)
             if self.start_time is not None
-            else None,
-            time_to_stop_checking=timedelta_to_xml_duration(self.stop_time),
-            time_window_is_relative_to=xtce_1_2.TimeWindowIsRelativeToType(
-                self.is_relative_to.value
-            ),
+            else None
         )
+        kwargs["time_to_stop_checking"] = timedelta_to_xml_duration(self.stop_time)
+        kwargs["time_window_is_relative_to"] = xtce_1_2.TimeWindowIsRelativeToType(
+            self.is_relative_to.value
+        )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.CheckWindowType:
-        return xtce_1_3.CheckWindowType(
-            time_to_start_checking=timedelta_to_xml_duration(self.start_time)
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["time_to_start_checking"] = (
+            timedelta_to_xml_duration(self.start_time)
             if self.start_time is not None
-            else None,
-            time_to_stop_checking=timedelta_to_xml_duration(self.stop_time),
-            time_window_is_relative_to=xtce_1_3.TimeWindowIsRelativeToType(
-                self.is_relative_to.value
-            ),
+            else None
         )
+        kwargs["time_to_stop_checking"] = timedelta_to_xml_duration(self.stop_time)
+        kwargs["time_window_is_relative_to"] = xtce_1_3.TimeWindowIsRelativeToType(
+            self.is_relative_to.value
+        )
+        return kwargs
 
 
 class CheckWindowAlgorithms(XtceBaseModel):
@@ -162,46 +156,39 @@ class CheckWindowAlgorithms(XtceBaseModel):
     start_time: InputAlgorithm
     stop_time: InputAlgorithm
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.CheckWindowAlgorithmsType
+    _v1_3_type = xtce_1_3.CheckWindowAlgorithmsType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.CheckWindowAlgorithmsType
-    ) -> Self:
-        return cls(
-            start_time=InputAlgorithm._from_v1_2(raw_obj.start_check),
-            stop_time=InputAlgorithm._from_v1_2(raw_obj.stop_time),
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.CheckWindowAlgorithmsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["start_time"] = InputAlgorithm._from_v1_2(obj.start_check)
+        kwargs["stop_time"] = InputAlgorithm._from_v1_2(obj.stop_time)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.CheckWindowAlgorithmsType
-    ) -> Self:
-        return cls(
-            start_time=InputAlgorithm._from_v1_3(raw_obj.start_check),
-            stop_time=InputAlgorithm._from_v1_3(raw_obj.stop_time),
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.CheckWindowAlgorithmsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["start_time"] = InputAlgorithm._from_v1_3(obj.start_check)
+        kwargs["stop_time"] = InputAlgorithm._from_v1_3(obj.stop_time)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["start_check"] = self.start_time._to_v1_2(policy)
+        kwargs["stop_time"] = self.stop_time._to_v1_2(policy)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.CheckWindowAlgorithmsType:
-        return xtce_1_2.CheckWindowAlgorithmsType(
-            start_check=self.start_time._to_v1_2(policy),
-            stop_time=self.stop_time._to_v1_2(policy),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.CheckWindowAlgorithmsType:
-        return xtce_1_3.CheckWindowAlgorithmsType(
-            start_check=self.start_time._to_v1_3(policy),
-            stop_time=self.stop_time._to_v1_3(policy),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["start_check"] = self.start_time._to_v1_3(policy)
+        kwargs["stop_time"] = self.stop_time._to_v1_3(policy)
+        return kwargs
 
 
 class CommandVerifier(OptionalNameDescriptionBase, ABC):
@@ -235,9 +222,9 @@ class CommandVerifier(OptionalNameDescriptionBase, ABC):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.CommandVerifierType
+    _v1_3_type = xtce_1_3.CommandVerifierType
 
     @classmethod
     def _unpack_verifier_choice_v1_2(
@@ -278,31 +265,10 @@ class CommandVerifier(OptionalNameDescriptionBase, ABC):
                 assert_never(raw_obj.choice_1)
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.CommandVerifierType) -> Self:
-        return cls(**cls._from_v1_2_common_kwargs(raw_obj))
-
-    @classmethod
-    def _from_v1_2_common_kwargs(
-        cls: type[Self],
-        raw_obj: xtce_1_2.CommandVerifierType,
-    ) -> dict[str, Any]:
-        """Build shared v1.2 constructor kwargs for command verifier imports."""
-        kwargs: dict[str, Any] = {
-            "name": raw_obj.name,
-            "short_description": raw_obj.short_description,
-            "long_description": raw_obj.long_description,
-            "verifier": cls._unpack_verifier_choice_v1_2(raw_obj),
-            "check_window": cls._unpack_check_window_choice_v1_2(raw_obj),
-        }
-
-        aliases = cls._aliases_from_v1_2(raw_obj.alias_set)
-        if aliases:
-            kwargs["aliases"] = aliases
-
-        ancillary_data = cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set)
-        if ancillary_data:
-            kwargs["ancillary_data"] = ancillary_data
-
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.CommandVerifierType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["verifier"] = cls._unpack_verifier_choice_v1_2(obj)
+        kwargs["check_window"] = cls._unpack_check_window_choice_v1_2(obj)
         return kwargs
 
     @classmethod
@@ -344,56 +310,21 @@ class CommandVerifier(OptionalNameDescriptionBase, ABC):
                 assert_never(raw_obj.choice_1)
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.CommandVerifierType) -> Self:
-        return cls(**cls._from_v1_3_common_kwargs(raw_obj))
-
-    @classmethod
-    def _from_v1_3_common_kwargs(
-        cls: type[Self],
-        raw_obj: xtce_1_3.CommandVerifierType,
-        *,
-        include_argument_restrictions: bool = True,
-    ) -> dict[str, Any]:
-        """Build shared v1.3 constructor kwargs for command verifier imports."""
-        kwargs: dict[str, Any] = {
-            "name": raw_obj.name,
-            "short_description": raw_obj.short_description,
-            "long_description": raw_obj.long_description,
-            "verifier": cls._unpack_verifier_choice_v1_3(raw_obj),
-            "check_window": cls._unpack_check_window_choice_v1_3(raw_obj),
-        }
-
-        aliases = cls._aliases_from_v1_3(raw_obj.alias_set)
-        if aliases:
-            kwargs["aliases"] = aliases
-
-        ancillary_data = cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set)
-        if ancillary_data:
-            kwargs["ancillary_data"] = ancillary_data
-
-        if include_argument_restrictions:
-            argument_restrictions = (
-                [
-                    ArgumentAssignment._from_v1_3(arg)
-                    for arg in raw_obj.argument_restriction_list.argument_assignment
-                ]
-                if raw_obj.argument_restriction_list is not None
-                else []
-            )
-            if argument_restrictions:
-                kwargs["argument_restrictions"] = argument_restrictions
-
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.CommandVerifierType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["verifier"] = cls._unpack_verifier_choice_v1_3(obj)
+        kwargs["check_window"] = cls._unpack_check_window_choice_v1_3(obj)
+        argument_restrictions = (
+            [
+                ArgumentAssignment._from_v1_3(arg)
+                for arg in obj.argument_restriction_list.argument_assignment
+            ]
+            if obj.argument_restriction_list is not None
+            else []
+        )
+        if argument_restrictions:
+            kwargs["argument_restrictions"] = argument_restrictions
         return kwargs
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.CommandVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-
-        return xtce_1_2.CommandVerifierType(**self._to_v1_2_common_kwargs(policy))
 
     def _enforce_v1_2_argument_restrictions(self, policy: DowngradePolicy) -> None:
         """Enforce argument restriction loss rules when exporting to XTCE v1.2."""
@@ -405,60 +336,41 @@ class CommandVerifier(OptionalNameDescriptionBase, ABC):
             policy=policy,
         )
 
-    def _to_v1_2_common_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
-        """Build shared v1.2 constructor kwargs for command verifier exports."""
-        return {
-            "name": self.name,
-            "short_description": self.short_description,
-            "long_description": self.long_description,
-            "alias_set": self._aliases_to_v1_2(policy),
-            "ancillary_data_set": self._ancillary_data_to_v1_2(policy),
-            "choice": (
-                xtce_1_2.ComparisonListType(
-                    comparison=[
-                        comparison._to_v1_2(policy) for comparison in self.verifier
-                    ]
-                )
-                if isinstance(self.verifier, list)
-                else self.verifier._to_v1_2(policy)
-            ),
-            "choice_1": self.check_window._to_v1_2(policy),
-        }
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        self._enforce_v1_2_argument_restrictions(policy)
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.CommandVerifierType:
-        return xtce_1_3.CommandVerifierType(**self._to_v1_3_common_kwargs(policy))
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_2.ComparisonListType(
+                comparison=[comparison._to_v1_2(policy) for comparison in self.verifier]
+            )
+            if isinstance(self.verifier, list)
+            else self.verifier._to_v1_2(policy)
+        )
+        kwargs["choice_1"] = self.check_window._to_v1_2(policy)
+        return kwargs
 
-    def _to_v1_3_common_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
-        """Build shared v1.3 constructor kwargs for command verifier exports."""
-        return {
-            "name": self.name,
-            "short_description": self.short_description,
-            "long_description": self.long_description,
-            "alias_set": self._aliases_to_v1_3(policy),
-            "ancillary_data_set": self._ancillary_data_to_v1_3(policy),
-            "choice": (
-                xtce_1_3.ComparisonListType(
-                    comparison=[
-                        comparison._to_v1_3(policy) for comparison in self.verifier
-                    ]
-                )
-                if isinstance(self.verifier, list)
-                else self.verifier._to_v1_3(policy)
-            ),
-            "choice_1": self.check_window._to_v1_3(policy),
-            "argument_restriction_list": (
-                xtce_1_3.ArgumentAssignmentListType(
-                    argument_assignment=[
-                        assignment._to_v1_3(policy)
-                        for assignment in self.argument_restrictions
-                    ]
-                )
-                if self.argument_restrictions
-                else None
-            ),
-        }
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_3.ComparisonListType(
+                comparison=[comparison._to_v1_3(policy) for comparison in self.verifier]
+            )
+            if isinstance(self.verifier, list)
+            else self.verifier._to_v1_3(policy)
+        )
+        kwargs["choice_1"] = self.check_window._to_v1_3(policy)
+        kwargs["argument_restriction_list"] = (
+            xtce_1_3.ArgumentAssignmentListType(
+                argument_assignment=[
+                    assignment._to_v1_3(policy)
+                    for assignment in self.argument_restrictions
+                ]
+            )
+            if self.argument_restrictions
+            else None
+        )
+        return kwargs
 
 
 class TransferredToRangeVerifier(CommandVerifier):
@@ -470,20 +382,8 @@ class TransferredToRangeVerifier(CommandVerifier):
 
     """
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.TransferredToRangeVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.TransferredToRangeVerifierType(
-            **self._to_v1_2_common_kwargs(policy)
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.TransferredToRangeVerifierType:
-        return xtce_1_3.TransferredToRangeVerifierType(
-            **self._to_v1_3_common_kwargs(policy)
-        )
+    _v1_2_type = xtce_1_2.TransferredToRangeVerifierType
+    _v1_3_type = xtce_1_3.TransferredToRangeVerifierType
 
 
 class SentFromRangeVerifier(CommandVerifier):
@@ -495,46 +395,22 @@ class SentFromRangeVerifier(CommandVerifier):
 
     """
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.SentFromRangeVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.SentFromRangeVerifierType(**self._to_v1_2_common_kwargs(policy))
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.SentFromRangeVerifierType:
-        return xtce_1_3.SentFromRangeVerifierType(**self._to_v1_3_common_kwargs(policy))
+    _v1_2_type = xtce_1_2.SentFromRangeVerifierType
+    _v1_3_type = xtce_1_3.SentFromRangeVerifierType
 
 
 class ReceivedVerifier(CommandVerifier):
     """A verifier that indicates the destination has received the command."""
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ReceivedVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.ReceivedVerifierType(**self._to_v1_2_common_kwargs(policy))
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ReceivedVerifierType:
-        return xtce_1_3.ReceivedVerifierType(**self._to_v1_3_common_kwargs(policy))
+    _v1_2_type = xtce_1_2.ReceivedVerifierType
+    _v1_3_type = xtce_1_3.ReceivedVerifierType
 
 
 class AcceptedVerifier(CommandVerifier):
     """A verifier that indicates the destination has accepted the command."""
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AcceptedVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.AcceptedVerifierType(**self._to_v1_2_common_kwargs(policy))
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AcceptedVerifierType:
-        return xtce_1_3.AcceptedVerifierType(**self._to_v1_3_common_kwargs(policy))
+    _v1_2_type = xtce_1_2.AcceptedVerifierType
+    _v1_3_type = xtce_1_3.AcceptedVerifierType
 
 
 class QueuedVerifier(CommandVerifier):
@@ -542,16 +418,8 @@ class QueuedVerifier(CommandVerifier):
     destination.
     """
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.QueuedVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.QueuedVerifierType(**self._to_v1_2_common_kwargs(policy))
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.QueuedVerifierType:
-        return xtce_1_3.QueuedVerifierType(**self._to_v1_3_common_kwargs(policy))
+    _v1_2_type = xtce_1_2.QueuedVerifierType
+    _v1_3_type = xtce_1_3.QueuedVerifierType
 
 
 class ExecutionVerifier(CommandVerifier):
@@ -562,95 +430,58 @@ class ExecutionVerifier(CommandVerifier):
     ) = None
     """Indicates the percentage of completion of the command execution."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_2_type = xtce_1_2.ExecutionVerifierType
+    _v1_3_type = xtce_1_3.ExecutionVerifierType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ExecutionVerifierType) -> Self:
-        if raw_obj.percent_complete is None:
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ExecutionVerifierType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        if obj.percent_complete is None:
             percent_complete = None
-        elif isinstance(raw_obj.percent_complete.choice, xtce_1_2.DynamicValueType):
-            percent_complete = DynamicValue._from_v1_2(raw_obj.percent_complete.choice)
+        elif isinstance(obj.percent_complete.choice, xtce_1_2.DynamicValueType):
+            percent_complete = DynamicValue._from_v1_2(obj.percent_complete.choice)
         else:
-            percent_complete = raw_obj.percent_complete.choice
-
-        kwargs = cls._from_v1_2_common_kwargs(raw_obj)
+            percent_complete = obj.percent_complete.choice
         kwargs["percent_complete"] = percent_complete
-        return cls(**kwargs)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ExecutionVerifierType) -> Self:
-        if raw_obj.percent_complete is None:
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ExecutionVerifierType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        if obj.percent_complete is None:
             percent_complete = None
-        elif isinstance(raw_obj.percent_complete.choice, xtce_1_3.DynamicValueType):
-            percent_complete = DynamicValue._from_v1_3(raw_obj.percent_complete.choice)
+        elif isinstance(obj.percent_complete.choice, xtce_1_3.DynamicValueType):
+            percent_complete = DynamicValue._from_v1_3(obj.percent_complete.choice)
         else:
-            percent_complete = raw_obj.percent_complete.choice
-
-        kwargs = cls._from_v1_3_common_kwargs(raw_obj)
+            percent_complete = obj.percent_complete.choice
         kwargs["percent_complete"] = percent_complete
-        return cls(**kwargs)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ExecutionVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.ExecutionVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            choice=xtce_1_2.ComparisonListType(
-                comparison=[comparison._to_v1_2(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_2(policy),
-            choice_1=self.check_window._to_v1_2(policy),
-            percent_complete=xtce_1_2.PercentCompleteType(
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["percent_complete"] = (
+            xtce_1_2.PercentCompleteType(
                 choice=self.percent_complete._to_v1_2(policy)
                 if isinstance(self.percent_complete, DynamicValue)
                 else self.percent_complete
             )
             if self.percent_complete is not None
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ExecutionVerifierType:
-        return xtce_1_3.ExecutionVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            choice=xtce_1_3.ComparisonListType(
-                comparison=[comparison._to_v1_3(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_3(policy),
-            choice_1=self.check_window._to_v1_3(policy),
-            argument_restriction_list=xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[
-                    assignment._to_v1_3(policy)
-                    for assignment in self.argument_restrictions
-                ]
-            )
-            if self.argument_restrictions
-            else None,
-            percent_complete=xtce_1_3.PercentCompleteType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["percent_complete"] = (
+            xtce_1_3.PercentCompleteType(
                 choice=self.percent_complete._to_v1_3(policy)
                 if isinstance(self.percent_complete, DynamicValue)
                 else self.percent_complete
             )
             if self.percent_complete is not None
-            else None,
+            else None
         )
+        return kwargs
 
 
 class CompleteVerifier(CommandVerifier):
@@ -659,87 +490,52 @@ class CompleteVerifier(CommandVerifier):
     return_parm_ref: ParameterRef | None = None
     """The path to the parameter whose value is being checked."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_2_type = xtce_1_2.CompleteVerifierType
+    _v1_3_type = xtce_1_3.CompleteVerifierType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self],
-        raw_obj: xtce_1_2.CompleteVerifierType,
-    ) -> Self:
-        kwargs = cls._from_v1_2_common_kwargs(raw_obj)
+    def _from_v1_2_kwargs(
+        cls,
+        obj: xtce_1_2.CompleteVerifierType,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["return_parm_ref"] = (
-            ParameterRef._from_v1_2(raw_obj.return_parm_ref)
-            if raw_obj.return_parm_ref is not None
+            ParameterRef._from_v1_2(obj.return_parm_ref)
+            if obj.return_parm_ref is not None
             else None
         )
-        return cls(**kwargs)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self],
-        raw_obj: xtce_1_3.CompleteVerifierType,
-    ) -> Self:
-        kwargs = cls._from_v1_3_common_kwargs(raw_obj)
+    def _from_v1_3_kwargs(
+        cls,
+        obj: xtce_1_3.CompleteVerifierType,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["return_parm_ref"] = (
-            ParameterRef._from_v1_3(raw_obj.return_parm_ref)
-            if raw_obj.return_parm_ref is not None
+            ParameterRef._from_v1_3(obj.return_parm_ref)
+            if obj.return_parm_ref is not None
             else None
         )
-        return cls(**kwargs)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.CompleteVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.CompleteVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            choice=xtce_1_2.ComparisonListType(
-                comparison=[comparison._to_v1_2(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_2(policy),
-            choice_1=self.check_window._to_v1_2(policy),
-            return_parm_ref=self.return_parm_ref._to_v1_2(policy)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["return_parm_ref"] = (
+            self.return_parm_ref._to_v1_2(policy)
             if self.return_parm_ref is not None
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.CompleteVerifierType:
-        return xtce_1_3.CompleteVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            choice=xtce_1_3.ComparisonListType(
-                comparison=[comparison._to_v1_3(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_3(policy),
-            choice_1=self.check_window._to_v1_3(policy),
-            argument_restriction_list=xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[
-                    assignment._to_v1_3(policy)
-                    for assignment in self.argument_restrictions
-                ]
-            )
-            if self.argument_restrictions
-            else None,
-            return_parm_ref=self.return_parm_ref._to_v1_3(policy)
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["return_parm_ref"] = (
+            self.return_parm_ref._to_v1_3(policy)
             if self.return_parm_ref is not None
-            else None,
+            else None
         )
+        return kwargs
 
 
 class FailedVerifier(CommandVerifier):
@@ -748,87 +544,52 @@ class FailedVerifier(CommandVerifier):
     return_parm_ref: ParameterRef | None = None
     """The path to the parameter whose value is being checked."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_2_type = xtce_1_2.FailedVerifierType
+    _v1_3_type = xtce_1_3.FailedVerifierType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self],
-        raw_obj: xtce_1_2.FailedVerifierType,
-    ) -> Self:
-        kwargs = cls._from_v1_2_common_kwargs(raw_obj)
+    def _from_v1_2_kwargs(
+        cls,
+        obj: xtce_1_2.FailedVerifierType,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["return_parm_ref"] = (
-            ParameterRef._from_v1_2(raw_obj.return_parm_ref)
-            if raw_obj.return_parm_ref is not None
+            ParameterRef._from_v1_2(obj.return_parm_ref)
+            if obj.return_parm_ref is not None
             else None
         )
-        return cls(**kwargs)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self],
-        raw_obj: xtce_1_3.FailedVerifierType,
-    ) -> Self:
-        kwargs = cls._from_v1_3_common_kwargs(raw_obj)
+    def _from_v1_3_kwargs(
+        cls,
+        obj: xtce_1_3.FailedVerifierType,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["return_parm_ref"] = (
-            ParameterRef._from_v1_3(raw_obj.return_parm_ref)
-            if raw_obj.return_parm_ref is not None
+            ParameterRef._from_v1_3(obj.return_parm_ref)
+            if obj.return_parm_ref is not None
             else None
         )
-        return cls(**kwargs)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.FailedVerifierType:
-        self._enforce_v1_2_argument_restrictions(policy)
-        return xtce_1_2.FailedVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            choice=xtce_1_2.ComparisonListType(
-                comparison=[comparison._to_v1_2(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_2(policy),
-            choice_1=self.check_window._to_v1_2(policy),
-            return_parm_ref=self.return_parm_ref._to_v1_2(policy)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["return_parm_ref"] = (
+            self.return_parm_ref._to_v1_2(policy)
             if self.return_parm_ref is not None
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.FailedVerifierType:
-        return xtce_1_3.FailedVerifierType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            choice=xtce_1_3.ComparisonListType(
-                comparison=[comparison._to_v1_3(policy) for comparison in self.verifier]
-            )
-            if isinstance(self.verifier, list)
-            else self.verifier._to_v1_3(policy),
-            choice_1=self.check_window._to_v1_3(policy),
-            argument_restriction_list=xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[
-                    assignment._to_v1_3(policy)
-                    for assignment in self.argument_restrictions
-                ]
-            )
-            if self.argument_restrictions
-            else None,
-            return_parm_ref=self.return_parm_ref._to_v1_3(policy)
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["return_parm_ref"] = (
+            self.return_parm_ref._to_v1_3(policy)
             if self.return_parm_ref is not None
-            else None,
+            else None
         )
+        return kwargs
 
 
 class VerifierSet(XtceBaseModel):
@@ -877,163 +638,170 @@ class VerifierSet(XtceBaseModel):
     spacecraft.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.VerifierSetType
+    _v1_3_type = xtce_1_3.VerifierSetType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.VerifierSetType) -> Self:
-        return cls(
-            transferred_to_range_verifier=(
-                TransferredToRangeVerifier._from_v1_2(
-                    raw_obj.transferred_to_range_verifier
-                )
-                if raw_obj.transferred_to_range_verifier is not None
-                else None
-            ),
-            sent_from_range_verifier=(
-                SentFromRangeVerifier._from_v1_2(raw_obj.sent_from_range_verifier)
-                if raw_obj.sent_from_range_verifier is not None
-                else None
-            ),
-            received_verifier=(
-                ReceivedVerifier._from_v1_2(raw_obj.received_verifier)
-                if raw_obj.received_verifier is not None
-                else None
-            ),
-            accepted_verifier=(
-                AcceptedVerifier._from_v1_2(raw_obj.accepted_verifier)
-                if raw_obj.accepted_verifier is not None
-                else None
-            ),
-            queued_verifier=(
-                QueuedVerifier._from_v1_2(raw_obj.queued_verifier)
-                if raw_obj.queued_verifier is not None
-                else None
-            ),
-            execution_verifiers=[
-                ExecutionVerifier._from_v1_2(verifier)
-                for verifier in raw_obj.execution_verifier
-            ],
-            complete_verifiers=[
-                CompleteVerifier._from_v1_2(verifier)
-                for verifier in raw_obj.complete_verifier
-            ],
-            failed_verifier=(
-                FailedVerifier._from_v1_2(raw_obj.failed_verifier)
-                if raw_obj.failed_verifier is not None
-                else None
-            ),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.VerifierSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["transferred_to_range_verifier"] = (
+            TransferredToRangeVerifier._from_v1_2(obj.transferred_to_range_verifier)
+            if obj.transferred_to_range_verifier is not None
+            else None
         )
+        kwargs["sent_from_range_verifier"] = (
+            SentFromRangeVerifier._from_v1_2(obj.sent_from_range_verifier)
+            if obj.sent_from_range_verifier is not None
+            else None
+        )
+        kwargs["received_verifier"] = (
+            ReceivedVerifier._from_v1_2(obj.received_verifier)
+            if obj.received_verifier is not None
+            else None
+        )
+        kwargs["accepted_verifier"] = (
+            AcceptedVerifier._from_v1_2(obj.accepted_verifier)
+            if obj.accepted_verifier is not None
+            else None
+        )
+        kwargs["queued_verifier"] = (
+            QueuedVerifier._from_v1_2(obj.queued_verifier)
+            if obj.queued_verifier is not None
+            else None
+        )
+        kwargs["execution_verifiers"] = [
+            ExecutionVerifier._from_v1_2(verifier)
+            for verifier in obj.execution_verifier
+        ]
+        kwargs["complete_verifiers"] = [
+            CompleteVerifier._from_v1_2(verifier) for verifier in obj.complete_verifier
+        ]
+        kwargs["failed_verifier"] = (
+            FailedVerifier._from_v1_2(obj.failed_verifier)
+            if obj.failed_verifier is not None
+            else None
+        )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.VerifierSetType) -> Self:
-        return cls(
-            transferred_to_range_verifier=(
-                TransferredToRangeVerifier._from_v1_3(
-                    raw_obj.transferred_to_range_verifier
-                )
-                if raw_obj.transferred_to_range_verifier is not None
-                else None
-            ),
-            sent_from_range_verifier=(
-                SentFromRangeVerifier._from_v1_3(raw_obj.sent_from_range_verifier)
-                if raw_obj.sent_from_range_verifier is not None
-                else None
-            ),
-            received_verifier=(
-                ReceivedVerifier._from_v1_3(raw_obj.received_verifier)
-                if raw_obj.received_verifier is not None
-                else None
-            ),
-            accepted_verifier=(
-                AcceptedVerifier._from_v1_3(raw_obj.accepted_verifier)
-                if raw_obj.accepted_verifier is not None
-                else None
-            ),
-            queued_verifier=(
-                QueuedVerifier._from_v1_3(raw_obj.queued_verifier)
-                if raw_obj.queued_verifier is not None
-                else None
-            ),
-            execution_verifiers=[
-                ExecutionVerifier._from_v1_3(verifier)
-                for verifier in raw_obj.execution_verifier
-            ],
-            complete_verifiers=[
-                CompleteVerifier._from_v1_3(verifier)
-                for verifier in raw_obj.complete_verifier
-            ],
-            failed_verifier=(
-                FailedVerifier._from_v1_3(raw_obj.failed_verifier)
-                if raw_obj.failed_verifier is not None
-                else None
-            ),
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.VerifierSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["transferred_to_range_verifier"] = (
+            TransferredToRangeVerifier._from_v1_3(obj.transferred_to_range_verifier)
+            if obj.transferred_to_range_verifier is not None
+            else None
         )
+        kwargs["sent_from_range_verifier"] = (
+            SentFromRangeVerifier._from_v1_3(obj.sent_from_range_verifier)
+            if obj.sent_from_range_verifier is not None
+            else None
+        )
+        kwargs["received_verifier"] = (
+            ReceivedVerifier._from_v1_3(obj.received_verifier)
+            if obj.received_verifier is not None
+            else None
+        )
+        kwargs["accepted_verifier"] = (
+            AcceptedVerifier._from_v1_3(obj.accepted_verifier)
+            if obj.accepted_verifier is not None
+            else None
+        )
+        kwargs["queued_verifier"] = (
+            QueuedVerifier._from_v1_3(obj.queued_verifier)
+            if obj.queued_verifier is not None
+            else None
+        )
+        kwargs["execution_verifiers"] = [
+            ExecutionVerifier._from_v1_3(verifier)
+            for verifier in obj.execution_verifier
+        ]
+        kwargs["complete_verifiers"] = [
+            CompleteVerifier._from_v1_3(verifier) for verifier in obj.complete_verifier
+        ]
+        kwargs["failed_verifier"] = (
+            FailedVerifier._from_v1_3(obj.failed_verifier)
+            if obj.failed_verifier is not None
+            else None
+        )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.VerifierSetType:
-        return xtce_1_2.VerifierSetType(
-            transferred_to_range_verifier=self.transferred_to_range_verifier._to_v1_2(
-                policy
-            )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["transferred_to_range_verifier"] = (
+            self.transferred_to_range_verifier._to_v1_2(policy)
             if self.transferred_to_range_verifier is not None
-            else None,
-            sent_from_range_verifier=self.sent_from_range_verifier._to_v1_2(policy)
-            if self.sent_from_range_verifier is not None
-            else None,
-            received_verifier=self.received_verifier._to_v1_2(policy)
-            if self.received_verifier is not None
-            else None,
-            accepted_verifier=self.accepted_verifier._to_v1_2(policy)
-            if self.accepted_verifier is not None
-            else None,
-            queued_verifier=self.queued_verifier._to_v1_2(policy)
-            if self.queued_verifier is not None
-            else None,
-            execution_verifier=[
-                verifier._to_v1_2(policy) for verifier in self.execution_verifiers
-            ],
-            complete_verifier=[
-                verifier._to_v1_2(policy) for verifier in self.complete_verifiers
-            ],
-            failed_verifier=self.failed_verifier._to_v1_2(policy)
-            if self.failed_verifier is not None
-            else None,
+            else None
         )
+        kwargs["sent_from_range_verifier"] = (
+            self.sent_from_range_verifier._to_v1_2(policy)
+            if self.sent_from_range_verifier is not None
+            else None
+        )
+        kwargs["received_verifier"] = (
+            self.received_verifier._to_v1_2(policy)
+            if self.received_verifier is not None
+            else None
+        )
+        kwargs["accepted_verifier"] = (
+            self.accepted_verifier._to_v1_2(policy)
+            if self.accepted_verifier is not None
+            else None
+        )
+        kwargs["queued_verifier"] = (
+            self.queued_verifier._to_v1_2(policy)
+            if self.queued_verifier is not None
+            else None
+        )
+        kwargs["execution_verifier"] = [
+            verifier._to_v1_2(policy) for verifier in self.execution_verifiers
+        ]
+        kwargs["complete_verifier"] = [
+            verifier._to_v1_2(policy) for verifier in self.complete_verifiers
+        ]
+        kwargs["failed_verifier"] = (
+            self.failed_verifier._to_v1_2(policy)
+            if self.failed_verifier is not None
+            else None
+        )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.VerifierSetType:
-        return xtce_1_3.VerifierSetType(
-            transferred_to_range_verifier=self.transferred_to_range_verifier._to_v1_3(
-                policy
-            )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["transferred_to_range_verifier"] = (
+            self.transferred_to_range_verifier._to_v1_3(policy)
             if self.transferred_to_range_verifier is not None
-            else None,
-            sent_from_range_verifier=self.sent_from_range_verifier._to_v1_3(policy)
-            if self.sent_from_range_verifier is not None
-            else None,
-            received_verifier=self.received_verifier._to_v1_3(policy)
-            if self.received_verifier is not None
-            else None,
-            accepted_verifier=self.accepted_verifier._to_v1_3(policy)
-            if self.accepted_verifier is not None
-            else None,
-            queued_verifier=self.queued_verifier._to_v1_3(policy)
-            if self.queued_verifier is not None
-            else None,
-            execution_verifier=[
-                verifier._to_v1_3(policy) for verifier in self.execution_verifiers
-            ],
-            complete_verifier=[
-                verifier._to_v1_3(policy) for verifier in self.complete_verifiers
-            ],
-            failed_verifier=self.failed_verifier._to_v1_3(policy)
-            if self.failed_verifier is not None
-            else None,
+            else None
         )
+        kwargs["sent_from_range_verifier"] = (
+            self.sent_from_range_verifier._to_v1_3(policy)
+            if self.sent_from_range_verifier is not None
+            else None
+        )
+        kwargs["received_verifier"] = (
+            self.received_verifier._to_v1_3(policy)
+            if self.received_verifier is not None
+            else None
+        )
+        kwargs["accepted_verifier"] = (
+            self.accepted_verifier._to_v1_3(policy)
+            if self.accepted_verifier is not None
+            else None
+        )
+        kwargs["queued_verifier"] = (
+            self.queued_verifier._to_v1_3(policy)
+            if self.queued_verifier is not None
+            else None
+        )
+        kwargs["execution_verifier"] = [
+            verifier._to_v1_3(policy) for verifier in self.execution_verifiers
+        ]
+        kwargs["complete_verifier"] = [
+            verifier._to_v1_3(policy) for verifier in self.complete_verifiers
+        ]
+        kwargs["failed_verifier"] = (
+            self.failed_verifier._to_v1_3(policy)
+            if self.failed_verifier is not None
+            else None
+        )
+        return kwargs

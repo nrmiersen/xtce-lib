@@ -7,13 +7,136 @@ from typing import Any, Self
 from pydantic import model_validator
 from typing_extensions import assert_never
 
-from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from .codec import ArgumentDynamicValue, DynamicValue
 from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
+
+
+def _parse_integer_value_v1_2(
+    integer_value: xtce_1_2.IntegerValueType,
+) -> int | DynamicValue | DiscreteLookupList:
+    """Parse an IntegerValueType into the unified model types."""
+    match integer_value.choice:
+        case int() as val:
+            return val
+        case xtce_1_2.DynamicValueType() as val:
+            return DynamicValue._from_v1_2(val)
+        case xtce_1_2.DiscreteLookupListType() as val:
+            return DiscreteLookupList._from_v1_2(val)
+        case None:
+            raise ValueError("invalid XTCE XML: dimension index is missing a value")
+        case _:
+            assert_never(integer_value.choice)
+
+
+def _parse_integer_value_v1_3(
+    integer_value: xtce_1_3.IntegerValueType,
+) -> int | DynamicValue | DiscreteLookupList:
+    """Parse an IntegerValueType into the unified model types."""
+    match integer_value.choice:
+        case int() as val:
+            return val
+        case xtce_1_3.DynamicValueType() as val:
+            return DynamicValue._from_v1_3(val)
+        case xtce_1_3.DiscreteLookupListType() as val:
+            return DiscreteLookupList._from_v1_3(val)
+        case None:
+            raise ValueError("invalid XTCE XML: dimension index is missing a value")
+        case _:
+            assert_never(integer_value.choice)
+
+
+def _pack_integer_value_v1_2(
+    value: int | DynamicValue | DiscreteLookupList,
+    policy: DowngradePolicy,
+) -> xtce_1_2.IntegerValueType:
+    """Pack a unified model index value into an IntegerValueType."""
+    match value:
+        case int():
+            return xtce_1_2.IntegerValueType(choice=value)
+        case DynamicValue():
+            return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
+        case DiscreteLookupList():
+            return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
+
+
+def _pack_integer_value_v1_3(
+    value: int | DynamicValue | DiscreteLookupList,
+    policy: DowngradePolicy,
+) -> xtce_1_3.IntegerValueType:
+    """Pack a unified model index value into an IntegerValueType."""
+    match value:
+        case int():
+            return xtce_1_3.IntegerValueType(choice=value)
+        case DynamicValue():
+            return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
+        case DiscreteLookupList():
+            return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
+
+
+def _parse_argument_integer_value_v1_2(
+    integer_value: xtce_1_2.ArgumentIntegerValueType,
+) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
+    """Parse an ArgumentIntegerValueType into the unified model types."""
+    match integer_value.choice:
+        case int() as val:
+            return val
+        case xtce_1_2.ArgumentDynamicValueType() as val:
+            return ArgumentDynamicValue._from_v1_2(val)
+        case xtce_1_2.ArgumentDiscreteLookupListType() as val:
+            return ArgumentDiscreteLookupList._from_v1_2(val)
+        case None:
+            raise ValueError("invalid XTCE XML: dimension index is missing a value")
+        case _:
+            assert_never(integer_value.choice)
+
+
+def _parse_argument_integer_value_v1_3(
+    integer_value: xtce_1_3.ArgumentIntegerValueType,
+) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
+    """Parse an ArgumentIntegerValueType into the unified model types."""
+    match integer_value.choice:
+        case int() as val:
+            return val
+        case xtce_1_3.ArgumentDynamicValueType() as val:
+            return ArgumentDynamicValue._from_v1_3(val)
+        case xtce_1_3.ArgumentDiscreteLookupListType() as val:
+            return ArgumentDiscreteLookupList._from_v1_3(val)
+        case None:
+            raise ValueError("invalid XTCE XML: dimension index is missing a value")
+        case _:
+            assert_never(integer_value.choice)
+
+
+def _pack_argument_integer_value_v1_2(
+    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
+    policy: DowngradePolicy,
+) -> xtce_1_2.ArgumentIntegerValueType:
+    """Pack a unified model argument index value into an ArgumentIntegerValueType."""
+    match value:
+        case int():
+            return xtce_1_2.ArgumentIntegerValueType(choice=value)
+        case ArgumentDynamicValue():
+            return xtce_1_2.ArgumentIntegerValueType(choice=value._to_v1_2(policy))
+        case ArgumentDiscreteLookupList():
+            return xtce_1_2.ArgumentIntegerValueType(choice=value._to_v1_2(policy))
+
+
+def _pack_argument_integer_value_v1_3(
+    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
+    policy: DowngradePolicy,
+) -> xtce_1_3.ArgumentIntegerValueType:
+    """Pack a unified model argument index value into an ArgumentIntegerValueType."""
+    match value:
+        case int():
+            return xtce_1_3.ArgumentIntegerValueType(choice=value)
+        case ArgumentDynamicValue():
+            return xtce_1_3.ArgumentIntegerValueType(choice=value._to_v1_3(policy))
+        case ArgumentDiscreteLookupList():
+            return xtce_1_3.ArgumentIntegerValueType(choice=value._to_v1_3(policy))
 
 
 class Dimension(XtceBaseModel):
@@ -64,114 +187,35 @@ class Dimension(XtceBaseModel):
 
         return self
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.DimensionType
+    _v1_3_type = xtce_1_3.DimensionType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], dimension: xtce_1_2.DimensionType) -> Self:
-        version = XtceVersion.V1_2
-
-        def unpack_index(
-            integer_value: xtce_1_2.IntegerValueType,
-        ) -> int | DynamicValue | DiscreteLookupList:
-            match integer_value.choice:
-                case int():
-                    return integer_value.choice
-                case xtce_1_2.DynamicValueType():
-                    return DynamicValue.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case xtce_1_2.DiscreteLookupListType():
-                    return DiscreteLookupList.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case None:
-                    raise ValueError(
-                        "invalid XTCE XML: dimension index is missing a value"
-                    )
-                case _:
-                    assert_never(integer_value.choice)
-
-        return cls(
-            start_index=unpack_index(dimension.starting_index),
-            end_index=unpack_index(dimension.ending_index),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.DimensionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["start_index"] = _parse_integer_value_v1_2(obj.starting_index)
+        kwargs["end_index"] = _parse_integer_value_v1_2(obj.ending_index)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], dimension: xtce_1_3.DimensionType) -> Self:
-        version = XtceVersion.V1_3
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.DimensionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["start_index"] = _parse_integer_value_v1_3(obj.starting_index)
+        kwargs["end_index"] = _parse_integer_value_v1_3(obj.ending_index)
+        return kwargs
 
-        def unpack_index(
-            integer_value: xtce_1_3.IntegerValueType,
-        ) -> int | DynamicValue | DiscreteLookupList:
-            match integer_value.choice:
-                case int():
-                    return integer_value.choice
-                case xtce_1_3.DynamicValueType():
-                    return DynamicValue.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case xtce_1_3.DiscreteLookupListType():
-                    return DiscreteLookupList.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case None:
-                    raise ValueError(
-                        "invalid XTCE XML: dimension index is missing a value"
-                    )
-                case _:
-                    assert_never(integer_value.choice)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["starting_index"] = _pack_integer_value_v1_2(self.start_index, policy)
+        kwargs["ending_index"] = _pack_integer_value_v1_2(self.end_index, policy)
+        return kwargs
 
-        return cls(
-            start_index=unpack_index(dimension.starting_index),
-            end_index=unpack_index(dimension.ending_index),
-        )
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.DimensionType:
-        def pack_index(
-            value: int | DynamicValue | DiscreteLookupList,
-        ) -> xtce_1_2.IntegerValueType:
-            match value:
-                case int():
-                    return xtce_1_2.IntegerValueType(choice=value)
-                case DynamicValue():
-                    return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
-                case DiscreteLookupList():
-                    return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
-
-        return xtce_1_2.DimensionType(
-            starting_index=pack_index(self.start_index),
-            ending_index=pack_index(self.end_index),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.DimensionType:
-        def pack_index(
-            value: int | DynamicValue | DiscreteLookupList,
-        ) -> xtce_1_3.IntegerValueType:
-            match value:
-                case int():
-                    return xtce_1_3.IntegerValueType(choice=value)
-                case DynamicValue():
-                    return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
-                case DiscreteLookupList():
-                    return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
-
-        return xtce_1_3.DimensionType(
-            starting_index=pack_index(self.start_index),
-            ending_index=pack_index(self.end_index),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["starting_index"] = _pack_integer_value_v1_3(self.start_index, policy)
+        kwargs["ending_index"] = _pack_integer_value_v1_3(self.end_index, policy)
+        return kwargs
 
 
 class ArgumentDimension(XtceBaseModel):
@@ -224,119 +268,40 @@ class ArgumentDimension(XtceBaseModel):
 
         return self
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentDimensionType
+    _v1_3_type = xtce_1_3.ArgumentDimensionType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], dimension: xtce_1_2.ArgumentDimensionType) -> Self:
-        version = XtceVersion.V1_2
-
-        def unpack_index(
-            integer_value: xtce_1_2.ArgumentIntegerValueType,
-        ) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
-            match integer_value.choice:
-                case int():
-                    return integer_value.choice
-                case xtce_1_2.ArgumentDynamicValueType():
-                    return ArgumentDynamicValue.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case xtce_1_2.ArgumentDiscreteLookupListType():
-                    return ArgumentDiscreteLookupList.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case None:
-                    raise ValueError(
-                        "invalid XTCE XML: dimension index is missing a value"
-                    )
-                case _:
-                    assert_never(integer_value.choice)
-
-        return cls(
-            start_index=unpack_index(dimension.starting_index),
-            end_index=unpack_index(dimension.ending_index),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentDimensionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["start_index"] = _parse_argument_integer_value_v1_2(obj.starting_index)
+        kwargs["end_index"] = _parse_argument_integer_value_v1_2(obj.ending_index)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], dimension: xtce_1_3.ArgumentDimensionType) -> Self:
-        version = XtceVersion.V1_3
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ArgumentDimensionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["start_index"] = _parse_argument_integer_value_v1_3(obj.starting_index)
+        kwargs["end_index"] = _parse_argument_integer_value_v1_3(obj.ending_index)
+        return kwargs
 
-        def unpack_index(
-            integer_value: xtce_1_3.ArgumentIntegerValueType,
-        ) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
-            match integer_value.choice:
-                case int():
-                    return integer_value.choice
-                case xtce_1_3.ArgumentDynamicValueType():
-                    return ArgumentDynamicValue.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case xtce_1_3.ArgumentDiscreteLookupListType():
-                    return ArgumentDiscreteLookupList.from_xsdata(
-                        integer_value.choice,
-                        version,
-                    )
-                case None:
-                    raise ValueError(
-                        "invalid XTCE XML: dimension index is missing a value"
-                    )
-                case _:
-                    assert_never(integer_value.choice)
-
-        return cls(
-            start_index=unpack_index(dimension.starting_index),
-            end_index=unpack_index(dimension.ending_index),
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["starting_index"] = _pack_argument_integer_value_v1_2(
+            self.start_index, policy
         )
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentDimensionType:
-        def pack_index(
-            value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
-        ) -> xtce_1_2.ArgumentIntegerValueType:
-            match value:
-                case int():
-                    return xtce_1_2.ArgumentIntegerValueType(choice=value)
-                case ArgumentDynamicValue():
-                    return xtce_1_2.ArgumentIntegerValueType(
-                        choice=value._to_v1_2(policy)
-                    )
-                case ArgumentDiscreteLookupList():
-                    return xtce_1_2.ArgumentIntegerValueType(
-                        choice=value._to_v1_2(policy)
-                    )
-
-        return xtce_1_2.ArgumentDimensionType(
-            starting_index=pack_index(self.start_index),
-            ending_index=pack_index(self.end_index),
+        kwargs["ending_index"] = _pack_argument_integer_value_v1_2(
+            self.end_index, policy
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentDimensionType:
-        def pack_index(
-            value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
-        ) -> xtce_1_3.ArgumentIntegerValueType:
-            match value:
-                case int():
-                    return xtce_1_3.ArgumentIntegerValueType(choice=value)
-                case ArgumentDynamicValue():
-                    return xtce_1_3.ArgumentIntegerValueType(
-                        choice=value._to_v1_3(policy)
-                    )
-                case ArgumentDiscreteLookupList():
-                    return xtce_1_3.ArgumentIntegerValueType(
-                        choice=value._to_v1_3(policy)
-                    )
-
-        return xtce_1_3.ArgumentDimensionType(
-            starting_index=pack_index(self.start_index),
-            ending_index=pack_index(self.end_index),
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["starting_index"] = _pack_argument_integer_value_v1_3(
+            self.start_index, policy
         )
+        kwargs["ending_index"] = _pack_argument_integer_value_v1_3(
+            self.end_index, policy
+        )
+        return kwargs

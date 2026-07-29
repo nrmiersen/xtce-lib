@@ -4,13 +4,13 @@ from __future__ import annotations
 
 import datetime
 from abc import ABC
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field
 
 from xtce_lib.common.xtce_path import XtcePath
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 from xtce_lib.xtce._util import coerce, uncoerce, unwrap
 
@@ -35,74 +35,72 @@ class Comparison(ParameterInstanceRef):
     value: int | float | str | bool | bytes | datetime.timedelta | datetime.datetime
     """The value to compare the parameter instance against."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.ComparisonType) -> Self:
-        return cls(
-            ref=XtcePath(raw_obj.parameter_ref),
-            instance=raw_obj.instance,
-            use_calibrated_value=raw_obj.use_calibrated_value,
-            comparison_operator=ComparisonOperator._from_v1_1(
-                raw_obj.comparison_operator
-            ),
-            value=coerce(raw_obj.value),
-        )
+    _v1_1_type = xtce_1_1.ComparisonType
+    _v1_2_type = xtce_1_2.ComparisonType
+    _v1_3_type = xtce_1_3.ComparisonType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ComparisonType) -> Self:
-        return cls(
-            ref=XtcePath(raw_obj.parameter_ref),
-            instance=raw_obj.instance,
-            use_calibrated_value=raw_obj.use_calibrated_value,
-            comparison_operator=ComparisonOperator._from_v1_2(
-                raw_obj.comparison_operator
-            ),
-            value=coerce(raw_obj.value),
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ComparisonType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_1(
+            obj.comparison_operator
         )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ComparisonType) -> Self:
-        return cls(
-            ref=XtcePath(raw_obj.parameter_ref),
-            instance=raw_obj.instance,
-            use_calibrated_value=raw_obj.use_calibrated_value,
-            comparison_operator=ComparisonOperator._from_v1_3(
-                raw_obj.comparison_operator
-            ),
-            value=coerce(raw_obj.value),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ComparisonType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_2(
+            obj.comparison_operator
         )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ComparisonType:
-        return xtce_1_1.ComparisonType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            comparison_operator=self.comparison_operator._to_v1_1(policy),
-            value=uncoerce(self.value),
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ComparisonType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_3(
+            obj.comparison_operator
         )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ComparisonType:
-        return xtce_1_2.ComparisonType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            comparison_operator=self.comparison_operator._to_v1_2(policy),
-            value=uncoerce(self.value),
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_1(policy)
+        kwargs["value"] = uncoerce(self.value)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ComparisonType:
-        return xtce_1_3.ComparisonType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            comparison_operator=self.comparison_operator._to_v1_3(policy),
-            value=uncoerce(self.value),
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_2(policy)
+        kwargs["value"] = uncoerce(self.value)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_3(policy)
+        kwargs["value"] = uncoerce(self.value)
+        return kwargs
 
 
 class ArgumentComparison(XtceBaseModel):
@@ -117,60 +115,53 @@ class ArgumentComparison(XtceBaseModel):
     value: int | float | str | bool | bytes | datetime.timedelta | datetime.datetime
     """The value to compare the parameter or argument instance against."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentComparisonType
+    _v1_3_type = xtce_1_3.ArgumentComparisonType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ArgumentComparisonType) -> Self:
-        if isinstance(raw_obj.choice, xtce_1_2.ParameterInstanceRefType):
-            instance = ParameterInstanceRef._from_v1_2(raw_obj.choice)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentComparisonType) -> dict[str, Any]:
+        if isinstance(obj.choice, xtce_1_2.ParameterInstanceRefType):
+            instance = ParameterInstanceRef._from_v1_2(obj.choice)
         else:
-            instance = ArgumentInstanceRef._from_v1_2(unwrap(raw_obj.choice))
+            instance = ArgumentInstanceRef._from_v1_2(unwrap(obj.choice))
 
-        return cls(
-            instance_ref=instance,
-            comparison_operator=ComparisonOperator._from_v1_2(
-                raw_obj.comparison_operator
-            ),
-            value=coerce(raw_obj.value),
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["instance_ref"] = instance
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_2(
+            obj.comparison_operator
         )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ArgumentComparisonType) -> Self:
-        if isinstance(raw_obj.choice, xtce_1_3.ParameterInstanceRefType):
-            instance = ParameterInstanceRef._from_v1_3(raw_obj.choice)
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ArgumentComparisonType) -> dict[str, Any]:
+        if isinstance(obj.choice, xtce_1_3.ParameterInstanceRefType):
+            instance = ParameterInstanceRef._from_v1_3(obj.choice)
         else:
-            instance = ArgumentInstanceRef._from_v1_3(unwrap(raw_obj.choice))
+            instance = ArgumentInstanceRef._from_v1_3(unwrap(obj.choice))
 
-        return cls(
-            instance_ref=instance,
-            comparison_operator=ComparisonOperator._from_v1_3(
-                raw_obj.comparison_operator
-            ),
-            value=coerce(raw_obj.value),
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["instance_ref"] = instance
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_3(
+            obj.comparison_operator
         )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = self.instance_ref._to_v1_2(policy)
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_2(policy)
+        kwargs["value"] = uncoerce(self.value)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentComparisonType:
-        return xtce_1_2.ArgumentComparisonType(
-            choice=self.instance_ref._to_v1_2(policy),
-            comparison_operator=self.comparison_operator._to_v1_2(policy),
-            value=uncoerce(self.value),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentComparisonType:
-        return xtce_1_3.ArgumentComparisonType(
-            choice=self.instance_ref._to_v1_3(policy),
-            comparison_operator=self.comparison_operator._to_v1_3(policy),
-            value=uncoerce(self.value),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = self.instance_ref._to_v1_3(policy)
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_3(policy)
+        kwargs["value"] = uncoerce(self.value)
+        return kwargs
 
 
 class ComparisonCheck(BaseComparison):
@@ -206,9 +197,13 @@ class ComparisonCheck(BaseComparison):
 
     """
 
+    _v1_1_type = xtce_1_1.ComparisonCheckType
+    _v1_2_type = xtce_1_2.ComparisonCheckType
+    _v1_3_type = xtce_1_3.ComparisonCheckType
+
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.ComparisonCheckType) -> Self:
-        items = list(raw_obj.choice)
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ComparisonCheckType) -> dict[str, Any]:
+        items = list(obj.choice)
 
         left_raw, op_raw = items[0], items[1]
 
@@ -235,19 +230,19 @@ class ComparisonCheck(BaseComparison):
                 )
             right = ParameterInstanceRef._from_v1_1(right_raw)
         else:
-            if raw_obj.value is None:
+            if obj.value is None:
                 raise ValueError("missing right-hand side value for comparison")
-            right = coerce(raw_obj.value)
+            right = coerce(obj.value)
 
-        return cls(
-            left=ParameterInstanceRef._from_v1_1(left_raw),
-            comparison_operator=ComparisonOperator._from_v1_1(op_raw),
-            right=right,
-        )
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["left"] = ParameterInstanceRef._from_v1_1(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_1(op_raw)
+        kwargs["right"] = right
+        return kwargs
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ComparisonCheckType) -> Self:
-        items = list(raw_obj.choice)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ComparisonCheckType) -> dict[str, Any]:
+        items = list(obj.choice)
 
         left_raw, op_raw = items[0], items[1]
 
@@ -274,19 +269,19 @@ class ComparisonCheck(BaseComparison):
                 )
             right = ParameterInstanceRef._from_v1_2(right_raw)
         else:
-            if raw_obj.value is None:
+            if obj.value is None:
                 raise ValueError("missing right-hand side value for comparison")
-            right = coerce(raw_obj.value)
+            right = coerce(obj.value)
 
-        return cls(
-            left=ParameterInstanceRef._from_v1_2(left_raw),
-            comparison_operator=ComparisonOperator._from_v1_2(op_raw),
-            right=right,
-        )
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["left"] = ParameterInstanceRef._from_v1_2(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_2(op_raw)
+        kwargs["right"] = right
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ComparisonCheckType) -> Self:
-        items = list(raw_obj.choice)
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ComparisonCheckType) -> dict[str, Any]:
+        items = list(obj.choice)
 
         left_raw, op_raw = items[0], items[1]
 
@@ -313,19 +308,17 @@ class ComparisonCheck(BaseComparison):
                 )
             right = ParameterInstanceRef._from_v1_3(right_raw)
         else:
-            if raw_obj.value is None:
+            if obj.value is None:
                 raise ValueError("missing right-hand side value for comparison")
-            right = coerce(raw_obj.value)
+            right = coerce(obj.value)
 
-        return cls(
-            left=ParameterInstanceRef._from_v1_3(left_raw),
-            comparison_operator=ComparisonOperator._from_v1_3(op_raw),
-            right=right,
-        )
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["left"] = ParameterInstanceRef._from_v1_3(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_3(op_raw)
+        kwargs["right"] = right
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ComparisonCheckType:
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         choice = [
             self.left._to_v1_1(policy),
             self.comparison_operator._to_v1_1(policy),
@@ -336,11 +329,12 @@ class ComparisonCheck(BaseComparison):
         else:
             value = uncoerce(self.right)
 
-        return xtce_1_1.ComparisonCheckType(choice=choice, value=value)
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["value"] = value
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ComparisonCheckType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         choice = [
             self.left._to_v1_2(policy),
             self.comparison_operator._to_v1_2(policy),
@@ -351,11 +345,12 @@ class ComparisonCheck(BaseComparison):
         else:
             value = uncoerce(self.right)
 
-        return xtce_1_2.ComparisonCheckType(choice=choice, value=value)
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["value"] = value
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ComparisonCheckType:
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         choice = [
             self.left._to_v1_3(policy),
             self.comparison_operator._to_v1_3(policy),
@@ -366,7 +361,10 @@ class ComparisonCheck(BaseComparison):
         else:
             value = uncoerce(self.right)
 
-        return xtce_1_3.ComparisonCheckType(choice=choice, value=value)
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["value"] = value
+        return kwargs
 
 
 class ArgumentComparisonCheck(BaseComparison):
@@ -407,14 +405,14 @@ class ArgumentComparisonCheck(BaseComparison):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentComparisonCheckType
+    _v1_3_type = xtce_1_3.ArgumentComparisonCheckType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentComparisonCheckType
-    ) -> Self:
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentComparisonCheckType
+    ) -> dict[str, Any]:
         def unpack_instance_ref(
             raw: xtce_1_2.ParameterInstanceRefType | xtce_1_2.ArgumentInstanceRefType,
         ):
@@ -429,7 +427,7 @@ class ArgumentComparisonCheck(BaseComparison):
                     f"{type(raw).__name__}"
                 )
 
-        items = list(raw_obj.choice)
+        items = list(obj.choice)
 
         if len(items) == 1:
             left_raw, right_raw = items[0], None
@@ -439,22 +437,22 @@ class ArgumentComparisonCheck(BaseComparison):
         if right_raw is not None:
             right = unpack_instance_ref(right_raw)
         else:
-            if raw_obj.value is None:
+            if obj.value is None:
                 raise ValueError("missing right-hand side value for comparison")
-            right = coerce(raw_obj.value)
+            right = coerce(obj.value)
 
-        return cls(
-            left=unpack_instance_ref(left_raw),
-            comparison_operator=ComparisonOperator._from_v1_2(
-                raw_obj.comparison_operator
-            ),
-            right=right,
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["left"] = unpack_instance_ref(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_2(
+            obj.comparison_operator
         )
+        kwargs["right"] = right
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentComparisonCheckType
-    ) -> Self:
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentComparisonCheckType
+    ) -> dict[str, Any]:
         def unpack_instance_ref(
             raw: xtce_1_3.ParameterInstanceRefType | xtce_1_3.ArgumentInstanceRefType,
         ):
@@ -469,7 +467,7 @@ class ArgumentComparisonCheck(BaseComparison):
                     f"{type(raw).__name__}"
                 )
 
-        items = list(raw_obj.choice)
+        items = list(obj.choice)
 
         if len(items) == 1:
             left_raw, right_raw = items[0], None
@@ -479,24 +477,19 @@ class ArgumentComparisonCheck(BaseComparison):
         if right_raw is not None:
             right = unpack_instance_ref(right_raw)
         else:
-            if raw_obj.value is None:
+            if obj.value is None:
                 raise ValueError("missing right-hand side value for comparison")
-            right = coerce(raw_obj.value)
+            right = coerce(obj.value)
 
-        return cls(
-            left=unpack_instance_ref(left_raw),
-            comparison_operator=ComparisonOperator._from_v1_3(
-                raw_obj.comparison_operator
-            ),
-            right=right,
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["left"] = unpack_instance_ref(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_3(
+            obj.comparison_operator
         )
+        kwargs["right"] = right
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentComparisonCheckType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         choice = [self.left._to_v1_2(policy)]
         if isinstance(self.right, (ParameterInstanceRef, ArgumentInstanceRef)):
             choice.append(self.right._to_v1_2(policy))
@@ -504,15 +497,13 @@ class ArgumentComparisonCheck(BaseComparison):
         else:
             value = uncoerce(self.right)
 
-        return xtce_1_2.ArgumentComparisonCheckType(
-            choice=choice,
-            comparison_operator=self.comparison_operator._to_v1_2(policy),
-            value=value,
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_2(policy)
+        kwargs["value"] = value
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentComparisonCheckType:
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         choice = [self.left._to_v1_3(policy)]
         if isinstance(self.right, (ParameterInstanceRef, ArgumentInstanceRef)):
             choice.append(self.right._to_v1_3(policy))
@@ -520,11 +511,11 @@ class ArgumentComparisonCheck(BaseComparison):
         else:
             value = uncoerce(self.right)
 
-        return xtce_1_3.ArgumentComparisonCheckType(
-            choice=choice,
-            comparison_operator=self.comparison_operator._to_v1_3(policy),
-            value=value,
-        )
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_3(policy)
+        kwargs["value"] = value
+        return kwargs
 
 
 class BaseConditions(XtceBaseModel, ABC):
@@ -537,59 +528,57 @@ class AndedConditions(BaseConditions):
     conditions: list[ComparisonCheck | OredConditions] = Field(min_length=2)
     """The list of conditions that are ANDed together."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.AndedConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_1(c)
-                if isinstance(c, xtce_1_1.ComparisonCheckType)
-                else OredConditions._from_v1_1(c)
-                for c in raw_obj.choice
-            ]
-        )
+    _v1_1_type = xtce_1_1.AndedConditionsType
+    _v1_2_type = xtce_1_2.AndedConditionsType
+    _v1_3_type = xtce_1_3.AndedConditionsType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.AndedConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_2(c)
-                if isinstance(c, xtce_1_2.ComparisonCheckType)
-                else OredConditions._from_v1_2(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.AndedConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_1(c)
+            if isinstance(c, xtce_1_1.ComparisonCheckType)
+            else OredConditions._from_v1_1(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.AndedConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_3(c)
-                if isinstance(c, xtce_1_3.ComparisonCheckType)
-                else OredConditions._from_v1_3(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.AndedConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_2(c)
+            if isinstance(c, xtce_1_2.ComparisonCheckType)
+            else OredConditions._from_v1_2(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.AndedConditionsType:
-        return xtce_1_1.AndedConditionsType(
-            choice=[c._to_v1_1(policy) for c in self.conditions]
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.AndedConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_3(c)
+            if isinstance(c, xtce_1_3.ComparisonCheckType)
+            else OredConditions._from_v1_3(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AndedConditionsType:
-        return xtce_1_2.AndedConditionsType(
-            choice=[c._to_v1_2(policy) for c in self.conditions]
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_1(policy) for c in self.conditions]
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AndedConditionsType:
-        return xtce_1_3.AndedConditionsType(
-            choice=[c._to_v1_3(policy) for c in self.conditions]
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_2(policy) for c in self.conditions]
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_3(policy) for c in self.conditions]
+        return kwargs
 
 
 class ArgumentAndedConditions(BaseConditions):
@@ -600,52 +589,45 @@ class ArgumentAndedConditions(BaseConditions):
     )
     """The list of conditions that are ANDed together."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentAndedConditionsType
+    _v1_3_type = xtce_1_3.ArgumentAndedConditionsType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentAndedConditionsType
-    ) -> Self:
-        return cls(
-            conditions=[
-                ArgumentComparisonCheck._from_v1_2(c)
-                if isinstance(c, xtce_1_2.ArgumentComparisonCheckType)
-                else ArgumentOredConditions._from_v1_2(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentAndedConditionsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_2(c)
+            if isinstance(c, xtce_1_2.ArgumentComparisonCheckType)
+            else ArgumentOredConditions._from_v1_2(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentAndedConditionsType
-    ) -> Self:
-        return cls(
-            conditions=[
-                ArgumentComparisonCheck._from_v1_3(c)
-                if isinstance(c, xtce_1_3.ArgumentComparisonCheckType)
-                else ArgumentOredConditions._from_v1_3(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentAndedConditionsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_3(c)
+            if isinstance(c, xtce_1_3.ArgumentComparisonCheckType)
+            else ArgumentOredConditions._from_v1_3(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_2(policy) for c in self.conditions]
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentAndedConditionsType:
-        return xtce_1_2.ArgumentAndedConditionsType(
-            choice=[c._to_v1_2(policy) for c in self.conditions]
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentAndedConditionsType:
-        return xtce_1_3.ArgumentAndedConditionsType(
-            choice=[c._to_v1_3(policy) for c in self.conditions]
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_3(policy) for c in self.conditions]
+        return kwargs
 
 
 class OredConditions(BaseConditions):
@@ -654,59 +636,57 @@ class OredConditions(BaseConditions):
     conditions: list[ComparisonCheck | AndedConditions] = Field(min_length=2)
     """The list of conditions that are ORed together."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.OredConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_1(c)
-                if isinstance(c, xtce_1_1.ComparisonCheckType)
-                else AndedConditions._from_v1_1(c)
-                for c in raw_obj.choice
-            ]
-        )
+    _v1_1_type = xtce_1_1.OredConditionsType
+    _v1_2_type = xtce_1_2.OredConditionsType
+    _v1_3_type = xtce_1_3.OredConditionsType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.OredConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_2(c)
-                if isinstance(c, xtce_1_2.ComparisonCheckType)
-                else AndedConditions._from_v1_2(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.OredConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_1(c)
+            if isinstance(c, xtce_1_1.ComparisonCheckType)
+            else AndedConditions._from_v1_1(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.OredConditionsType) -> Self:
-        return cls(
-            conditions=[
-                ComparisonCheck._from_v1_3(c)
-                if isinstance(c, xtce_1_3.ComparisonCheckType)
-                else AndedConditions._from_v1_3(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.OredConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_2(c)
+            if isinstance(c, xtce_1_2.ComparisonCheckType)
+            else AndedConditions._from_v1_2(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.OredConditionsType:
-        return xtce_1_1.OredConditionsType(
-            choice=[c._to_v1_1(policy) for c in self.conditions]
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.OredConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["conditions"] = [
+            ComparisonCheck._from_v1_3(c)
+            if isinstance(c, xtce_1_3.ComparisonCheckType)
+            else AndedConditions._from_v1_3(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OredConditionsType:
-        return xtce_1_2.OredConditionsType(
-            choice=[c._to_v1_2(policy) for c in self.conditions]
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_1(policy) for c in self.conditions]
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.OredConditionsType:
-        return xtce_1_3.OredConditionsType(
-            choice=[c._to_v1_3(policy) for c in self.conditions]
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_2(policy) for c in self.conditions]
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_3(policy) for c in self.conditions]
+        return kwargs
 
 
 class ArgumentOredConditions(BaseConditions):
@@ -717,52 +697,45 @@ class ArgumentOredConditions(BaseConditions):
     )
     """The list of argument conditions that are ORed together."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentOredConditionsType
+    _v1_3_type = xtce_1_3.ArgumentOredConditionsType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentOredConditionsType
-    ) -> Self:
-        return cls(
-            conditions=[
-                ArgumentComparisonCheck._from_v1_2(c)
-                if isinstance(c, xtce_1_2.ArgumentComparisonCheckType)
-                else ArgumentAndedConditions._from_v1_2(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentOredConditionsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_2(c)
+            if isinstance(c, xtce_1_2.ArgumentComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_2(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentOredConditionsType
-    ) -> Self:
-        return cls(
-            conditions=[
-                ArgumentComparisonCheck._from_v1_3(c)
-                if isinstance(c, xtce_1_3.ArgumentComparisonCheckType)
-                else ArgumentAndedConditions._from_v1_3(c)
-                for c in raw_obj.choice
-            ]
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentOredConditionsType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_3(c)
+            if isinstance(c, xtce_1_3.ArgumentComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_3(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_2(policy) for c in self.conditions]
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentOredConditionsType:
-        return xtce_1_2.ArgumentOredConditionsType(
-            choice=[c._to_v1_2(policy) for c in self.conditions]
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentOredConditionsType:
-        return xtce_1_3.ArgumentOredConditionsType(
-            choice=[c._to_v1_3(policy) for c in self.conditions]
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_3(policy) for c in self.conditions]
+        return kwargs
 
 
 class BooleanExpression(XtceBaseModel):
@@ -771,56 +744,60 @@ class BooleanExpression(XtceBaseModel):
     comparison: ComparisonCheck | AndedConditions | OredConditions
     """The boolean expression representing the condition."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.BooleanExpressionType) -> Self:
-        return cls(
-            comparison=(
-                ComparisonCheck._from_v1_1(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_1.ComparisonCheckType)
-                else AndedConditions._from_v1_1(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_1.AndedConditionsType)
-                else OredConditions._from_v1_1(unwrap(raw_obj.choice))
-            )
-        )
+    _v1_1_type = xtce_1_1.BooleanExpressionType
+    _v1_2_type = xtce_1_2.BooleanExpressionType
+    _v1_3_type = xtce_1_3.BooleanExpressionType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.BooleanExpressionType) -> Self:
-        return cls(
-            comparison=(
-                ComparisonCheck._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonCheckType)
-                else AndedConditions._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.AndedConditionsType)
-                else OredConditions._from_v1_2(unwrap(raw_obj.choice))
-            )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.BooleanExpressionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["comparison"] = (
+            ComparisonCheck._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.ComparisonCheckType)
+            else AndedConditions._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.AndedConditionsType)
+            else OredConditions._from_v1_1(unwrap(obj.choice))
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.BooleanExpressionType) -> Self:
-        return cls(
-            comparison=(
-                ComparisonCheck._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonCheckType)
-                else AndedConditions._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.AndedConditionsType)
-                else OredConditions._from_v1_3(unwrap(raw_obj.choice))
-            )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.BooleanExpressionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["comparison"] = (
+            ComparisonCheck._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ComparisonCheckType)
+            else AndedConditions._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.AndedConditionsType)
+            else OredConditions._from_v1_2(unwrap(obj.choice))
         )
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.BooleanExpressionType:
-        return xtce_1_1.BooleanExpressionType(choice=self.comparison._to_v1_1(policy))
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.BooleanExpressionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["comparison"] = (
+            ComparisonCheck._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ComparisonCheckType)
+            else AndedConditions._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.AndedConditionsType)
+            else OredConditions._from_v1_3(unwrap(obj.choice))
+        )
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.BooleanExpressionType:
-        return xtce_1_2.BooleanExpressionType(choice=self.comparison._to_v1_2(policy))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_1(policy)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.BooleanExpressionType:
-        return xtce_1_3.BooleanExpressionType(choice=self.comparison._to_v1_3(policy))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_2(policy)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_3(policy)
+        return kwargs
 
 
 class ArgumentBooleanExpression(XtceBaseModel):
@@ -830,54 +807,47 @@ class ArgumentBooleanExpression(XtceBaseModel):
         ArgumentComparisonCheck | ArgumentAndedConditions | ArgumentOredConditions
     )
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentBooleanExpressionType
+    _v1_3_type = xtce_1_3.ArgumentBooleanExpressionType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentBooleanExpressionType
-    ) -> Self:
-        return cls(
-            comparison=(
-                ArgumentComparisonCheck._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentComparisonCheckType)
-                else ArgumentAndedConditions._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentAndedConditionsType)
-                else ArgumentOredConditions._from_v1_2(unwrap(raw_obj.choice))
-            )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentBooleanExpressionType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["comparison"] = (
+            ArgumentComparisonCheck._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ArgumentComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ArgumentAndedConditionsType)
+            else ArgumentOredConditions._from_v1_2(unwrap(obj.choice))
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentBooleanExpressionType
-    ) -> Self:
-        return cls(
-            comparison=(
-                ArgumentComparisonCheck._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentComparisonCheckType)
-                else ArgumentAndedConditions._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentAndedConditionsType)
-                else ArgumentOredConditions._from_v1_3(unwrap(raw_obj.choice))
-            )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentBooleanExpressionType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["comparison"] = (
+            ArgumentComparisonCheck._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ArgumentComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ArgumentAndedConditionsType)
+            else ArgumentOredConditions._from_v1_3(unwrap(obj.choice))
         )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_2(policy)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentBooleanExpressionType:
-        return xtce_1_2.ArgumentBooleanExpressionType(
-            choice=self.comparison._to_v1_2(policy)
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentBooleanExpressionType:
-        return xtce_1_3.ArgumentBooleanExpressionType(
-            choice=self.comparison._to_v1_3(policy)
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_3(policy)
+        return kwargs
 
 
 class MatchCriteria(XtceBaseModel):
@@ -886,86 +856,90 @@ class MatchCriteria(XtceBaseModel):
     criteria: Comparison | list[Comparison] | BooleanExpression | InputAlgorithm
     """The criteria used to match a particular condition."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.MatchCriteriaType) -> Self:
-        from .algorithm import InputAlgorithm
-
-        return cls(
-            criteria=(
-                [Comparison._from_v1_1(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_1.MatchCriteriaType.ComparisonList)
-                else Comparison._from_v1_1(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_1.ComparisonType)
-                else BooleanExpression._from_v1_1(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_1.BooleanExpressionType)
-                else InputAlgorithm._from_v1_1(unwrap(raw_obj.choice))
-            )
-        )
+    _v1_1_type = xtce_1_1.MatchCriteriaType
+    _v1_2_type = xtce_1_2.MatchCriteriaType
+    _v1_3_type = xtce_1_3.MatchCriteriaType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.MatchCriteriaType) -> Self:
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MatchCriteriaType) -> dict[str, Any]:
         from .algorithm import InputAlgorithm
 
-        return cls(
-            criteria=(
-                [Comparison._from_v1_2(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonListType)
-                else Comparison._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonType)
-                else BooleanExpression._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.BooleanExpressionType)
-                else InputAlgorithm._from_v1_2(unwrap(raw_obj.choice))
-            )
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["criteria"] = (
+            [Comparison._from_v1_1(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_1.MatchCriteriaType.ComparisonList)
+            else Comparison._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.ComparisonType)
+            else BooleanExpression._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.BooleanExpressionType)
+            else InputAlgorithm._from_v1_1(unwrap(obj.choice))
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.MatchCriteriaType) -> Self:
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.MatchCriteriaType) -> dict[str, Any]:
         from .algorithm import InputAlgorithm
 
-        return cls(
-            criteria=(
-                [Comparison._from_v1_3(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonListType)
-                else Comparison._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonType)
-                else BooleanExpression._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.BooleanExpressionType)
-                else InputAlgorithm._from_v1_3(unwrap(raw_obj.choice))
-            )
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["criteria"] = (
+            [Comparison._from_v1_2(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_2.ComparisonListType)
+            else Comparison._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ComparisonType)
+            else BooleanExpression._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.BooleanExpressionType)
+            else InputAlgorithm._from_v1_2(unwrap(obj.choice))
         )
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.MatchCriteriaType:
-        return xtce_1_1.MatchCriteriaType(
-            choice=xtce_1_1.MatchCriteriaType.ComparisonList(
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.MatchCriteriaType) -> dict[str, Any]:
+        from .algorithm import InputAlgorithm
+
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["criteria"] = (
+            [Comparison._from_v1_3(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_3.ComparisonListType)
+            else Comparison._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ComparisonType)
+            else BooleanExpression._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.BooleanExpressionType)
+            else InputAlgorithm._from_v1_3(unwrap(obj.choice))
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_1.MatchCriteriaType.ComparisonList(
                 comparison=[c._to_v1_1(policy) for c in self.criteria]
             )
             if isinstance(self.criteria, list)
-            else self.criteria._to_v1_1(policy),
+            else self.criteria._to_v1_1(policy)
         )
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.MatchCriteriaType:
-        return xtce_1_2.MatchCriteriaType(
-            choice=xtce_1_2.ComparisonListType(
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_2.ComparisonListType(
                 comparison=[c._to_v1_2(policy) for c in self.criteria]
             )
             if isinstance(self.criteria, list)
-            else self.criteria._to_v1_2(policy),
+            else self.criteria._to_v1_2(policy)
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.MatchCriteriaType:
-        return xtce_1_3.MatchCriteriaType(
-            choice=xtce_1_3.ComparisonListType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_3.ComparisonListType(
                 comparison=[c._to_v1_3(policy) for c in self.criteria]
             )
             if isinstance(self.criteria, list)
-            else self.criteria._to_v1_3(policy),
+            else self.criteria._to_v1_3(policy)
         )
+        return kwargs
 
 
 class ArgumentMatchCriteria(XtceBaseModel):
@@ -979,135 +953,89 @@ class ArgumentMatchCriteria(XtceBaseModel):
     )
     """The criteria used to match a particular condition."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentMatchCriteriaType
+    _v1_3_type = xtce_1_3.ArgumentMatchCriteriaType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentMatchCriteriaType
-    ) -> Self:
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentMatchCriteriaType
+    ) -> dict[str, Any]:
         from .algorithm import ArgumentInputAlgorithm
 
-        return cls(
-            criteria=(
-                [ArgumentComparison._from_v1_2(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentComparisonListType)
-                else ArgumentComparison._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentComparisonType)
-                else ArgumentBooleanExpression._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentBooleanExpressionType)
-                else ArgumentInputAlgorithm._from_v1_2(unwrap(raw_obj.choice))
-            )
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["criteria"] = (
+            [ArgumentComparison._from_v1_2(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_2.ArgumentComparisonListType)
+            else ArgumentComparison._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ArgumentComparisonType)
+            else ArgumentBooleanExpression._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.ArgumentBooleanExpressionType)
+            else ArgumentInputAlgorithm._from_v1_2(unwrap(obj.choice))
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentMatchCriteriaType
-    ) -> Self:
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentMatchCriteriaType
+    ) -> dict[str, Any]:
         from .algorithm import ArgumentInputAlgorithm
 
-        return cls(
-            criteria=(
-                [ArgumentComparison._from_v1_3(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentComparisonListType)
-                else ArgumentComparison._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentComparisonType)
-                else ArgumentBooleanExpression._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentBooleanExpressionType)
-                else ArgumentInputAlgorithm._from_v1_3(unwrap(raw_obj.choice))
-            )
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["criteria"] = (
+            [ArgumentComparison._from_v1_3(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_3.ArgumentComparisonListType)
+            else ArgumentComparison._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ArgumentComparisonType)
+            else ArgumentBooleanExpression._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.ArgumentBooleanExpressionType)
+            else ArgumentInputAlgorithm._from_v1_3(unwrap(obj.choice))
         )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentMatchCriteriaType:
-        return xtce_1_2.ArgumentMatchCriteriaType(
-            choice=xtce_1_2.ArgumentComparisonListType(
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_2.ArgumentComparisonListType(
                 comparison=[c._to_v1_2(policy) for c in self.criteria]
             )
             if isinstance(self.criteria, list)
-            else self.criteria._to_v1_2(policy),
+            else self.criteria._to_v1_2(policy)
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentMatchCriteriaType:
-        return xtce_1_3.ArgumentMatchCriteriaType(
-            choice=xtce_1_3.ArgumentComparisonListType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_3.ArgumentComparisonListType(
                 comparison=[c._to_v1_3(policy) for c in self.criteria]
             )
             if isinstance(self.criteria, list)
-            else self.criteria._to_v1_3(policy),
+            else self.criteria._to_v1_3(policy)
         )
+        return kwargs
 
 
 class ContextMatch(MatchCriteria):
     """Define match criteria for context-based selection."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ContextMatchType
+    _v1_3_type = xtce_1_3.ContextMatchType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ContextMatchType) -> Self:
-        from .algorithm import InputAlgorithm
-
-        return cls(
-            criteria=(
-                [Comparison._from_v1_2(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonListType)
-                else Comparison._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonType)
-                else BooleanExpression._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.BooleanExpressionType)
-                else InputAlgorithm._from_v1_2(unwrap(raw_obj.choice))
-            )
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ContextMatchType) -> dict[str, Any]:
+        return super()._from_v1_2_kwargs(obj)
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ContextMatchType) -> Self:
-        from .algorithm import InputAlgorithm
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ContextMatchType) -> dict[str, Any]:
+        return super()._from_v1_3_kwargs(obj)
 
-        return cls(
-            criteria=(
-                [Comparison._from_v1_3(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonListType)
-                else Comparison._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonType)
-                else BooleanExpression._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.BooleanExpressionType)
-                else InputAlgorithm._from_v1_3(unwrap(raw_obj.choice))
-            )
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return super()._to_v1_2_kwargs(policy)
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ContextMatchType:
-        return xtce_1_2.ContextMatchType(
-            choice=xtce_1_2.ComparisonListType(
-                comparison=[c._to_v1_2(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_2(policy),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ContextMatchType:
-        return xtce_1_3.ContextMatchType(
-            choice=xtce_1_3.ComparisonListType(
-                comparison=[c._to_v1_3(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_3(policy),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return super()._to_v1_3_kwargs(policy)
 
 
 class DiscreteLookup(MatchCriteria):
@@ -1116,70 +1044,31 @@ class DiscreteLookup(MatchCriteria):
     value: int
     """The value to use when the lookup conditions are true."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.DiscreteLookupType
+    _v1_3_type = xtce_1_3.DiscreteLookupType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.DiscreteLookupType) -> Self:
-        from .algorithm import InputAlgorithm
-
-        return cls(
-            criteria=(
-                [Comparison._from_v1_2(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonListType)
-                else Comparison._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ComparisonType)
-                else BooleanExpression._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.BooleanExpressionType)
-                else InputAlgorithm._from_v1_2(unwrap(raw_obj.choice))
-            ),
-            value=raw_obj.value,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.DiscreteLookupType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.DiscreteLookupType) -> Self:
-        from .algorithm import InputAlgorithm
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.DiscreteLookupType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
-        return cls(
-            criteria=(
-                [Comparison._from_v1_3(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonListType)
-                else Comparison._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ComparisonType)
-                else BooleanExpression._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.BooleanExpressionType)
-                else InputAlgorithm._from_v1_3(unwrap(raw_obj.choice))
-            ),
-            value=raw_obj.value,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["value"] = self.value
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.DiscreteLookupType:
-        return xtce_1_2.DiscreteLookupType(
-            choice=xtce_1_2.ComparisonListType(
-                comparison=[c._to_v1_2(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_2(policy),
-            value=self.value,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.DiscreteLookupType:
-        return xtce_1_3.DiscreteLookupType(
-            choice=xtce_1_3.ComparisonListType(
-                comparison=[c._to_v1_3(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_3(policy),
-            value=self.value,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["value"] = self.value
+        return kwargs
 
 
 class ArgumentDiscreteLookup(ArgumentMatchCriteria):
@@ -1187,74 +1076,35 @@ class ArgumentDiscreteLookup(ArgumentMatchCriteria):
 
     value: int
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentDiscreteLookupType
+    _v1_3_type = xtce_1_3.ArgumentDiscreteLookupType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentDiscreteLookupType
-    ) -> Self:
-        from .algorithm import ArgumentInputAlgorithm
-
-        return cls(
-            criteria=(
-                [ArgumentComparison._from_v1_2(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentComparisonListType)
-                else ArgumentComparison._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentComparisonType)
-                else ArgumentBooleanExpression._from_v1_2(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_2.ArgumentBooleanExpressionType)
-                else ArgumentInputAlgorithm._from_v1_2(unwrap(raw_obj.choice))
-            ),
-            value=raw_obj.value,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentDiscreteLookupType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentDiscreteLookupType
-    ) -> Self:
-        from .algorithm import ArgumentInputAlgorithm
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentDiscreteLookupType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
-        return cls(
-            criteria=(
-                [ArgumentComparison._from_v1_3(c) for c in raw_obj.choice.comparison]
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentComparisonListType)
-                else ArgumentComparison._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentComparisonType)
-                else ArgumentBooleanExpression._from_v1_3(raw_obj.choice)
-                if isinstance(raw_obj.choice, xtce_1_3.ArgumentBooleanExpressionType)
-                else ArgumentInputAlgorithm._from_v1_3(unwrap(raw_obj.choice))
-            ),
-            value=raw_obj.value,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["value"] = self.value
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentDiscreteLookupType:
-        return xtce_1_2.ArgumentDiscreteLookupType(
-            choice=xtce_1_2.ArgumentComparisonListType(
-                comparison=[c._to_v1_2(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_2(policy),
-            value=self.value,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentDiscreteLookupType:
-        return xtce_1_3.ArgumentDiscreteLookupType(
-            choice=xtce_1_3.ArgumentComparisonListType(
-                comparison=[c._to_v1_3(policy) for c in self.criteria]
-            )
-            if isinstance(self.criteria, list)
-            else self.criteria._to_v1_3(policy),
-            value=self.value,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["value"] = self.value
+        return kwargs
 
 
 class DiscreteLookupList(XtceBaseModel):
@@ -1277,30 +1127,25 @@ class DiscreteLookupList(XtceBaseModel):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.DiscreteLookupListType
+    _v1_3_type = xtce_1_3.DiscreteLookupListType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.DiscreteLookupListType) -> Self:
-        return cls(
-            lookups=[DiscreteLookup._from_v1_2(l) for l in raw_obj.discrete_lookup],
-            default_value=0,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.DiscreteLookupListType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["lookups"] = [DiscreteLookup._from_v1_2(l) for l in obj.discrete_lookup]
+        kwargs["default_value"] = 0
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.DiscreteLookupListType) -> Self:
-        return cls(
-            lookups=[DiscreteLookup._from_v1_3(l) for l in raw_obj.discrete_lookup],
-            default_value=raw_obj.default_value,
-        )
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.DiscreteLookupListType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["lookups"] = [DiscreteLookup._from_v1_3(l) for l in obj.discrete_lookup]
+        kwargs["default_value"] = obj.default_value
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.DiscreteLookupListType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         self._enforce_unsupported_field(
             field_name="default_value",
             current_value=self.default_value,
@@ -1308,17 +1153,15 @@ class DiscreteLookupList(XtceBaseModel):
             policy=policy,
         )
 
-        return xtce_1_2.DiscreteLookupListType(
-            discrete_lookup=[l._to_v1_2(policy) for l in self.lookups]
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_2(policy) for l in self.lookups]
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.DiscreteLookupListType:
-        return xtce_1_3.DiscreteLookupListType(
-            discrete_lookup=[l._to_v1_3(policy) for l in self.lookups],
-            default_value=self.default_value,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_3(policy) for l in self.lookups]
+        kwargs["default_value"] = self.default_value
+        return kwargs
 
 
 class ArgumentDiscreteLookupList(XtceBaseModel):
@@ -1338,38 +1181,33 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
     used.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentDiscreteLookupListType
+    _v1_3_type = xtce_1_3.ArgumentDiscreteLookupListType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentDiscreteLookupListType
-    ) -> Self:
-        return cls(
-            lookups=[
-                ArgumentDiscreteLookup._from_v1_2(l) for l in raw_obj.discrete_lookup
-            ],
-            default_value=0,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentDiscreteLookupListType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["lookups"] = [
+            ArgumentDiscreteLookup._from_v1_2(l) for l in obj.discrete_lookup
+        ]
+        kwargs["default_value"] = 0
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentDiscreteLookupListType
-    ) -> Self:
-        return cls(
-            lookups=[
-                ArgumentDiscreteLookup._from_v1_3(l) for l in raw_obj.discrete_lookup
-            ],
-            default_value=raw_obj.default_value,
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentDiscreteLookupListType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["lookups"] = [
+            ArgumentDiscreteLookup._from_v1_3(l) for l in obj.discrete_lookup
+        ]
+        kwargs["default_value"] = obj.default_value
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentDiscreteLookupListType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         self._enforce_unsupported_field(
             field_name="default_value",
             current_value=self.default_value,
@@ -1377,14 +1215,12 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
             policy=policy,
         )
 
-        return xtce_1_2.ArgumentDiscreteLookupListType(
-            discrete_lookup=[l._to_v1_2(policy) for l in self.lookups]
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_2(policy) for l in self.lookups]
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentDiscreteLookupListType:
-        return xtce_1_3.ArgumentDiscreteLookupListType(
-            discrete_lookup=[l._to_v1_3(policy) for l in self.lookups],
-            default_value=self.default_value,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_3(policy) for l in self.lookups]
+        kwargs["default_value"] = self.default_value
+        return kwargs

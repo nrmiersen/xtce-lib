@@ -70,6 +70,85 @@ class BaseCalibrator(XtceBaseModel, ABC):
 
     """
 
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.BaseCalibratorType
+    _v1_3_type = xtce_1_3.BaseCalibratorType
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.BaseCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["name"] = obj.name
+        kwargs["short_description"] = obj.short_description
+        kwargs["ancillary_data"] = (
+            [
+                AncillaryData._from_v1_2(data)
+                for data in obj.ancillary_data_set.ancillary_data
+            ]
+            if obj.ancillary_data_set is not None
+            else []
+        )
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.BaseCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["name"] = obj.name
+        kwargs["short_description"] = obj.short_description
+        kwargs["ancillary_data"] = (
+            [
+                AncillaryData._from_v1_3(data)
+                for data in obj.ancillary_data_set.ancillary_data
+            ]
+            if obj.ancillary_data_set is not None
+            else []
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        version = XtceVersion.V1_1
+
+        self._enforce_unsupported_field(
+            field_name="name",
+            current_value=self.name,
+            empty_value=None,
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="short_description",
+            current_value=self.short_description,
+            empty_value=None,
+            target_version=version,
+            policy=policy,
+        )
+        self._enforce_unsupported_field(
+            field_name="ancillary_data",
+            current_value=self.ancillary_data,
+            empty_value=[],
+            target_version=version,
+            policy=policy,
+        )
+
+        return super()._to_v1_1_kwargs(policy)
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["short_description"] = self.short_description
+        kwargs["ancillary_data_set"] = xtce_1_2.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+        )
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["short_description"] = self.short_description
+        kwargs["ancillary_data_set"] = xtce_1_3.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+        )
+        return kwargs
+
 
 class MathOperationCalibrator(BaseCalibrator):
     """Define a math operation calibrator."""
@@ -78,6 +157,10 @@ class MathOperationCalibrator(BaseCalibrator):
         ValueOperand | ThisParameterOperand | MathOperator | ParameterInstanceRef
     ] = Field(default_factory=list)
     """The sequence of operands and operators for the math operation."""
+
+    _v1_1_type = xtce_1_1.MathOperationType
+    _v1_2_type = xtce_1_2.MathOperationCalibratorType
+    _v1_3_type = xtce_1_3.MathOperationCalibratorType
 
     @model_validator(mode="after")
     def validate_rpn_sequence(self) -> Self:
@@ -114,175 +197,119 @@ class MathOperationCalibrator(BaseCalibrator):
         return self
 
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.MathOperationType) -> Self:
-        return cls(
-            operation=[
-                ValueOperand(value=float(item))
-                if isinstance(item, float)
-                else MathOperator(value=item.value)
-                if isinstance(item, xtce_1_1.MathOperatorsType)
-                else ParameterInstanceRef(ref=XtcePath(item.parameter_ref))
-                if isinstance(item, xtce_1_1.ParameterInstanceRefType)
-                else ThisParameterOperand()
-                for item in raw_obj.choice
-            ],
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MathOperationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=float(item))
+            if isinstance(item, float)
+            else MathOperator(value=item.value)
+            if isinstance(item, xtce_1_1.MathOperatorsType)
+            else ParameterInstanceRef(ref=XtcePath(item.parameter_ref))
+            if isinstance(item, xtce_1_1.ParameterInstanceRefType)
+            else ThisParameterOperand()
+            for item in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.MathOperationCalibratorType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_2(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            operation=[
-                ValueOperand(value=item.value)
-                if isinstance(item, xtce_1_2.MathOperationCalibratorType.ValueOperand)
-                else ThisParameterOperand()
-                if isinstance(
-                    item, xtce_1_2.MathOperationCalibratorType.ThisParameterOperand
-                )
-                else ParameterInstanceRef(
-                    ref=XtcePath(item.parameter_ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                if isinstance(item, xtce_1_2.ParameterInstanceRefType)
-                else MathOperator(value=item.value)
-                for item in raw_obj.choice
-            ],
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.MathOperationCalibratorType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=item.value)
+            if isinstance(item, xtce_1_2.MathOperationCalibratorType.ValueOperand)
+            else ThisParameterOperand()
+            if isinstance(
+                item, xtce_1_2.MathOperationCalibratorType.ThisParameterOperand
+            )
+            else ParameterInstanceRef(
+                ref=XtcePath(item.parameter_ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_2.ParameterInstanceRefType)
+            else MathOperator(value=item.value)
+            for item in obj.choice
+        ]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.MathOperationCalibratorType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_3(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            operation=[
-                ValueOperand(value=item.value)
-                if isinstance(item, xtce_1_3.MathOperationCalibratorType.ValueOperand)
-                else ThisParameterOperand()
-                if isinstance(
-                    item, xtce_1_3.MathOperationCalibratorType.ThisParameterOperand
-                )
-                else ParameterInstanceRef(
-                    ref=XtcePath(item.parameter_ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                if isinstance(item, xtce_1_3.ParameterInstanceRefType)
-                else MathOperator(value=item.value)
-                for item in raw_obj.choice
-            ],
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.MathOperationCalibratorType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=item.value)
+            if isinstance(item, xtce_1_3.MathOperationCalibratorType.ValueOperand)
+            else ThisParameterOperand()
+            if isinstance(
+                item, xtce_1_3.MathOperationCalibratorType.ThisParameterOperand
+            )
+            else ParameterInstanceRef(
+                ref=XtcePath(item.parameter_ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_3.ParameterInstanceRefType)
+            else MathOperator(value=item.value)
+            for item in obj.choice
+        ]
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.MathOperationType:
-        version = XtceVersion.V1_1
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [
+            float(item.value)
+            if isinstance(item, ValueOperand)
+            else object()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_1.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_1.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        return kwargs
 
-        self._enforce_unsupported_field(
-            field_name="name",
-            current_value=self.name,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="short_description",
-            current_value=self.short_description,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="ancillary_data",
-            current_value=self.ancillary_data,
-            empty_value=[],
-            target_version=version,
-            policy=policy,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [
+            xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_2.MathOperationCalibratorType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_2.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_2.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        return kwargs
 
-        return xtce_1_1.MathOperationType(
-            choice=[
-                float(item.value)
-                if isinstance(item, ValueOperand)
-                else object()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_1.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_1.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ]
-        )
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.MathOperationCalibratorType:
-        return xtce_1_2.MathOperationCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            ),
-            choice=[
-                xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
-                if isinstance(item, ValueOperand)
-                else xtce_1_2.MathOperationCalibratorType.ThisParameterOperand()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_2.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_2.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.MathOperationCalibratorType:
-        return xtce_1_3.MathOperationCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            ),
-            choice=[
-                xtce_1_3.MathOperationCalibratorType.ValueOperand(value=str(item.value))
-                if isinstance(item, ValueOperand)
-                else xtce_1_3.MathOperationCalibratorType.ThisParameterOperand()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_3.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_3.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [
+            xtce_1_3.MathOperationCalibratorType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_3.MathOperationCalibratorType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_3.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_3.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        return kwargs
 
 
 class ArgumentMathOperation(XtceBaseModel):

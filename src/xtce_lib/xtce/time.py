@@ -1,7 +1,7 @@
 """Time models."""
 
 import datetime
-from typing import Self, assert_never
+from typing import Any, Self, assert_never
 
 from pydantic import Field, model_validator
 from xsdata.models.datatype import XmlDate, XmlDateTime
@@ -74,49 +74,34 @@ class TimeAssociation(ParameterInstanceRef):
         # Verify Parameter.type_ref is a AbsoluteTimeParameter
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], time_association: xtce_1_1.TimeAssociationType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(time_association.parameter_ref),
-            instance=time_association.instance,
-            use_calibrated_value=time_association.use_calibrated_value,
-            interpolate_time=time_association.interpolate_time,
-            offset=time_association.offset.to_date()
-            if time_association.offset is not None
-            else None,
-        )
+    _v1_1_type = xtce_1_1.TimeAssociationType
+    _v1_2_type = xtce_1_2.TimeAssociationType
+    _v1_3_type = xtce_1_3.TimeAssociationType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], time_association: xtce_1_2.TimeAssociationType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(time_association.parameter_ref),
-            instance=time_association.instance,
-            use_calibrated_value=time_association.use_calibrated_value,
-            interpolate_time=time_association.interpolate_time,
-            offset=time_association.offset,
-            unit=TimeAssociationUnits._from_v1_2(time_association.unit),
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.TimeAssociationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["interpolate_time"] = obj.interpolate_time
+        kwargs["offset"] = obj.offset.to_date() if obj.offset is not None else None
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], time_association: xtce_1_3.TimeAssociationType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(time_association.parameter_ref),
-            instance=time_association.instance,
-            use_calibrated_value=time_association.use_calibrated_value,
-            interpolate_time=time_association.interpolate_time,
-            offset=time_association.offset,
-            unit=TimeAssociationUnits._from_v1_3(time_association.unit),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.TimeAssociationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["interpolate_time"] = obj.interpolate_time
+        kwargs["offset"] = obj.offset
+        kwargs["unit"] = TimeAssociationUnits._from_v1_2(obj.unit)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.TimeAssociationType:
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.TimeAssociationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["interpolate_time"] = obj.interpolate_time
+        kwargs["offset"] = obj.offset
+        kwargs["unit"] = TimeAssociationUnits._from_v1_3(obj.unit)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_1
 
         self._enforce_unsupported_field(
@@ -135,17 +120,12 @@ class TimeAssociation(ParameterInstanceRef):
             require_match=True,
         )
 
-        return xtce_1_1.TimeAssociationType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            interpolate_time=self.interpolate_time,
-            offset=XmlDate.from_date(offset),
-        )
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["interpolate_time"] = self.interpolate_time
+        kwargs["offset"] = XmlDate.from_date(offset)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.TimeAssociationType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         offset = self._enforce_restricted_type(
             field_name="offset",
             current_value=self.offset,
@@ -155,18 +135,13 @@ class TimeAssociation(ParameterInstanceRef):
             require_match=True,
         )
 
-        return xtce_1_2.TimeAssociationType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            interpolate_time=self.interpolate_time,
-            offset=offset,
-            unit=self.unit._to_v1_2(policy),
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["interpolate_time"] = self.interpolate_time
+        kwargs["offset"] = offset
+        kwargs["unit"] = self.unit._to_v1_2(policy)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.TimeAssociationType:
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         offset = self._enforce_restricted_type(
             field_name="offset",
             current_value=self.offset,
@@ -176,14 +151,11 @@ class TimeAssociation(ParameterInstanceRef):
             require_match=True,
         )
 
-        return xtce_1_3.TimeAssociationType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            interpolate_time=self.interpolate_time,
-            offset=offset,
-            unit=self.unit._to_v1_3(policy),
-        )
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["interpolate_time"] = self.interpolate_time
+        kwargs["offset"] = offset
+        kwargs["unit"] = self.unit._to_v1_3(policy)
+        return kwargs
 
 
 class ReferenceTime(XtceBaseModel):
@@ -268,9 +240,12 @@ class ReferenceTime(XtceBaseModel):
             # AbsoluteTimeParameter
             # TODO need parameter type classes to be defined before semantic validation can be implemented
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], reference_time: xtce_1_1.ReferenceTimeType) -> Self:
+    _v1_1_type = xtce_1_1.ReferenceTimeType
+    _v1_2_type = xtce_1_2.ReferenceTimeType
+    _v1_3_type = xtce_1_3.ReferenceTimeType
 
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ReferenceTimeType) -> dict[str, Any]:
         def unpack_epoch(
             reference_time: xtce_1_1.ReferenceTimeType,
         ) -> datetime.date | EpochTime | None:
@@ -288,23 +263,17 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(reference_time.choice)
 
-        return cls(
-            offset_from=(
-                ParameterInstanceRef.from_xsdata(
-                    reference_time.choice, XtceVersion.V1_1
-                )
-                if isinstance(
-                    reference_time.choice,
-                    xtce_1_1.ParameterInstanceRefType,
-                )
-                else None
-            ),
-            epoch=unpack_epoch(reference_time),
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["offset_from"] = (
+            ParameterInstanceRef.from_xsdata(obj.choice, XtceVersion.V1_1)
+            if isinstance(obj.choice, xtce_1_1.ParameterInstanceRefType)
+            else None
         )
+        kwargs["epoch"] = unpack_epoch(obj)
+        return kwargs
 
     @classmethod
-    def _from_v1_2(cls: type[Self], reference_time: xtce_1_2.ReferenceTimeType) -> Self:
-
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ReferenceTimeType) -> dict[str, Any]:
         def unpack_epoch(
             reference_time: xtce_1_2.ReferenceTimeType,
         ) -> datetime.date | datetime.datetime | EpochTime | None:
@@ -324,23 +293,17 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(reference_time.choice)
 
-        return cls(
-            offset_from=(
-                ParameterInstanceRef.from_xsdata(
-                    reference_time.choice, XtceVersion.V1_2
-                )
-                if isinstance(
-                    reference_time.choice,
-                    xtce_1_2.ParameterInstanceRefType,
-                )
-                else None
-            ),
-            epoch=unpack_epoch(reference_time),
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["offset_from"] = (
+            ParameterInstanceRef.from_xsdata(obj.choice, XtceVersion.V1_2)
+            if isinstance(obj.choice, xtce_1_2.ParameterInstanceRefType)
+            else None
         )
+        kwargs["epoch"] = unpack_epoch(obj)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], reference_time: xtce_1_3.ReferenceTimeType) -> Self:
-
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ReferenceTimeType) -> dict[str, Any]:
         def unpack_epoch(
             reference_time: xtce_1_3.ReferenceTimeType,
         ) -> datetime.date | datetime.datetime | EpochTime | None:
@@ -360,23 +323,16 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(reference_time.choice)
 
-        return cls(
-            offset_from=(
-                ParameterInstanceRef.from_xsdata(
-                    reference_time.choice, XtceVersion.V1_3
-                )
-                if isinstance(
-                    reference_time.choice,
-                    xtce_1_3.ParameterInstanceRefType,
-                )
-                else None
-            ),
-            epoch=unpack_epoch(reference_time),
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["offset_from"] = (
+            ParameterInstanceRef.from_xsdata(obj.choice, XtceVersion.V1_3)
+            if isinstance(obj.choice, xtce_1_3.ParameterInstanceRefType)
+            else None
         )
+        kwargs["epoch"] = unpack_epoch(obj)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ReferenceTimeType:
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         if self.epoch is not None:
             self._enforce_restricted_type(
                 field_name="epoch",
@@ -403,15 +359,15 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(epoch)
 
-        return xtce_1_1.ReferenceTimeType(
-            choice=pack_epoch(self.epoch)
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = (
+            pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_1(policy)
         )
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ReferenceTimeType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         def pack_epoch(
             epoch: datetime.date | datetime.datetime | EpochTime,
         ) -> XmlDate | XmlDateTime | xtce_1_2.EpochTimeEnumsType:
@@ -425,15 +381,15 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(epoch)
 
-        return xtce_1_2.ReferenceTimeType(
-            choice=pack_epoch(self.epoch)
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = (
+            pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_2(policy)
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ReferenceTimeType:
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         def pack_epoch(
             epoch: datetime.date | datetime.datetime | EpochTime,
         ) -> XmlDate | XmlDateTime | xtce_1_3.EpochTimeEnumsType:
@@ -447,8 +403,10 @@ class ReferenceTime(XtceBaseModel):
                 case _:
                     assert_never(epoch)
 
-        return xtce_1_3.ReferenceTimeType(
-            choice=pack_epoch(self.epoch)
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = (
+            pack_epoch(self.epoch)
             if self.epoch is not None
             else unwrap(self.offset_from)._to_v1_3(policy)
         )
+        return kwargs

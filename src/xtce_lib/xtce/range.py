@@ -4,7 +4,7 @@ from typing import Any, Self
 
 from pydantic import Field, model_validator
 
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError, XtceVersion
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
@@ -53,49 +53,48 @@ class IntegerRange(XtceBaseModel):
 
         return self
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], integer_range: xtce_1_1.IntegerRangeType) -> Self:
-        return cls(
-            min_inclusive=coerce_optional_int(integer_range.min_inclusive),
-            max_inclusive=coerce_optional_int(integer_range.max_inclusive),
-        )
+    _v1_1_type = xtce_1_1.IntegerRangeType
+    _v1_2_type = xtce_1_2.IntegerRangeType
+    _v1_3_type = xtce_1_3.IntegerRangeType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], integer_range: xtce_1_2.IntegerRangeType) -> Self:
-        return cls(
-            min_inclusive=integer_range.min_inclusive,
-            max_inclusive=integer_range.max_inclusive,
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.IntegerRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["min_inclusive"] = coerce_optional_int(obj.min_inclusive)
+        kwargs["max_inclusive"] = coerce_optional_int(obj.max_inclusive)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], integer_range: xtce_1_3.IntegerRangeType) -> Self:
-        return cls(
-            min_inclusive=integer_range.min_inclusive,
-            max_inclusive=integer_range.max_inclusive,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.IntegerRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["min_inclusive"] = obj.min_inclusive
+        kwargs["max_inclusive"] = obj.max_inclusive
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.IntegerRangeType:
-        return xtce_1_1.IntegerRangeType(
-            min_inclusive=self.min_inclusive, max_inclusive=self.max_inclusive
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.IntegerRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["min_inclusive"] = obj.min_inclusive
+        kwargs["max_inclusive"] = obj.max_inclusive
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.IntegerRangeType:
-        return xtce_1_2.IntegerRangeType(
-            min_inclusive=coerce_optional_int(self.min_inclusive),
-            max_inclusive=coerce_optional_int(self.max_inclusive),
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["min_inclusive"] = self.min_inclusive
+        kwargs["max_inclusive"] = self.max_inclusive
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.IntegerRangeType:
-        return xtce_1_3.IntegerRangeType(
-            min_inclusive=coerce_optional_int(self.min_inclusive),
-            max_inclusive=coerce_optional_int(self.max_inclusive),
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["min_inclusive"] = coerce_optional_int(self.min_inclusive)
+        kwargs["max_inclusive"] = coerce_optional_int(self.max_inclusive)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["min_inclusive"] = coerce_optional_int(self.min_inclusive)
+        kwargs["max_inclusive"] = coerce_optional_int(self.max_inclusive)
+        return kwargs
 
 
 class ValidIntegerRange(IntegerRange):
@@ -113,50 +112,35 @@ class ValidIntegerRange(IntegerRange):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.IntegerDataType.ValidRange
+    _v1_3_type = xtce_1_3.IntegerDataType.ValidRange
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], integer_range: xtce_1_2.IntegerDataType.ValidRange
-    ) -> Self:
-        return cls(
-            min_inclusive=integer_range.min_inclusive,
-            max_inclusive=integer_range.max_inclusive,
-            applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.IntegerDataType.ValidRange
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], integer_range: xtce_1_3.IntegerDataType.ValidRange
-    ) -> Self:
-        return cls(
-            min_inclusive=integer_range.min_inclusive,
-            max_inclusive=integer_range.max_inclusive,
-            applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.IntegerDataType.ValidRange
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.IntegerDataType.ValidRange:
-        return xtce_1_2.IntegerDataType.ValidRange(
-            min_inclusive=coerce_optional_int(self.min_inclusive),
-            max_inclusive=coerce_optional_int(self.max_inclusive),
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.IntegerDataType.ValidRange:
-        return xtce_1_3.IntegerDataType.ValidRange(
-            min_inclusive=coerce_optional_int(self.min_inclusive),
-            max_inclusive=coerce_optional_int(self.max_inclusive),
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
 
 class ValidIntegerRanges(XtceBaseModel):
@@ -183,50 +167,43 @@ class ValidIntegerRanges(XtceBaseModel):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ValidIntegerRangeSetType
+    _v1_3_type = xtce_1_3.ValidIntegerRangeSetType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], integer_range: xtce_1_2.ValidIntegerRangeSetType
-    ) -> Self:
-        return cls(
-            valid_ranges=[
-                IntegerRange._from_v1_2(range) for range in integer_range.valid_range
-            ],
-            applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ValidIntegerRangeSetType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            IntegerRange._from_v1_2(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], integer_range: xtce_1_3.ValidIntegerRangeSetType
-    ) -> Self:
-        return cls(
-            valid_ranges=[
-                IntegerRange._from_v1_3(range) for range in integer_range.valid_range
-            ],
-            applies_to_calibrated=integer_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ValidIntegerRangeSetType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            IntegerRange._from_v1_3(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_2(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ValidIntegerRangeSetType:
-        return xtce_1_2.ValidIntegerRangeSetType(
-            valid_range=[range._to_v1_2(policy) for range in self.valid_ranges],
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ValidIntegerRangeSetType:
-        return xtce_1_3.ValidIntegerRangeSetType(
-            valid_range=[range._to_v1_3(policy) for range in self.valid_ranges],
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_3(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
 
 class FloatRange(XtceBaseModel):
@@ -286,62 +263,60 @@ class FloatRange(XtceBaseModel):
 
         return self
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], float_range: xtce_1_1.FloatRangeType) -> Self:
-        return cls(
-            min_inclusive=float_range.min_inclusive,
-            min_exclusive=float_range.min_exclusive,
-            max_inclusive=float_range.max_inclusive,
-            max_exclusive=float_range.max_exclusive,
-        )
+    _v1_1_type = xtce_1_1.FloatRangeType
+    _v1_2_type = xtce_1_2.FloatRangeType
+    _v1_3_type = xtce_1_3.FloatRangeType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], float_range: xtce_1_2.FloatRangeType) -> Self:
-        return cls(
-            min_inclusive=float_range.min_inclusive,
-            min_exclusive=float_range.min_exclusive,
-            max_inclusive=float_range.max_inclusive,
-            max_exclusive=float_range.max_exclusive,
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.FloatRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["min_inclusive"] = obj.min_inclusive
+        kwargs["min_exclusive"] = obj.min_exclusive
+        kwargs["max_inclusive"] = obj.max_inclusive
+        kwargs["max_exclusive"] = obj.max_exclusive
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], float_range: xtce_1_3.FloatRangeType) -> Self:
-        return cls(
-            min_inclusive=float_range.min_inclusive,
-            min_exclusive=float_range.min_exclusive,
-            max_inclusive=float_range.max_inclusive,
-            max_exclusive=float_range.max_exclusive,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.FloatRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["min_inclusive"] = obj.min_inclusive
+        kwargs["min_exclusive"] = obj.min_exclusive
+        kwargs["max_inclusive"] = obj.max_inclusive
+        kwargs["max_exclusive"] = obj.max_exclusive
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.FloatRangeType:
-        return xtce_1_1.FloatRangeType(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.FloatRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["min_inclusive"] = obj.min_inclusive
+        kwargs["min_exclusive"] = obj.min_exclusive
+        kwargs["max_inclusive"] = obj.max_inclusive
+        kwargs["max_exclusive"] = obj.max_exclusive
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.FloatRangeType:
-        return xtce_1_2.FloatRangeType(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["min_inclusive"] = self.min_inclusive
+        kwargs["min_exclusive"] = self.min_exclusive
+        kwargs["max_inclusive"] = self.max_inclusive
+        kwargs["max_exclusive"] = self.max_exclusive
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.FloatRangeType:
-        return xtce_1_3.FloatRangeType(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["min_inclusive"] = self.min_inclusive
+        kwargs["min_exclusive"] = self.min_exclusive
+        kwargs["max_inclusive"] = self.max_inclusive
+        kwargs["max_exclusive"] = self.max_exclusive
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["min_inclusive"] = self.min_inclusive
+        kwargs["min_exclusive"] = self.min_exclusive
+        kwargs["max_inclusive"] = self.max_inclusive
+        kwargs["max_exclusive"] = self.max_exclusive
+        return kwargs
 
 
 class ValidFloatRange(FloatRange):
@@ -354,58 +329,35 @@ class ValidFloatRange(FloatRange):
 
     applies_to_calibrated: bool = Field(default=True)
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.FloatDataType.ValidRange
+    _v1_3_type = xtce_1_3.FloatDataType.ValidRange
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], float_range: xtce_1_2.FloatDataType.ValidRange
-    ) -> Self:
-        return cls(
-            min_inclusive=float_range.min_inclusive,
-            min_exclusive=float_range.min_exclusive,
-            max_inclusive=float_range.max_inclusive,
-            max_exclusive=float_range.max_exclusive,
-            applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.FloatDataType.ValidRange
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], float_range: xtce_1_3.FloatDataType.ValidRange
-    ) -> Self:
-        return cls(
-            min_inclusive=float_range.min_inclusive,
-            min_exclusive=float_range.min_exclusive,
-            max_inclusive=float_range.max_inclusive,
-            max_exclusive=float_range.max_exclusive,
-            applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.FloatDataType.ValidRange
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.FloatDataType.ValidRange:
-        return xtce_1_2.FloatDataType.ValidRange(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.FloatDataType.ValidRange:
-        return xtce_1_3.FloatDataType.ValidRange(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
 
 class ValidFloatRanges(XtceBaseModel):
@@ -432,50 +384,39 @@ class ValidFloatRanges(XtceBaseModel):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ValidFloatRangeSetType
+    _v1_3_type = xtce_1_3.ValidFloatRangeSetType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], float_range: xtce_1_2.ValidFloatRangeSetType
-    ) -> Self:
-        return cls(
-            valid_ranges=[
-                FloatRange._from_v1_2(range) for range in float_range.valid_range
-            ],
-            applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ValidFloatRangeSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            FloatRange._from_v1_2(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], float_range: xtce_1_3.ValidFloatRangeSetType
-    ) -> Self:
-        return cls(
-            valid_ranges=[
-                FloatRange._from_v1_3(range) for range in float_range.valid_range
-            ],
-            applies_to_calibrated=float_range.valid_range_applies_to_calibrated,
-        )
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ValidFloatRangeSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            FloatRange._from_v1_3(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_2(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ValidFloatRangeSetType:
-        return xtce_1_2.ValidFloatRangeSetType(
-            valid_range=[range._to_v1_2(policy) for range in self.valid_ranges],
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ValidFloatRangeSetType:
-        return xtce_1_3.ValidFloatRangeSetType(
-            valid_range=[range._to_v1_3(policy) for range in self.valid_ranges],
-            valid_range_applies_to_calibrated=self.applies_to_calibrated,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_3(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
+        return kwargs
 
 
 class MultiRange(FloatRange):
@@ -496,68 +437,48 @@ class MultiRange(FloatRange):
         normal
         +watch +warning +distress +critical +severe
 
-    This means each min, max pair are a range: (-inf, min) or (-inf, min], and [max, inf) or (max, inf). However a value of `INSIDE` "inverts" these bands:
+    This means each min, max pair are a range: (-inf, min) or (-inf, min], and
+    [max, inf) or (max, inf). However a value of `INSIDE` "inverts" these bands:
 
         -normal -watch -warning -distress -critical
         severe
         +critical +distress +warning +watch +normal
 
-    This means each min, max pair form a range of (min, max) or [min, max) or (min, max] or [min, max]. The most common form used is "outside" and it is the default. The set notation used defines parenthesis as exclusive and square brackets as inclusive.
+    This means each min, max pair form a range of (min, max) or [min, max) or (min, max]
+    or [min, max]. The most common form used is `OUTSIDE` and it is the default (The set
+    notation used defines parenthesis as exclusive and square brackets as inclusive).
 
     """
 
     level: ConcernLevel
     """The concern level of this alarm range."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.MultiRangeType
+    _v1_3_type = xtce_1_3.MultiRangeType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], multi_range: xtce_1_2.MultiRangeType) -> Self:
-        return cls(
-            min_inclusive=multi_range.min_inclusive,
-            min_exclusive=multi_range.min_exclusive,
-            max_inclusive=multi_range.max_inclusive,
-            max_exclusive=multi_range.max_exclusive,
-            range_form=RangeForm(multi_range.range_form.value),
-            level=ConcernLevel(unwrap(multi_range.level).value),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.MultiRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["range_form"] = RangeForm(obj.range_form.value)
+        kwargs["level"] = ConcernLevel(unwrap(obj.level).value)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], multi_range: xtce_1_3.MultiRangeType) -> Self:
-        return cls(
-            min_inclusive=multi_range.min_inclusive,
-            min_exclusive=multi_range.min_exclusive,
-            max_inclusive=multi_range.max_inclusive,
-            max_exclusive=multi_range.max_exclusive,
-            range_form=RangeForm(multi_range.range_form.value),
-            level=ConcernLevel(unwrap(multi_range.level).value),
-        )
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.MultiRangeType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["range_form"] = RangeForm(obj.range_form.value)
+        kwargs["level"] = ConcernLevel(unwrap(obj.level).value)
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["range_form"] = xtce_1_2.RangeFormType(self.range_form)
+        kwargs["level"] = xtce_1_2.ConcernLevelsType(self.level)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.MultiRangeType:
-        return xtce_1_2.MultiRangeType(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-            range_form=xtce_1_2.RangeFormType(self.range_form),
-            level=xtce_1_2.ConcernLevelsType(self.level),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.MultiRangeType:
-        return xtce_1_3.MultiRangeType(
-            min_inclusive=self.min_inclusive,
-            min_exclusive=self.min_exclusive,
-            max_inclusive=self.max_inclusive,
-            max_exclusive=self.max_exclusive,
-            range_form=xtce_1_3.RangeFormType(self.range_form),
-            level=xtce_1_3.ConcernLevelsType(self.level),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["range_form"] = xtce_1_3.RangeFormType(self.range_form)
+        kwargs["level"] = xtce_1_3.ConcernLevelsType(self.level)
+        return kwargs

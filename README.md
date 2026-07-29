@@ -107,28 +107,30 @@ True
 - [x] Write a class to represent the unified XTCE model (`XtceDatabase`)
 - [x] Scaffold the structure of the unified XTCE model
 - [ ] Implement all base subclasses in the unified model, including translation methods
-  - [ ] Alarm models
   - [x] Algorithm models
-  - [ ] Argument models
   - [x] Array models
   - [x] Calibrator models
-  - [ ] Codec models
-  - [ ] Command models
   - [x] Common models
   - [x] Condition models
-  - [ ] Container models
-  - [ ] Datatype models
-  - [ ] Enum models
-  - [ ] Parameter models
   - [x] Range models
   - [x] Reference models
-  - [ ] Space system
   - [x] Stream models
-  - [ ] Telemetry models
   - [x] Time models
   - [x] Trigger models
   - [x] Verifier models
+  - [ ] Alarm models
+  - [ ] Codec models
+  - [ ] Datatype models
+  - [ ] Argument models
+  - [ ] Container models
+  - [ ] Command models
+  - [ ] Parameter models
+  - [ ] Telemetry models
+  - [ ] Space system
+  - [ ] Enum models
+- [x] Refactor translation methods for inherited classes
 - [ ] Implement unified model serialization and deserialization
+- [ ] Release alpha
 - [ ] Implement full model semantic validation
 - [ ] Write end-to-end tests for generating and parsing XTCE files
 - [ ] Write documentation

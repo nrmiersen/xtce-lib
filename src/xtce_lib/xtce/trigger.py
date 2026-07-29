@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC
 from decimal import Decimal
-from typing import TYPE_CHECKING, Annotated, Self
+from typing import TYPE_CHECKING, Annotated, Any
 
 from pydantic import AfterValidator, Field
 
@@ -95,41 +95,48 @@ class OnParameterUpdateTrigger(BaseTrigger):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        parameter_update_trigger: xtce_1_1.TriggerSetType.OnParameterUpdateTrigger,
-    ) -> Self:
-        return cls(ref=XtcePath(parameter_update_trigger.parameter_ref))
+    _v1_1_type = xtce_1_1.TriggerSetType.OnParameterUpdateTrigger
+    _v1_2_type = xtce_1_2.OnParameterUpdateTriggerType
+    _v1_3_type = xtce_1_3.OnParameterUpdateTriggerType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], parameter_update_trigger: xtce_1_2.OnParameterUpdateTriggerType
-    ) -> Self:
-        return cls(ref=XtcePath(parameter_update_trigger.parameter_ref))
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.TriggerSetType.OnParameterUpdateTrigger
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], parameter_update_trigger: xtce_1_3.OnParameterUpdateTriggerType
-    ) -> Self:
-        return cls(ref=XtcePath(parameter_update_trigger.parameter_ref))
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.OnParameterUpdateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.TriggerSetType.OnParameterUpdateTrigger:
-        return xtce_1_1.TriggerSetType.OnParameterUpdateTrigger(
-            parameter_ref=str(self.ref)
-        )
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.OnParameterUpdateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OnParameterUpdateTriggerType:
-        return xtce_1_2.OnParameterUpdateTriggerType(parameter_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.OnParameterUpdateTriggerType:
-        return xtce_1_3.OnParameterUpdateTriggerType(parameter_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
 
 
 class OnContainerUpdateTrigger(BaseTrigger):
@@ -199,41 +206,48 @@ class OnContainerUpdateTrigger(BaseTrigger):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        container_update_trigger: xtce_1_1.TriggerSetType.OnContainerUpdateTrigger,
-    ) -> Self:
-        return cls(ref=XtcePath(container_update_trigger.container_ref))
+    _v1_1_type = xtce_1_1.TriggerSetType.OnContainerUpdateTrigger
+    _v1_2_type = xtce_1_2.OnContainerUpdateTriggerType
+    _v1_3_type = xtce_1_3.OnContainerUpdateTriggerType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], container_update_trigger: xtce_1_2.OnContainerUpdateTriggerType
-    ) -> Self:
-        return cls(ref=XtcePath(container_update_trigger.container_ref))
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.TriggerSetType.OnContainerUpdateTrigger
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], container_update_trigger: xtce_1_3.OnContainerUpdateTriggerType
-    ) -> Self:
-        return cls(ref=XtcePath(container_update_trigger.container_ref))
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.OnContainerUpdateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.TriggerSetType.OnContainerUpdateTrigger:
-        return xtce_1_1.TriggerSetType.OnContainerUpdateTrigger(
-            container_ref=str(self.ref)
-        )
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.OnContainerUpdateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OnContainerUpdateTriggerType:
-        return xtce_1_2.OnContainerUpdateTriggerType(container_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.OnContainerUpdateTriggerType:
-        return xtce_1_3.OnContainerUpdateTriggerType(container_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
 
 
 class OnPeriodicRateTrigger(BaseTrigger):
@@ -242,45 +256,48 @@ class OnPeriodicRateTrigger(BaseTrigger):
     fire_rate_sec: float = Field(..., ge=0)
     """The periodic rate in time in which this algorithm is triggered to evaluate."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        periodic_rate_trigger: xtce_1_1.TriggerSetType.OnPeriodicRateTrigger,
-    ) -> Self:
-        return cls(fire_rate_sec=int(periodic_rate_trigger.fire_rate_in_seconds))
+    _v1_1_type = xtce_1_1.TriggerSetType.OnPeriodicRateTrigger
+    _v1_2_type = xtce_1_2.OnPeriodicRateTriggerType
+    _v1_3_type = xtce_1_3.OnPeriodicRateTriggerType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], periodic_rate_trigger: xtce_1_2.OnPeriodicRateTriggerType
-    ) -> Self:
-        return cls(fire_rate_sec=periodic_rate_trigger.fire_rate_in_seconds)
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.TriggerSetType.OnPeriodicRateTrigger
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["fire_rate_sec"] = int(obj.fire_rate_in_seconds)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], periodic_rate_trigger: xtce_1_3.OnPeriodicRateTriggerType
-    ) -> Self:
-        return cls(fire_rate_sec=periodic_rate_trigger.fire_rate_in_seconds)
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.OnPeriodicRateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["fire_rate_sec"] = obj.fire_rate_in_seconds
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.TriggerSetType.OnPeriodicRateTrigger:
-        return xtce_1_1.TriggerSetType.OnPeriodicRateTrigger(
-            fire_rate_in_seconds=Decimal(self.fire_rate_sec)
-        )
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.OnPeriodicRateTriggerType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["fire_rate_sec"] = obj.fire_rate_in_seconds
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OnPeriodicRateTriggerType:
-        return xtce_1_2.OnPeriodicRateTriggerType(
-            fire_rate_in_seconds=self.fire_rate_sec
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["fire_rate_in_seconds"] = Decimal(self.fire_rate_sec)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.OnPeriodicRateTriggerType:
-        return xtce_1_3.OnPeriodicRateTriggerType(
-            fire_rate_in_seconds=self.fire_rate_sec
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["fire_rate_in_seconds"] = self.fire_rate_sec
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["fire_rate_in_seconds"] = self.fire_rate_sec
+        return kwargs
 
 
 class TriggerSet(XtceBaseModel):
@@ -322,74 +339,72 @@ class TriggerSet(XtceBaseModel):
         for trigger in self.triggers:
             trigger.validate_semantics(report, registry, scope)
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], trigger_set: xtce_1_1.TriggerSetType) -> Self:
-        return cls(
-            triggers=[
-                OnParameterUpdateTrigger._from_v1_1(trigger)
-                if isinstance(trigger, xtce_1_1.TriggerSetType.OnParameterUpdateTrigger)
-                else OnContainerUpdateTrigger._from_v1_1(trigger)
-                if isinstance(trigger, xtce_1_1.TriggerSetType.OnContainerUpdateTrigger)
-                else OnPeriodicRateTrigger._from_v1_1(trigger)
-                for trigger in trigger_set.choice
-            ],
-            name=trigger_set.name,
-            trigger_rate=trigger_set.trigger_rate,
-        )
+    _v1_1_type = xtce_1_1.TriggerSetType
+    _v1_2_type = xtce_1_2.TriggerSetType
+    _v1_3_type = xtce_1_3.TriggerSetType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], trigger_set: xtce_1_2.TriggerSetType) -> Self:
-        return cls(
-            triggers=[
-                OnParameterUpdateTrigger._from_v1_2(trigger)
-                if isinstance(trigger, xtce_1_2.OnParameterUpdateTriggerType)
-                else OnContainerUpdateTrigger._from_v1_2(trigger)
-                if isinstance(trigger, xtce_1_2.OnContainerUpdateTriggerType)
-                else OnPeriodicRateTrigger._from_v1_2(trigger)
-                for trigger in trigger_set.choice
-            ],
-            name=trigger_set.name,
-            trigger_rate=trigger_set.trigger_rate,
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.TriggerSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["triggers"] = [
+            OnParameterUpdateTrigger._from_v1_1(trigger)
+            if isinstance(trigger, xtce_1_1.TriggerSetType.OnParameterUpdateTrigger)
+            else OnContainerUpdateTrigger._from_v1_1(trigger)
+            if isinstance(trigger, xtce_1_1.TriggerSetType.OnContainerUpdateTrigger)
+            else OnPeriodicRateTrigger._from_v1_1(trigger)
+            for trigger in obj.choice
+        ]
+        kwargs["name"] = obj.name
+        kwargs["trigger_rate"] = obj.trigger_rate
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], trigger_set: xtce_1_3.TriggerSetType) -> Self:
-        return cls(
-            triggers=[
-                OnParameterUpdateTrigger._from_v1_3(trigger)
-                if isinstance(trigger, xtce_1_3.OnParameterUpdateTriggerType)
-                else OnContainerUpdateTrigger._from_v1_3(trigger)
-                if isinstance(trigger, xtce_1_3.OnContainerUpdateTriggerType)
-                else OnPeriodicRateTrigger._from_v1_3(trigger)
-                for trigger in trigger_set.choice
-            ],
-            name=trigger_set.name,
-            trigger_rate=trigger_set.trigger_rate,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.TriggerSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["triggers"] = [
+            OnParameterUpdateTrigger._from_v1_2(trigger)
+            if isinstance(trigger, xtce_1_2.OnParameterUpdateTriggerType)
+            else OnContainerUpdateTrigger._from_v1_2(trigger)
+            if isinstance(trigger, xtce_1_2.OnContainerUpdateTriggerType)
+            else OnPeriodicRateTrigger._from_v1_2(trigger)
+            for trigger in obj.choice
+        ]
+        kwargs["name"] = obj.name
+        kwargs["trigger_rate"] = obj.trigger_rate
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.TriggerSetType:
-        return xtce_1_1.TriggerSetType(
-            choice=[trigger._to_v1_1(policy) for trigger in self.triggers],
-            name=self.name,
-            trigger_rate=self.trigger_rate,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.TriggerSetType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["triggers"] = [
+            OnParameterUpdateTrigger._from_v1_3(trigger)
+            if isinstance(trigger, xtce_1_3.OnParameterUpdateTriggerType)
+            else OnContainerUpdateTrigger._from_v1_3(trigger)
+            if isinstance(trigger, xtce_1_3.OnContainerUpdateTriggerType)
+            else OnPeriodicRateTrigger._from_v1_3(trigger)
+            for trigger in obj.choice
+        ]
+        kwargs["name"] = obj.name
+        kwargs["trigger_rate"] = obj.trigger_rate
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.TriggerSetType:
-        return xtce_1_2.TriggerSetType(
-            choice=[trigger._to_v1_2(policy) for trigger in self.triggers],
-            name=self.name,
-            trigger_rate=self.trigger_rate,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [trigger._to_v1_1(policy) for trigger in self.triggers]
+        kwargs["name"] = self.name
+        kwargs["trigger_rate"] = self.trigger_rate
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.TriggerSetType:
-        return xtce_1_3.TriggerSetType(
-            choice=[trigger._to_v1_3(policy) for trigger in self.triggers],
-            name=self.name,
-            trigger_rate=self.trigger_rate,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [trigger._to_v1_2(policy) for trigger in self.triggers]
+        kwargs["name"] = self.name
+        kwargs["trigger_rate"] = self.trigger_rate
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [trigger._to_v1_3(policy) for trigger in self.triggers]
+        kwargs["name"] = self.name
+        kwargs["trigger_rate"] = self.trigger_rate
+        return kwargs

@@ -3,13 +3,8 @@
 import pytest
 from pydantic import ValidationError
 
-from xtce_lib import XtcePath, XtceVersion, xtce
+from xtce_lib import XtceVersion, xtce
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
-from xtce_lib.xtce._pattern import (
-    EXPD_NAME_REF_NO_PATH,
-    EXPD_NAME_REF_W_PATH,
-    NAME_REF_NO_PATH,
-)
 
 
 class TestAlias:
@@ -271,6 +266,93 @@ class TestDescriptionBase:
         assert len(model.aliases) == 1
         assert len(model.ancillary_data) == 1
 
+    @pytest.mark.parametrize(
+        ("version", "raw_obj"),
+        [
+            (
+                XtceVersion.V1_1,
+                xtce_1_1.DescriptionType(
+                    short_description="Battery voltage in volts",
+                    long_description="Measured battery voltage.",
+                ),
+            ),
+            (
+                XtceVersion.V1_2,
+                xtce_1_2.DescriptionType(
+                    short_description="Battery voltage in volts",
+                    long_description="Measured battery voltage.",
+                ),
+            ),
+            (
+                XtceVersion.V1_3,
+                xtce_1_3.DescriptionType(
+                    short_description="Battery voltage in volts",
+                    long_description="Measured battery voltage.",
+                ),
+            ),
+        ],
+    )
+    def test_from_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        raw_obj: object,
+    ) -> None:
+        """from_xsdata should map versioned description objects to DescriptionBase."""
+        model = xtce.DescriptionBase.from_xsdata(raw_obj, version)
+
+        assert isinstance(model, xtce.DescriptionBase)
+        assert model.short_description == "Battery voltage in volts"
+        assert model.long_description == "Measured battery voltage."
+
+    @pytest.mark.parametrize(
+        ("version", "expected_type"),
+        [
+            (XtceVersion.V1_1, xtce_1_1.DescriptionType),
+            (XtceVersion.V1_2, xtce_1_2.DescriptionType),
+            (XtceVersion.V1_3, xtce_1_3.DescriptionType),
+        ],
+    )
+    def test_to_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        expected_type: type,
+    ) -> None:
+        """to_xsdata should return the expected versioned description type."""
+        model = xtce.DescriptionBase(
+            short_description="Battery voltage in volts",
+            long_description="Measured battery voltage.",
+        )
+
+        raw_obj = model.to_xsdata(version)
+
+        assert isinstance(raw_obj, expected_type)
+        assert raw_obj.short_description == "Battery voltage in volts"
+        assert raw_obj.long_description == "Measured battery voltage."
+
+    @pytest.mark.parametrize(
+        "version",
+        [
+            XtceVersion.V1_1,
+            XtceVersion.V1_2,
+            XtceVersion.V1_3,
+        ],
+    )
+    def test_round_trip_through_xsdata_preserves_fields(
+        self,
+        version: XtceVersion,
+    ) -> None:
+        """Round-trip conversion should preserve description fields."""
+        original = xtce.DescriptionBase(
+            short_description="Battery voltage in volts",
+            long_description="Measured battery voltage.",
+        )
+
+        round_tripped = xtce.DescriptionBase.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
+
 
 class TestNameDescriptionBase:
     """Test NameDescriptionBase model."""
@@ -306,6 +388,67 @@ class TestNameDescriptionBase:
             "setSpeed",
             "uint8",
         ]
+
+    @pytest.mark.parametrize(
+        ("version", "raw_obj"),
+        [
+            (XtceVersion.V1_1, xtce_1_1.NameDescriptionType(name="BatteryVoltage")),
+            (XtceVersion.V1_2, xtce_1_2.NameDescriptionType(name="BatteryVoltage")),
+            (XtceVersion.V1_3, xtce_1_3.NameDescriptionType(name="BatteryVoltage")),
+        ],
+    )
+    def test_from_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        raw_obj: object,
+    ) -> None:
+        """from_xsdata should map versioned name-description objects to NameDescriptionBase."""
+        model = xtce.NameDescriptionBase.from_xsdata(raw_obj, version)
+
+        assert isinstance(model, xtce.NameDescriptionBase)
+        assert model.name == "BatteryVoltage"
+
+    @pytest.mark.parametrize(
+        ("version", "expected_type"),
+        [
+            (XtceVersion.V1_1, xtce_1_1.NameDescriptionType),
+            (XtceVersion.V1_2, xtce_1_2.NameDescriptionType),
+            (XtceVersion.V1_3, xtce_1_3.NameDescriptionType),
+        ],
+    )
+    def test_to_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        expected_type: type,
+    ) -> None:
+        """to_xsdata should return the expected versioned name-description type."""
+        model = xtce.NameDescriptionBase(name="BatteryVoltage")
+
+        raw_obj = model.to_xsdata(version)
+
+        assert isinstance(raw_obj, expected_type)
+        assert raw_obj.name == "BatteryVoltage"
+
+    @pytest.mark.parametrize(
+        "version",
+        [
+            XtceVersion.V1_1,
+            XtceVersion.V1_2,
+            XtceVersion.V1_3,
+        ],
+    )
+    def test_round_trip_through_xsdata_preserves_fields(
+        self,
+        version: XtceVersion,
+    ) -> None:
+        """Round-trip conversion should preserve the name field."""
+        original = xtce.NameDescriptionBase(name="BatteryVoltage")
+
+        round_tripped = xtce.NameDescriptionBase.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
 
 
 class TestOptionalNameDescriptionBase:
@@ -358,166 +501,72 @@ class TestOptionalNameDescriptionBase:
             "LogMessageSet",
         ]
 
-
-class TestNameReferenceNoPath:
-    """Test NameReferenceNoPath model."""
-
     @pytest.mark.parametrize(
-        "valid_name",
+        ("version", "raw_obj"),
         [
-            "Voltage",
-            "BatteryVoltage",
-            "uint8",
+            (
+                XtceVersion.V1_1,
+                xtce_1_1.OptionalNameDescriptionType(name="SpeedCommandVerifier"),
+            ),
+            (
+                XtceVersion.V1_2,
+                xtce_1_2.OptionalNameDescriptionType(name="SpeedCommandVerifier"),
+            ),
+            (
+                XtceVersion.V1_3,
+                xtce_1_3.OptionalNameDescriptionType(name="SpeedCommandVerifier"),
+            ),
         ],
     )
-    def test_accepts_valid_names(self, valid_name: str) -> None:
-        """Name references without a path should accept valid names."""
-        model = xtce.NameReferenceNoPath(name=valid_name)
+    def test_from_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        raw_obj: object,
+    ) -> None:
+        """from_xsdata should map versioned optional-name objects to OptionalNameDescriptionBase."""
+        model = xtce.OptionalNameDescriptionBase.from_xsdata(raw_obj, version)
 
-        assert model.name == valid_name
-
-    @pytest.mark.parametrize(
-        "invalid_name",
-        [
-            ".",
-            "..",
-            "/",
-        ],
-    )
-    def test_rejects_invalid_names(self, invalid_name: str) -> None:
-        """Name references without a path should reject malformed names."""
-        with pytest.raises(ValidationError):
-            xtce.NameReferenceNoPath(name=invalid_name)
-
-    def test_json_schema_exposes_pattern_and_examples(self) -> None:
-        """Schema should expose the no-path name pattern and examples."""
-        schema = xtce.NameReferenceNoPath.model_json_schema()
-
-        assert schema["properties"]["name"]["pattern"] == NAME_REF_NO_PATH
-        assert schema["properties"]["name"]["examples"] == ["Voltage"]
-
-
-class TestExpandedNameReferenceNoPath:
-    """Test ExpandedNameReferenceNoPath model."""
+        assert isinstance(model, xtce.OptionalNameDescriptionBase)
+        assert model.name == "SpeedCommandVerifier"
 
     @pytest.mark.parametrize(
-        "valid_name",
+        ("version", "expected_type"),
         [
-            "Voltage",
-            "Voltage[1]",
-            "Battery Voltage",
+            (XtceVersion.V1_1, xtce_1_1.OptionalNameDescriptionType),
+            (XtceVersion.V1_2, xtce_1_2.OptionalNameDescriptionType),
+            (XtceVersion.V1_3, xtce_1_3.OptionalNameDescriptionType),
         ],
     )
-    def test_accepts_valid_names(self, valid_name: str) -> None:
-        """Expanded name references without a path should accept array and aggregate syntax."""
-        model = xtce.ExpandedNameReferenceNoPath(name=valid_name)
+    def test_to_xsdata_for_each_version(
+        self,
+        version: XtceVersion,
+        expected_type: type,
+    ) -> None:
+        """to_xsdata should return the expected versioned optional-name type."""
+        model = xtce.OptionalNameDescriptionBase(name="SpeedCommandVerifier")
 
-        assert model.name == valid_name
+        raw_obj = model.to_xsdata(version)
+
+        assert isinstance(raw_obj, expected_type)
+        assert raw_obj.name == "SpeedCommandVerifier"
 
     @pytest.mark.parametrize(
-        "invalid_name",
+        "version",
         [
-            ".",
-            "..",
-            "/",
+            XtceVersion.V1_1,
+            XtceVersion.V1_2,
+            XtceVersion.V1_3,
         ],
     )
-    def test_rejects_invalid_names(self, invalid_name: str) -> None:
-        """Expanded name references without a path should reject malformed names."""
-        with pytest.raises(ValidationError):
-            xtce.ExpandedNameReferenceNoPath(name=invalid_name)
+    def test_round_trip_through_xsdata_preserves_fields(
+        self,
+        version: XtceVersion,
+    ) -> None:
+        """Round-trip conversion should preserve the optional name field."""
+        original = xtce.OptionalNameDescriptionBase(name="SpeedCommandVerifier")
 
-    def test_json_schema_exposes_pattern_and_examples(self) -> None:
-        """Schema should expose the expanded no-path pattern and examples."""
-        schema = xtce.ExpandedNameReferenceNoPath.model_json_schema()
+        round_tripped = xtce.OptionalNameDescriptionBase.from_xsdata(
+            original.to_xsdata(version), version
+        )
 
-        assert schema["properties"]["name"]["pattern"] == EXPD_NAME_REF_NO_PATH
-        assert schema["properties"]["name"]["examples"] == ["Voltage[12].raw[3]"]
-
-
-class TestNameReferenceWithPath:
-    """Test NameReferenceWithPath model."""
-
-    @pytest.mark.parametrize(
-        "valid_name",
-        [
-            "Voltage",
-            "/ConkSat/Bus/BatteryVoltage",
-            XtcePath("../Bus/BatteryVoltage"),
-            XtcePath("../Payload/Camera/ExposureTime"),
-        ],
-    )
-    def test_accepts_valid_names(self, valid_name: str | XtcePath) -> None:
-        """Path-based name references should accept valid path references."""
-        model = xtce.NameReferenceWithPath(name=valid_name)  # type: ignore
-
-        assert model.name == valid_name
-
-    @pytest.mark.parametrize(
-        "invalid_name",
-        [
-            ".",
-            "..",
-            "/",
-            "Battery Voltage",
-        ],
-    )
-    def test_rejects_invalid_names(self, invalid_name: str) -> None:
-        """Path-based name references should reject malformed references."""
-        with pytest.raises(ValidationError):
-            xtce.NameReferenceWithPath(name=XtcePath(invalid_name))
-
-    def test_json_schema_exposes_pattern_and_examples(self) -> None:
-        """Schema should expose the path-based name pattern and examples."""
-        schema = xtce.NameReferenceWithPath.model_json_schema()
-
-        assert schema["properties"]["name"]["pattern"] == EXPD_NAME_REF_W_PATH
-        assert schema["properties"]["name"]["examples"] == [
-            "/ConkSat/Bus/BatteryVoltage",
-            "../Bus/BatteryVoltage",
-            "../Payload/Camera/ExposureTime",
-        ]
-
-
-class TestExpandedNameReferenceWithPath:
-    """Test ExpandedNameReferenceWithPath model."""
-
-    @pytest.mark.parametrize(
-        "valid_name",
-        [
-            "Voltage",
-            "/ConkSat/Bus/Battery[2].voltage",
-            XtcePath("ConkSat/Bus/BatteryVoltage[3]"),
-            XtcePath("../Bus/BatteryVoltage[3].raw"),
-        ],
-    )
-    def test_accepts_valid_names(self, valid_name: str | XtcePath) -> None:
-        """Expanded path-based name references should accept array and aggregate syntax."""
-        model = xtce.ExpandedNameReferenceWithPath(name=valid_name)  # type: ignore
-
-        assert model.name == valid_name
-
-    @pytest.mark.parametrize(
-        "invalid_name",
-        [
-            ".",
-            "..",
-            "/",
-            "Battery Voltage",
-        ],
-    )
-    def test_rejects_invalid_names(self, invalid_name: str) -> None:
-        """Expanded path-based name references should reject malformed references."""
-        with pytest.raises(ValidationError):
-            xtce.ExpandedNameReferenceWithPath(name=XtcePath(invalid_name))
-
-    def test_json_schema_exposes_pattern_and_examples(self) -> None:
-        """Schema should expose the expanded path-based name pattern and examples."""
-        schema = xtce.ExpandedNameReferenceWithPath.model_json_schema()
-
-        assert schema["properties"]["name"]["pattern"] == EXPD_NAME_REF_W_PATH
-        assert schema["properties"]["name"]["examples"] == [
-            "ConkSat/Bus/Battery.voltage",
-            "ConkSat/Bus/Battery[2].voltage",
-            "ConkSat/Bus/BatteryVoltage[3]",
-        ]
+        assert round_tripped == original

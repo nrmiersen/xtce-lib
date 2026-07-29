@@ -1,16 +1,14 @@
 """Common base models."""
 
 from abc import ABC
-from typing import Annotated, Self
+from typing import Any
 
-from pydantic import AfterValidator, Field
+from pydantic import Field
 
-from xtce_lib.common.xtce_path import XtcePath, require_regex
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
-from ._pattern import EXPD_NAME_REF_NO_PATH, EXPD_NAME_REF_W_PATH, NAME_REF_NO_PATH
 
 
 class Alias(XtceBaseModel):
@@ -46,32 +44,48 @@ class Alias(XtceBaseModel):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], alias: xtce_1_1.AliasSetType.Alias) -> Self:
-        return cls(namespace=alias.name_space, alias=alias.alias)
+    _v1_1_type = xtce_1_1.AliasSetType.Alias
+    _v1_2_type = xtce_1_2.AliasType
+    _v1_3_type = xtce_1_3.AliasType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], alias: xtce_1_2.AliasType) -> Self:
-        return cls(namespace=alias.name_space, alias=alias.alias)
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.AliasSetType.Alias) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["namespace"] = obj.name_space
+        kwargs["alias"] = obj.alias
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], alias: xtce_1_3.AliasType) -> Self:
-        return cls(namespace=alias.name_space, alias=alias.alias)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.AliasType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["namespace"] = obj.name_space
+        kwargs["alias"] = obj.alias
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.AliasSetType.Alias:
-        return xtce_1_1.AliasSetType.Alias(name_space=self.namespace, alias=self.alias)
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.AliasType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["namespace"] = obj.name_space
+        kwargs["alias"] = obj.alias
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AliasType:
-        return xtce_1_2.AliasType(name_space=self.namespace, alias=self.alias)
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["name_space"] = self.namespace
+        kwargs["alias"] = self.alias
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AliasType:
-        return xtce_1_3.AliasType(name_space=self.namespace, alias=self.alias)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name_space"] = self.namespace
+        kwargs["alias"] = self.alias
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name_space"] = self.namespace
+        kwargs["alias"] = self.alias
+        return kwargs
 
 
 class AncillaryData(XtceBaseModel):
@@ -111,55 +125,62 @@ class AncillaryData(XtceBaseModel):
     )
     """Optional Uniform Resource Identifier for this ancillary data."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], alias: xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
-    ) -> Self:
-        return cls(
-            name=alias.name,
-            value=alias.value,
-            mime_type=alias.mime_type,
-            href=alias.href,
-        )
+    _v1_1_type = xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
+    _v1_2_type = xtce_1_2.AncillaryDataType
+    _v1_3_type = xtce_1_3.AncillaryDataType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], alias: xtce_1_2.AncillaryDataType) -> Self:
-        return cls(
-            name=alias.name,
-            value=alias.value,
-            mime_type=alias.mime_type,
-            href=alias.href,
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["name"] = obj.name
+        kwargs["value"] = obj.value
+        kwargs["mime_type"] = obj.mime_type
+        kwargs["href"] = obj.href
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], alias: xtce_1_3.AncillaryDataType) -> Self:
-        return cls(
-            name=alias.name,
-            value=alias.value,
-            mime_type=alias.mime_type,
-            href=alias.href,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.AncillaryDataType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["name"] = obj.name
+        kwargs["value"] = obj.value
+        kwargs["mime_type"] = obj.mime_type
+        kwargs["href"] = obj.href
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData:
-        return xtce_1_1.DescriptionType.AncillaryDataSet.AncillaryData(
-            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.AncillaryDataType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["name"] = obj.name
+        kwargs["value"] = obj.value
+        kwargs["mime_type"] = obj.mime_type
+        kwargs["href"] = obj.href
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AncillaryDataType:
-        return xtce_1_2.AncillaryDataType(
-            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["value"] = self.value
+        kwargs["mime_type"] = self.mime_type
+        kwargs["href"] = self.href
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AncillaryDataType:
-        return xtce_1_3.AncillaryDataType(
-            name=self.name, value=self.value, mime_type=self.mime_type, href=self.href
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["value"] = self.value
+        kwargs["mime_type"] = self.mime_type
+        kwargs["href"] = self.href
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["value"] = self.value
+        kwargs["mime_type"] = self.mime_type
+        kwargs["href"] = self.href
+        return kwargs
 
 
 class DescriptionBase(XtceBaseModel, ABC):
@@ -209,102 +230,129 @@ class DescriptionBase(XtceBaseModel, ABC):
     ancillary_data: list[AncillaryData] = Field(default_factory=list)
     """Used to contain any ancillary data associated with the element."""
 
-    @classmethod
-    def _aliases_from_v1_1(
-        cls: type[Self], alias_set: xtce_1_1.AliasSetType | None
-    ) -> list[Alias]:
-        if alias_set is None:
-            return []
-        return [Alias._from_v1_1(alias) for alias in alias_set.alias]
+    _v1_1_type = xtce_1_1.DescriptionType
+    _v1_2_type = xtce_1_2.DescriptionType
+    _v1_3_type = xtce_1_3.DescriptionType
 
     @classmethod
-    def _aliases_from_v1_2(
-        cls: type[Self], alias_set: xtce_1_2.AliasSetType | None
-    ) -> list[Alias]:
-        if alias_set is None:
-            return []
-        return [Alias._from_v1_2(alias) for alias in alias_set.alias]
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.DescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["short_description"] = obj.short_description
+        kwargs["long_description"] = obj.long_description
+        kwargs["ancillary_data"] = (
+            [
+                AncillaryData._from_v1_1(data)
+                for data in obj.ancillary_data_set.ancillary_data
+            ]
+            if obj.ancillary_data_set and obj.ancillary_data_set.ancillary_data
+            else []
+        )
+        kwargs["aliases"] = (
+            [Alias._from_v1_1(alias) for alias in obj.alias_set.alias]
+            if obj.alias_set and obj.alias_set.alias
+            else []
+        )
+        return kwargs
 
     @classmethod
-    def _aliases_from_v1_3(
-        cls: type[Self], alias_set: xtce_1_3.AliasSetType | None
-    ) -> list[Alias]:
-        if alias_set is None:
-            return []
-        return [Alias._from_v1_3(alias) for alias in alias_set.alias]
-
-    def _aliases_to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.AliasSetType:
-        return xtce_1_1.AliasSetType(
-            alias=[alias._to_v1_1(policy) for alias in self.aliases]
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.DescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["short_description"] = obj.short_description
+        kwargs["long_description"] = obj.long_description
+        kwargs["ancillary_data"] = (
+            [
+                AncillaryData._from_v1_2(data)
+                for data in obj.ancillary_data_set.ancillary_data
+            ]
+            if obj.ancillary_data_set and obj.ancillary_data_set.ancillary_data
+            else []
         )
-
-    def _aliases_to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AliasSetType:
-        return xtce_1_2.AliasSetType(
-            alias=[alias._to_v1_2(policy) for alias in self.aliases]
+        kwargs["aliases"] = (
+            [Alias._from_v1_2(alias) for alias in obj.alias_set.alias]
+            if obj.alias_set and obj.alias_set.alias
+            else []
         )
-
-    def _aliases_to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AliasSetType:
-        return xtce_1_3.AliasSetType(
-            alias=[alias._to_v1_3(policy) for alias in self.aliases]
-        )
+        return kwargs
 
     @classmethod
-    def _ancillary_data_from_v1_1(
-        cls: type[Self],
-        ancillary_data_set: xtce_1_1.DescriptionType.AncillaryDataSet | None,
-    ) -> list[AncillaryData]:
-        if ancillary_data_set is None:
-            return []
-        return [
-            AncillaryData._from_v1_1(data) for data in ancillary_data_set.ancillary_data
-        ]
-
-    @classmethod
-    def _ancillary_data_from_v1_2(
-        cls: type[Self], ancillary_data_set: xtce_1_2.AncillaryDataSetType | None
-    ) -> list[AncillaryData]:
-        if ancillary_data_set is None:
-            return []
-        return [
-            AncillaryData._from_v1_2(data) for data in ancillary_data_set.ancillary_data
-        ]
-
-    @classmethod
-    def _ancillary_data_from_v1_3(
-        cls: type[Self], ancillary_data_set: xtce_1_3.AncillaryDataSetType | None
-    ) -> list[AncillaryData]:
-        if ancillary_data_set is None:
-            return []
-        return [
-            AncillaryData._from_v1_3(data) for data in ancillary_data_set.ancillary_data
-        ]
-
-    def _ancillary_data_to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.DescriptionType.AncillaryDataSet:
-        return xtce_1_1.DescriptionType.AncillaryDataSet(
-            ancillary_data=[data._to_v1_1(policy) for data in self.ancillary_data]
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.DescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["short_description"] = obj.short_description
+        kwargs["long_description"] = obj.long_description
+        kwargs["ancillary_data"] = (
+            [
+                AncillaryData._from_v1_3(data)
+                for data in obj.ancillary_data_set.ancillary_data
+            ]
+            if obj.ancillary_data_set and obj.ancillary_data_set.ancillary_data
+            else []
         )
-
-    def _ancillary_data_to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AncillaryDataSetType:
-        return xtce_1_2.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+        kwargs["aliases"] = (
+            [Alias._from_v1_3(alias) for alias in obj.alias_set.alias]
+            if obj.alias_set and obj.alias_set.alias
+            else []
         )
+        return kwargs
 
-    def _ancillary_data_to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AncillaryDataSetType:
-        return xtce_1_3.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["short_description"] = self.short_description
+        kwargs["long_description"] = self.long_description
+        kwargs["ancillary_data_set"] = (
+            xtce_1_1.DescriptionType.AncillaryDataSet(
+                ancillary_data=[data._to_v1_1(policy) for data in self.ancillary_data]
+            )
+            if self.ancillary_data
+            else None
         )
+        kwargs["alias_set"] = (
+            xtce_1_1.AliasSetType(
+                alias=[alias._to_v1_1(policy) for alias in self.aliases]
+            )
+            if self.aliases
+            else None
+        )
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["short_description"] = self.short_description
+        kwargs["long_description"] = self.long_description
+        kwargs["ancillary_data_set"] = (
+            xtce_1_2.AncillaryDataSetType(
+                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+            )
+            if self.ancillary_data
+            else None
+        )
+        kwargs["alias_set"] = (
+            xtce_1_2.AliasSetType(
+                alias=[alias._to_v1_2(policy) for alias in self.aliases]
+            )
+            if self.aliases
+            else None
+        )
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["short_description"] = self.short_description
+        kwargs["long_description"] = self.long_description
+        kwargs["ancillary_data_set"] = (
+            xtce_1_3.AncillaryDataSetType(
+                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+            )
+            if self.ancillary_data
+            else None
+        )
+        kwargs["alias_set"] = (
+            xtce_1_3.AliasSetType(
+                alias=[alias._to_v1_3(policy) for alias in self.aliases]
+            )
+            if self.aliases
+            else None
+        )
+        return kwargs
 
 
 class NameDescriptionBase(DescriptionBase, ABC):
@@ -316,6 +364,43 @@ class NameDescriptionBase(DescriptionBase, ABC):
         examples=["BatteryVoltage", "setSpeed", "uint8"],
     )
     """The name of this element."""
+
+    _v1_1_type = xtce_1_1.NameDescriptionType
+    _v1_2_type = xtce_1_2.NameDescriptionType
+    _v1_3_type = xtce_1_3.NameDescriptionType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.NameDescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.NameDescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.NameDescriptionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs
 
 
 class OptionalNameDescriptionBase(DescriptionBase, ABC):
@@ -330,82 +415,45 @@ class OptionalNameDescriptionBase(DescriptionBase, ABC):
     )
     """The optional name of this element."""
 
+    _v1_1_type = xtce_1_1.OptionalNameDescriptionType
+    _v1_2_type = xtce_1_2.OptionalNameDescriptionType
+    _v1_3_type = xtce_1_3.OptionalNameDescriptionType
 
-class NameReferenceNoPath(XtceBaseModel, ABC):
-    """A reference that can not include a path to a named element where array and
-    aggregate are not possible.
-    """
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.OptionalNameDescriptionType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
 
-    name: str = Field(
-        ...,
-        pattern=NAME_REF_NO_PATH,
-        examples=["Voltage"],
-    )
-    """A reference to a named element that can not include a path to the element.
+    @classmethod
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.OptionalNameDescriptionType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
 
-    Can not include array or aggregate references.
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.OptionalNameDescriptionType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["name"] = obj.name
+        return kwargs
 
-    """
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs
 
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs
 
-class ExpandedNameReferenceNoPath(XtceBaseModel, ABC):
-    """A reference that can not include a path to a named element where array and
-    aggregate are possible.
-    """
-
-    name: str = Field(
-        ...,
-        pattern=EXPD_NAME_REF_NO_PATH,
-        examples=["Voltage[12].raw[3]"],
-    )
-    """A reference to a named element that can not include a path to the element.
-
-    Can include array or aggregate references.
-
-    """
-
-
-class NameReferenceWithPath(XtceBaseModel, ABC):
-    """A reference that can include a path to a named element where array and aggregate
-    are not possible.
-    """
-
-    name: Annotated[XtcePath, AfterValidator(require_regex(EXPD_NAME_REF_W_PATH))] = (
-        Field(
-            ...,
-            examples=[
-                "/ConkSat/Bus/BatteryVoltage",
-                "../Bus/BatteryVoltage",
-                "../Payload/Camera/ExposureTime",
-            ],
-            json_schema_extra={"pattern": EXPD_NAME_REF_W_PATH},
-        )
-    )
-    """A Unix-like path to a parameter.
-
-    Can not include array or aggregate references.
-
-    """
-
-
-class ExpandedNameReferenceWithPath(XtceBaseModel, ABC):
-    """A reference that can include a path to a named element where array and aggregate
-    are possible.
-    """
-
-    name: Annotated[XtcePath, AfterValidator(require_regex(EXPD_NAME_REF_W_PATH))] = (
-        Field(
-            ...,
-            examples=[
-                "ConkSat/Bus/Battery.voltage",
-                "ConkSat/Bus/Battery[2].voltage",
-                "ConkSat/Bus/BatteryVoltage[3]",
-            ],
-            json_schema_extra={"pattern": EXPD_NAME_REF_W_PATH},
-        )
-    )
-    """A reference to a named element as a Unix style path to the element.
-
-    Can include array and aggregate references.
-
-    """
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name"] = self.name
+        return kwargs

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Self
+from typing import TYPE_CHECKING, Annotated, Any
 
 from pydantic import AfterValidator, Field
 
@@ -86,32 +86,42 @@ class ParameterRef(XtceBaseModel):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], parameter_ref: xtce_1_1.ParameterRefType) -> Self:
-        return cls(ref=XtcePath(parameter_ref.parameter_ref))
+    _v1_1_type = xtce_1_1.ParameterRefType
+    _v1_2_type = xtce_1_2.ParameterRefType
+    _v1_3_type = xtce_1_3.ParameterRefType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], parameter_ref: xtce_1_2.ParameterRefType) -> Self:
-        return cls(ref=XtcePath(parameter_ref.parameter_ref))
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ParameterRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], parameter_ref: xtce_1_3.ParameterRefType) -> Self:
-        return cls(ref=XtcePath(parameter_ref.parameter_ref))
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ParameterRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ParameterRefType:
-        return xtce_1_1.ParameterRefType(parameter_ref=str(self.ref))
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ParameterRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.parameter_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ParameterRefType:
-        return xtce_1_2.ParameterRefType(parameter_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ParameterRefType:
-        return xtce_1_3.ParameterRefType(parameter_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["parameter_ref"] = str(self.ref)
+        return kwargs
 
 
 class OutputParameterRef(ParameterRef):
@@ -168,57 +178,45 @@ class OutputParameterRef(ParameterRef):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        raw_obj: xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef,
-    ) -> Self:
-        return cls(
-            ref=XtcePath(raw_obj.parameter_ref),
-            output_name=raw_obj.output_name,
-        )
+    _v1_1_type = xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef
+    _v1_2_type = xtce_1_2.OutputParameterRefType
+    _v1_3_type = xtce_1_3.OutputParameterRefType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], parameter_ref: xtce_1_2.OutputParameterRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            output_name=parameter_ref.output_name,
-        )
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["output_name"] = obj.output_name
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], parameter_ref: xtce_1_3.OutputParameterRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            output_name=parameter_ref.output_name,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.OutputParameterRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["output_name"] = obj.output_name
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef:
-        return xtce_1_1.InputOutputAlgorithmType.OutputSet.OutputParameterRef(
-            parameter_ref=str(self.ref),
-            output_name=self.output_name,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.OutputParameterRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["output_name"] = obj.output_name
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.OutputParameterRefType:
-        return xtce_1_2.OutputParameterRefType(
-            parameter_ref=str(self.ref),
-            output_name=self.output_name,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["output_name"] = self.output_name
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.OutputParameterRefType:
-        return xtce_1_3.OutputParameterRefType(
-            parameter_ref=str(self.ref),
-            output_name=self.output_name,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["output_name"] = self.output_name
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["output_name"] = self.output_name
+        return kwargs
 
 
 class ParameterInstanceRef(ParameterRef):
@@ -257,65 +255,56 @@ class ParameterInstanceRef(ParameterRef):
             - The reference must be an instance of Parameter.
 
         """
-
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], parameter_ref: xtce_1_1.ParameterInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            instance=parameter_ref.instance,
-            use_calibrated_value=parameter_ref.use_calibrated_value,
-        )
+    _v1_1_type = xtce_1_1.ParameterInstanceRefType
+    _v1_2_type = xtce_1_2.ParameterInstanceRefType
+    _v1_3_type = xtce_1_3.ParameterInstanceRefType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], parameter_ref: xtce_1_2.ParameterInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            instance=parameter_ref.instance,
-            use_calibrated_value=parameter_ref.use_calibrated_value,
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.ParameterInstanceRefType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], parameter_ref: xtce_1_3.ParameterInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            instance=parameter_ref.instance,
-            use_calibrated_value=parameter_ref.use_calibrated_value,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ParameterInstanceRefType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ParameterInstanceRefType:
-        return xtce_1_1.ParameterInstanceRefType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ParameterInstanceRefType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["instance"] = obj.instance
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ParameterInstanceRefType:
-        return xtce_1_2.ParameterInstanceRefType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ParameterInstanceRefType:
-        return xtce_1_3.ParameterInstanceRefType(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["instance"] = self.instance
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        return kwargs
 
 
 class ArgumentInstanceRef(XtceBaseModel):
@@ -342,43 +331,38 @@ class ArgumentInstanceRef(XtceBaseModel):
             - The reference must exist in the metacommand's argument list.
 
         """
-
         # TODO maybe need to pass in metacommand or argument list
         # TODO need argument type classes to be defined before semantic validation can be implemented
 
-    @classmethod
-    def _from_v1_2(
-        cls: type[Self], argument_ref: xtce_1_2.ArgumentInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=argument_ref.argument_ref,
-            use_calibrated_value=argument_ref.use_calibrated_value,
-        )
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentInstanceRefType
+    _v1_3_type = xtce_1_3.ArgumentInstanceRefType
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], argument_ref: xtce_1_3.ArgumentInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=argument_ref.argument_ref,
-            use_calibrated_value=argument_ref.use_calibrated_value,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentInstanceRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = obj.argument_ref
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentInstanceRefType:
-        return xtce_1_2.ArgumentInstanceRefType(
-            argument_ref=str(self.ref),
-            use_calibrated_value=self.use_calibrated_value,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ArgumentInstanceRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = obj.argument_ref
+        kwargs["use_calibrated_value"] = obj.use_calibrated_value
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentInstanceRefType:
-        return xtce_1_3.ArgumentInstanceRefType(
-            argument_ref=str(self.ref),
-            use_calibrated_value=self.use_calibrated_value,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["argument_ref"] = str(self.ref)
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["argument_ref"] = str(self.ref)
+        kwargs["use_calibrated_value"] = self.use_calibrated_value
+        return kwargs
 
 
 class InputParameterInstanceRef(ParameterInstanceRef):
@@ -401,64 +385,51 @@ class InputParameterInstanceRef(ParameterInstanceRef):
             - The reference must be an instance of Parameter.
 
         """
-
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        raw_obj: xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef,
-    ) -> Self:
-        return cls(
-            ref=XtcePath(raw_obj.parameter_ref),
-            instance=raw_obj.instance,
-            use_calibrated_value=raw_obj.use_calibrated_value,
-            input_name=raw_obj.input_name,
-        )
+    _v1_1_type = xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
+    _v1_2_type = xtce_1_2.InputParameterInstanceRefType
+    _v1_3_type = xtce_1_3.InputParameterInstanceRefType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], parameter_ref: xtce_1_2.InputParameterInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            input_name=parameter_ref.input_name,
-        )
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["input_name"] = obj.input_name
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], parameter_ref: xtce_1_3.InputParameterInstanceRefType
-    ) -> Self:
-        return cls(
-            ref=XtcePath(parameter_ref.parameter_ref),
-            input_name=parameter_ref.input_name,
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.InputParameterInstanceRefType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["input_name"] = obj.input_name
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef:
-        return xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef(
-            parameter_ref=str(self.ref),
-            instance=self.instance,
-            use_calibrated_value=self.use_calibrated_value,
-            input_name=self.input_name,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.InputParameterInstanceRefType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["input_name"] = obj.input_name
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.InputParameterInstanceRefType:
-        return xtce_1_2.InputParameterInstanceRefType(
-            parameter_ref=str(self.ref),
-            input_name=self.input_name,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["input_name"] = self.input_name
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.InputParameterInstanceRefType:
-        return xtce_1_3.InputParameterInstanceRefType(
-            parameter_ref=str(self.ref),
-            input_name=self.input_name,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["input_name"] = self.input_name
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["input_name"] = self.input_name
+        return kwargs
 
 
 class ContainerRef(XtceBaseModel):
@@ -522,32 +493,42 @@ class ContainerRef(XtceBaseModel):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], container_ref: xtce_1_1.ContainerRefType) -> Self:
-        return cls(ref=XtcePath(container_ref.container_ref))
+    _v1_1_type = xtce_1_1.ContainerRefType
+    _v1_2_type = xtce_1_2.ContainerRefType
+    _v1_3_type = xtce_1_3.ContainerRefType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], container_ref: xtce_1_2.ContainerRefType) -> Self:
-        return cls(ref=XtcePath(container_ref.container_ref))
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ContainerRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], container_ref: xtce_1_3.ContainerRefType) -> Self:
-        return cls(ref=XtcePath(container_ref.container_ref))
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ContainerRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ContainerRefType:
-        return xtce_1_1.ContainerRefType(container_ref=str(self.ref))
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ContainerRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.container_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ContainerRefType:
-        return xtce_1_2.ContainerRefType(container_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ContainerRefType:
-        return xtce_1_3.ContainerRefType(container_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["container_ref"] = str(self.ref)
+        return kwargs
 
 
 class ServiceRef(XtceBaseModel):
@@ -607,32 +588,42 @@ class ServiceRef(XtceBaseModel):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], service_ref: xtce_1_1.ServiceRefType) -> Self:
-        return cls(ref=XtcePath(service_ref.service_ref))
+    _v1_1_type = xtce_1_1.ServiceRefType
+    _v1_2_type = xtce_1_2.ServiceRefType
+    _v1_3_type = xtce_1_3.ServiceRefType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], service_ref: xtce_1_2.ServiceRefType) -> Self:
-        return cls(ref=XtcePath(service_ref.service_ref))
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ServiceRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.service_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], service_ref: xtce_1_3.ServiceRefType) -> Self:
-        return cls(ref=XtcePath(service_ref.service_ref))
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ServiceRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.service_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ServiceRefType:
-        return xtce_1_1.ServiceRefType(service_ref=str(self.ref))
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ServiceRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.service_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ServiceRefType:
-        return xtce_1_2.ServiceRefType(service_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["service_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ServiceRefType:
-        return xtce_1_3.ServiceRefType(service_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["service_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["service_ref"] = str(self.ref)
+        return kwargs
 
 
 class StreamRef(XtceBaseModel):
@@ -696,29 +687,39 @@ class StreamRef(XtceBaseModel):
                 )
             )
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], stream_ref: xtce_1_1.StreamRefType) -> Self:
-        return cls(ref=XtcePath(stream_ref.stream_ref))
+    _v1_1_type = xtce_1_1.StreamRefType
+    _v1_2_type = xtce_1_2.StreamRefType
+    _v1_3_type = xtce_1_3.StreamRefType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], stream_ref: xtce_1_2.StreamRefType) -> Self:
-        return cls(ref=XtcePath(stream_ref.stream_ref))
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.StreamRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.stream_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], stream_ref: xtce_1_3.StreamRefType) -> Self:
-        return cls(ref=XtcePath(stream_ref.stream_ref))
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.StreamRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.stream_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.StreamRefType:
-        return xtce_1_1.StreamRefType(stream_ref=str(self.ref))
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.StreamRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.stream_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.StreamRefType:
-        return xtce_1_2.StreamRefType(stream_ref=str(self.ref))
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["stream_ref"] = str(self.ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.StreamRefType:
-        return xtce_1_3.StreamRefType(stream_ref=str(self.ref))
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["stream_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["stream_ref"] = str(self.ref)
+        return kwargs

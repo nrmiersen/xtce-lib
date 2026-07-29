@@ -1,26 +1,25 @@
 """Algorithm models."""
 
 from abc import ABC
-from typing import Annotated, Any, Self
+from typing import Annotated, Any
 
 from pydantic import AfterValidator, Field
 
 from xtce_lib.common.xtce_path import XtcePath, require_regex
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from ._pattern import EXPD_NAME_REF_W_PATH, NAME_REF_W_PATH
-from ._util import XtceValue, coerce, uncoerce, unwrap
+from ._util import XtceValue
 from .calibrator import MathOperation, ThisParameterOperand, ValueOperand
-from .common import AncillaryData, NameDescriptionBase
+from .common import NameDescriptionBase
 from .enum import BitOrder, ChecksumType, MathOperator, ParityForm, ReferencePoint
 from .reference import (
     ArgumentInstanceRef,
     InputParameterInstanceRef,
     OutputParameterRef,
-    ParameterInstanceRef,
 )
 from .trigger import TriggerSet
 
@@ -34,52 +33,50 @@ class Constant(XtceBaseModel):
     value: XtceValue
     """The value of the constant."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], raw_obj: xtce_1_1.InputAlgorithmType.InputSet.Constant
-    ) -> Self:
-        return cls(
-            constant_name=unwrap(raw_obj.constant_name),
-            value=coerce(raw_obj.value),
-        )
+    _v1_1_type = xtce_1_1.InputAlgorithmType.InputSet.Constant
+    _v1_2_type = xtce_1_2.ConstantType
+    _v1_3_type = xtce_1_3.ConstantType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ConstantType) -> Self:
-        return cls(
-            constant_name=unwrap(raw_obj.constant_name),
-            value=coerce(raw_obj.value),
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.InputAlgorithmType.InputSet.Constant
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["constant_name"] = obj.constant_name
+        kwargs["value"] = obj.value
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ConstantType) -> Self:
-        return cls(
-            constant_name=unwrap(raw_obj.constant_name),
-            value=coerce(raw_obj.value),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ConstantType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["constant_name"] = obj.constant_name
+        kwargs["value"] = obj.value
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputAlgorithmType.InputSet.Constant:
-        return xtce_1_1.InputAlgorithmType.InputSet.Constant(
-            constant_name=self.constant_name,
-            value=uncoerce(self.value),
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ConstantType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["constant_name"] = obj.constant_name
+        kwargs["value"] = obj.value
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ConstantType:
-        return xtce_1_2.ConstantType(
-            constant_name=self.constant_name,
-            value=uncoerce(self.value),
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["constant_name"] = self.constant_name
+        kwargs["value"] = self.value
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ConstantType:
-        return xtce_1_3.ConstantType(
-            constant_name=self.constant_name,
-            value=uncoerce(self.value),
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["constant_name"] = self.constant_name
+        kwargs["value"] = self.value
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["constant_name"] = self.constant_name
+        kwargs["value"] = self.value
+        return kwargs
 
 
 class AlgorithmText(XtceBaseModel):
@@ -91,37 +88,50 @@ class AlgorithmText(XtceBaseModel):
     language: str = "pseudo"
     """The language of the algorithm code."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], raw_obj: xtce_1_1.SimpleAlgorithmType.AlgorithmText
-    ) -> Self:
-        return cls(text=raw_obj.value, language=raw_obj.language)
+    _v1_1_type = xtce_1_1.SimpleAlgorithmType.AlgorithmText
+    _v1_2_type = xtce_1_2.AlgorithmTextType
+    _v1_3_type = xtce_1_3.AlgorithmTextType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.AlgorithmTextType) -> Self:
-        return cls(text=raw_obj.value, language=raw_obj.language)
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.SimpleAlgorithmType.AlgorithmText
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["text"] = obj.value
+        kwargs["language"] = obj.language
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.AlgorithmTextType) -> Self:
-        return cls(text=raw_obj.value, language=raw_obj.language)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.AlgorithmTextType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["text"] = obj.value
+        kwargs["language"] = obj.language
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SimpleAlgorithmType.AlgorithmText:
-        return xtce_1_1.SimpleAlgorithmType.AlgorithmText(
-            value=self.text,
-            language=self.language,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.AlgorithmTextType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["text"] = obj.value
+        kwargs["language"] = obj.language
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.AlgorithmTextType:
-        return xtce_1_2.AlgorithmTextType(value=self.text, language=self.language)
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["value"] = self.text
+        kwargs["language"] = self.language
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.AlgorithmTextType:
-        return xtce_1_3.AlgorithmTextType(value=self.text, language=self.language)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["value"] = self.text
+        kwargs["language"] = self.language
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["value"] = self.text
+        kwargs["language"] = self.language
+        return kwargs
 
 
 class ExternalAlgorithm(XtceBaseModel):
@@ -133,53 +143,50 @@ class ExternalAlgorithm(XtceBaseModel):
     algorithm_location: str
     """The location of the external algorithm implementation."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self],
-        raw_obj: xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet.ExternalAlgorithm,
-    ) -> Self:
-        return cls(
-            implementation_name=raw_obj.implementation_name,
-            algorithm_location=raw_obj.algorithm_location,
-        )
+    _v1_1_type = xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet.ExternalAlgorithm
+    _v1_2_type = xtce_1_2.ExternalAlgorithmType
+    _v1_3_type = xtce_1_3.ExternalAlgorithmType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ExternalAlgorithmType) -> Self:
-        return cls(
-            implementation_name=raw_obj.implementation_name,
-            algorithm_location=raw_obj.algorithm_location,
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet.ExternalAlgorithm
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["implementation_name"] = obj.implementation_name
+        kwargs["algorithm_location"] = obj.algorithm_location
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ExternalAlgorithmType) -> Self:
-        return cls(
-            implementation_name=raw_obj.implementation_name,
-            algorithm_location=raw_obj.algorithm_location,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ExternalAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["implementation_name"] = obj.implementation_name
+        kwargs["algorithm_location"] = obj.algorithm_location
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet.ExternalAlgorithm:
-        return xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet.ExternalAlgorithm(
-            implementation_name=self.implementation_name,
-            algorithm_location=self.algorithm_location,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ExternalAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["implementation_name"] = obj.implementation_name
+        kwargs["algorithm_location"] = obj.algorithm_location
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ExternalAlgorithmType:
-        return xtce_1_2.ExternalAlgorithmType(
-            implementation_name=self.implementation_name,
-            algorithm_location=self.algorithm_location,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["implementation_name"] = self.implementation_name
+        kwargs["algorithm_location"] = self.algorithm_location
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ExternalAlgorithmType:
-        return xtce_1_3.ExternalAlgorithmType(
-            implementation_name=self.implementation_name,
-            algorithm_location=self.algorithm_location,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["implementation_name"] = self.implementation_name
+        kwargs["algorithm_location"] = self.algorithm_location
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["implementation_name"] = self.implementation_name
+        kwargs["algorithm_location"] = self.algorithm_location
+        return kwargs
 
 
 class SimpleAlgorithm(NameDescriptionBase, ABC):
@@ -196,112 +203,108 @@ class SimpleAlgorithm(NameDescriptionBase, ABC):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.SimpleAlgorithmType) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = xtce_1_1.SimpleAlgorithmType
+    _v1_2_type = xtce_1_2.SimpleAlgorithmType
+    _v1_3_type = xtce_1_3.SimpleAlgorithmType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.SimpleAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_2(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.SimpleAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["algorithm_text"] = (
+            AlgorithmText._from_v1_1(obj.algorithm_text) if obj.algorithm_text else None
+        )
+        kwargs["external_algorithms"] = (
+            [
+                ExternalAlgorithm._from_v1_1(algo)
+                for algo in obj.external_algorithm_set.external_algorithm
+            ]
+            if obj.external_algorithm_set
+            and obj.external_algorithm_set.external_algorithm
+            else []
+        )
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.SimpleAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["algorithm_text"] = (
+            AlgorithmText._from_v1_2(obj.algorithm_text) if obj.algorithm_text else None
+        )
+        kwargs["external_algorithms"] = (
+            [
                 ExternalAlgorithm._from_v1_2(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
+                for algo in obj.external_algorithm_set.external_algorithm
             ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
+            if obj.external_algorithm_set
+            and obj.external_algorithm_set.external_algorithm
+            else []
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.SimpleAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_3(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_3(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.SimpleAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["algorithm_text"] = (
+            AlgorithmText._from_v1_3(obj.algorithm_text) if obj.algorithm_text else None
         )
+        kwargs["external_algorithms"] = (
+            [
+                ExternalAlgorithm._from_v1_3(algo)
+                for algo in obj.external_algorithm_set.external_algorithm
+            ]
+            if obj.external_algorithm_set
+            and obj.external_algorithm_set.external_algorithm
+            else []
+        )
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SimpleAlgorithmType:
-        return xtce_1_1.SimpleAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_1(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_1(policy),
-            algorithm_text=self.algorithm_text._to_v1_1(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["algorithm_text"] = (
+            self.algorithm_text._to_v1_1(policy) if self.algorithm_text else None
+        )
+        kwargs["external_algorithm_set"] = (
+            xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
                 external_algorithm=[
                     algo._to_v1_1(policy) for algo in self.external_algorithms
                 ]
             )
             if self.external_algorithms
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.SimpleAlgorithmType:
-        return xtce_1_2.SimpleAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            algorithm_text=self.algorithm_text._to_v1_2(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_2.ExternalAlgorithmSetType(
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["algorithm_text"] = (
+            self.algorithm_text._to_v1_2(policy) if self.algorithm_text else None
+        )
+        kwargs["external_algorithm_set"] = (
+            xtce_1_2.ExternalAlgorithmSetType(
                 external_algorithm=[
                     algo._to_v1_2(policy) for algo in self.external_algorithms
                 ]
             )
             if self.external_algorithms
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.SimpleAlgorithmType:
-        return xtce_1_3.SimpleAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            algorithm_text=self.algorithm_text._to_v1_3(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_3.ExternalAlgorithmSetType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["algorithm_text"] = (
+            self.algorithm_text._to_v1_3(policy) if self.algorithm_text else None
+        )
+        kwargs["external_algorithm_set"] = (
+            xtce_1_3.ExternalAlgorithmSetType(
                 external_algorithm=[
                     algo._to_v1_3(policy) for algo in self.external_algorithms
                 ]
             )
             if self.external_algorithms
-            else None,
+            else None
         )
+        return kwargs
 
 
 class InputAlgorithm(SimpleAlgorithm):
@@ -310,169 +313,87 @@ class InputAlgorithm(SimpleAlgorithm):
     inputs: list[InputParameterInstanceRef | Constant] = Field(default_factory=list)
     """The list of input parameters for the input algorithm."""
 
+    _v1_1_type = xtce_1_1.InputAlgorithmType
+    _v1_2_type = xtce_1_2.InputAlgorithmType
+    _v1_3_type = xtce_1_3.InputAlgorithmType
+
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.InputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_1(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_1(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_1(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_1(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.InputAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["inputs"] = (
+            [
                 InputParameterInstanceRef._from_v1_1(inp)
                 if isinstance(
                     inp, xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
                 )
                 else Constant._from_v1_1(inp)
-                for inp in raw_obj.input_set.choice
+                for inp in obj.input_set.choice
             ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
+            if obj.input_set and obj.input_set.choice
+            else []
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.InputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_2(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_2(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.InputAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["inputs"] = (
+            [
                 InputParameterInstanceRef._from_v1_2(inp)
                 if isinstance(inp, xtce_1_2.InputParameterInstanceRefType)
                 else Constant._from_v1_2(inp)
-                for inp in raw_obj.input_set.choice
+                for inp in obj.input_set.choice
             ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
+            if obj.input_set and obj.input_set.choice
+            else []
         )
+        kwargs["name"] = obj.name
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.InputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_3(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_3(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.InputAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["inputs"] = (
+            [
                 InputParameterInstanceRef._from_v1_3(inp)
                 if isinstance(inp, xtce_1_3.InputParameterInstanceRefType)
                 else Constant._from_v1_3(inp)
-                for inp in raw_obj.input_set.choice
+                for inp in obj.input_set.choice
             ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
+            if obj.input_set and obj.input_set.choice
+            else []
         )
+        kwargs["name"] = obj.name
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputAlgorithmType:
-        return xtce_1_1.InputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_1(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_1(policy),
-            algorithm_text=self.algorithm_text._to_v1_1(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
-                external_algorithm=[
-                    algo._to_v1_1(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_1.InputAlgorithmType.InputSet(
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_1.InputAlgorithmType.InputSet(
                 choice=[inp._to_v1_1(policy) for inp in self.inputs]
             )
             if self.inputs
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.InputAlgorithmType:
-        return xtce_1_2.InputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            algorithm_text=self.algorithm_text._to_v1_2(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_2.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_2(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_2.InputSetType(
-                choice=[inp._to_v1_2(policy) for inp in self.inputs]
-            )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_2.InputSetType(choice=[inp._to_v1_2(policy) for inp in self.inputs])
             if self.inputs
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.InputAlgorithmType:
-        return xtce_1_3.InputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            algorithm_text=self.algorithm_text._to_v1_3(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_3.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_3(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_3.InputSetType(
-                choice=[inp._to_v1_3(policy) for inp in self.inputs]
-            )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_3.InputSetType(choice=[inp._to_v1_3(policy) for inp in self.inputs])
             if self.inputs
-            else None,
+            else None
         )
+        return kwargs
 
 
 class ArgumentInputAlgorithm(SimpleAlgorithm):
@@ -485,78 +406,47 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
     )
     """The list of input parameters or arguments for the input algorithm."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ArgumentInputAlgorithmType
+    _v1_3_type = xtce_1_3.ArgumentInputAlgorithmType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.ArgumentInputAlgorithmType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_2(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_2(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.ArgumentInputAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["inputs"] = (
+            [
                 InputParameterInstanceRef._from_v1_2(inp)
                 if isinstance(inp, xtce_1_2.InputParameterInstanceRefType)
                 else ArgumentInstanceRef._from_v1_2(inp)
-                for inp in raw_obj.input_set.choice
+                for inp in obj.input_set.choice
             ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
+            if obj.input_set and obj.input_set.choice
+            else []
         )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentInputAlgorithmType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_3(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_3(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentInputAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["inputs"] = (
+            [
                 InputParameterInstanceRef._from_v1_3(inp)
                 if isinstance(inp, xtce_1_3.InputParameterInstanceRefType)
                 else ArgumentInstanceRef._from_v1_3(inp)
                 if isinstance(inp, xtce_1_3.ArgumentInstanceRefType)
                 else Constant._from_v1_3(inp)
-                for inp in raw_obj.input_set.choice
+                for inp in obj.input_set.choice
             ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
+            if obj.input_set and obj.input_set.choice
+            else []
         )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ArgumentInputAlgorithmType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         inputs = [
             self._enforce_restricted_type(
                 field_name=f"inputs[{i}]",
@@ -569,54 +459,26 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
             for i, inp in enumerate(self.inputs)
         ]
 
-        return xtce_1_2.ArgumentInputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            algorithm_text=self.algorithm_text._to_v1_2(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_2.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_2(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_2.ArgumentInputSetType(
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_2.ArgumentInputSetType(
                 choice=[inp._to_v1_2(policy) for inp in inputs]
             )
             if self.inputs
-            else None,
+            else None
         )
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentInputAlgorithmType:
-        return xtce_1_3.ArgumentInputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            algorithm_text=self.algorithm_text._to_v1_3(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_3.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_3(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_3.ArgumentInputSetType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_3.ArgumentInputSetType(
                 choice=[inp._to_v1_3(policy) for inp in self.inputs]
             )
             if self.inputs
-            else None,
+            else None
         )
+        return kwargs
 
 
 class TriggeredMathOperation(MathOperation):
@@ -634,96 +496,38 @@ class TriggeredMathOperation(MathOperation):
     )
     """A Unix-like path to the parameter to output the math operation to."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], raw_obj: xtce_1_1.MathAlgorithmType.MathOperation
-    ) -> Self:
-        # MathAlgorithmType.MathOperation is roughly equivalent to
-        # TriggeredMathOperationType in XTCE 1.2+
-        return cls(
-            operation=[
-                ValueOperand(value=float(item))
-                if isinstance(item, float)
-                else MathOperator(value=item.value)
-                if isinstance(item, xtce_1_1.MathOperatorsType)
-                else ParameterInstanceRef(ref=XtcePath(item.parameter_ref))
-                if isinstance(item, xtce_1_1.ParameterInstanceRefType)
-                else ThisParameterOperand()
-                for item in raw_obj.choice
-            ],
-            trigger_set=TriggerSet._from_v1_1(raw_obj.trigger_set),
-            output_parameter_ref=XtcePath(raw_obj.output_parameter_ref),
-        )
+    _v1_1_type = xtce_1_1.MathAlgorithmType.MathOperation
+    _v1_2_type = xtce_1_2.TriggeredMathOperationType
+    _v1_3_type = xtce_1_3.TriggeredMathOperationType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.TriggeredMathOperationType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_2(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set
-            else [],
-            operation=[
-                ValueOperand(value=item.value)
-                if isinstance(item, xtce_1_2.MathOperationCalibratorType.ValueOperand)
-                else ThisParameterOperand()
-                if isinstance(
-                    item, xtce_1_2.MathOperationCalibratorType.ThisParameterOperand
-                )
-                else MathOperator(value=item.value)
-                if isinstance(item, xtce_1_2.MathOperatorsType)
-                else ParameterInstanceRef(
-                    ref=XtcePath(item.parameter_ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in raw_obj.choice
-            ],
-            trigger_set=TriggerSet._from_v1_2(raw_obj.trigger_set),
-            output_parameter_ref=XtcePath(raw_obj.output_parameter_ref),
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.MathAlgorithmType.MathOperation
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["trigger_set"] = TriggerSet._from_v1_1(obj.trigger_set)
+        kwargs["output_parameter_ref"] = XtcePath(obj.output_parameter_ref)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.TriggeredMathOperationType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_3(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set
-            else [],
-            operation=[
-                ValueOperand(value=item.value)
-                if isinstance(item, xtce_1_3.MathOperationCalibratorType.ValueOperand)
-                else ThisParameterOperand()
-                if isinstance(
-                    item, xtce_1_3.MathOperationCalibratorType.ThisParameterOperand
-                )
-                else MathOperator(value=item.value)
-                if isinstance(item, xtce_1_3.MathOperatorsType)
-                else ParameterInstanceRef(
-                    ref=XtcePath(item.parameter_ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in raw_obj.choice
-            ],
-            trigger_set=TriggerSet._from_v1_3(raw_obj.trigger_set),
-            output_parameter_ref=XtcePath(raw_obj.output_parameter_ref),
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.TriggeredMathOperationType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["trigger_set"] = TriggerSet._from_v1_2(obj.trigger_set)
+        kwargs["output_parameter_ref"] = XtcePath(obj.output_parameter_ref)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.MathAlgorithmType.MathOperation:
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.TriggeredMathOperationType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["trigger_set"] = TriggerSet._from_v1_3(obj.trigger_set)
+        kwargs["output_parameter_ref"] = XtcePath(obj.output_parameter_ref)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         # MathAlgorithmType.MathOperation is roughly equivalent to
         # TriggeredMathOperationType in XTCE 1.2+
         version = XtceVersion.V1_1
@@ -750,82 +554,78 @@ class TriggeredMathOperation(MathOperation):
             policy=policy,
         )
 
-        return xtce_1_1.MathAlgorithmType.MathOperation(
-            choice=[
-                float(item.value)
-                if isinstance(item, ValueOperand)
-                else object()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_1.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_1.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-            trigger_set=self.trigger_set._to_v1_1(policy),
-            output_parameter_ref=str(self.output_parameter_ref),
-        )
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [
+            float(item.value)
+            if isinstance(item, ValueOperand)
+            else object()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_1.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_1.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        kwargs["trigger_set"] = self.trigger_set._to_v1_1(policy)
+        kwargs["output_parameter_ref"] = str(self.output_parameter_ref)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.TriggeredMathOperationType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         # XTCE 1.2 uses type xtce:NameReferenceType instead for some reason
         validator = require_regex(NAME_REF_W_PATH)
         validator(self.output_parameter_ref)
 
-        return xtce_1_2.TriggeredMathOperationType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            ),
-            choice=[
-                xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
-                if isinstance(item, ValueOperand)
-                else xtce_1_2.MathOperationCalibratorType.ThisParameterOperand()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_2.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_2.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-            trigger_set=self.trigger_set._to_v1_2(policy),
-            output_parameter_ref=str(self.output_parameter_ref),
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["short_description"] = self.short_description
+        kwargs["ancillary_data_set"] = xtce_1_2.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
         )
+        kwargs["choice"] = [
+            xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_2.MathOperationCalibratorType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_2.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_2.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        kwargs["trigger_set"] = self.trigger_set._to_v1_2(policy)
+        kwargs["output_parameter_ref"] = str(self.output_parameter_ref)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.TriggeredMathOperationType:
-        return xtce_1_3.TriggeredMathOperationType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            ),
-            choice=[
-                xtce_1_3.MathOperationCalibratorType.ValueOperand(value=str(item.value))
-                if isinstance(item, ValueOperand)
-                else xtce_1_3.MathOperationCalibratorType.ThisParameterOperand()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_3.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_3.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-            trigger_set=self.trigger_set._to_v1_3(policy),
-            output_parameter_ref=str(self.output_parameter_ref),
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["name"] = self.name
+        kwargs["short_description"] = self.short_description
+        kwargs["ancillary_data_set"] = xtce_1_3.AncillaryDataSetType(
+            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
         )
+        kwargs["choice"] = [
+            xtce_1_3.MathOperationCalibratorType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_3.MathOperationCalibratorType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_3.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_3.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        kwargs["trigger_set"] = self.trigger_set._to_v1_3(policy)
+        kwargs["output_parameter_ref"] = str(self.output_parameter_ref)
+        return kwargs
 
 
 class MathAlgorithm(NameDescriptionBase):
@@ -834,74 +634,42 @@ class MathAlgorithm(NameDescriptionBase):
     math_operation: TriggeredMathOperation
     """The mathematical operation."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.MathAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_1(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_1(raw_obj.ancillary_data_set),
-            math_operation=TriggeredMathOperation._from_v1_1(raw_obj.math_operation),
-        )
+    _v1_1_type = xtce_1_1.MathAlgorithmType
+    _v1_2_type = xtce_1_2.MathAlgorithmType
+    _v1_3_type = xtce_1_3.MathAlgorithmType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.MathAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            math_operation=TriggeredMathOperation._from_v1_2(raw_obj.math_operation),
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MathAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["math_operation"] = TriggeredMathOperation._from_v1_1(obj.math_operation)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.MathAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            math_operation=TriggeredMathOperation._from_v1_3(raw_obj.math_operation),
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.MathAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["math_operation"] = TriggeredMathOperation._from_v1_2(obj.math_operation)
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.MathAlgorithmType:
-        return xtce_1_1.MathAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_1(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_1(policy),
-            math_operation=self.math_operation._to_v1_1(policy),
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.MathAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["math_operation"] = TriggeredMathOperation._from_v1_3(obj.math_operation)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.MathAlgorithmType:
-        return xtce_1_2.MathAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            math_operation=self.math_operation._to_v1_2(policy),
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["math_operation"] = self.math_operation._to_v1_1(policy)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.MathAlgorithmType:
-        return xtce_1_3.MathAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            math_operation=self.math_operation._to_v1_3(policy),
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["math_operation"] = self.math_operation._to_v1_2(policy)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["math_operation"] = self.math_operation._to_v1_3(policy)
+        return kwargs
 
 
 class InputOutputAlgorithm(InputAlgorithm):
@@ -913,208 +681,93 @@ class InputOutputAlgorithm(InputAlgorithm):
     thread: bool = False
     """Indicates whether the algorithm runs in its own thread."""
 
+    _v1_1_type = xtce_1_1.InputOutputAlgorithmType
+    _v1_2_type = xtce_1_2.InputOutputAlgorithmType
+    _v1_3_type = xtce_1_3.InputOutputAlgorithmType
+
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.InputOutputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_1(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_1(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_1(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_1(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_1(inp)
-                if isinstance(
-                    inp, xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
-                )
-                else Constant._from_v1_1(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.InputOutputAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["outputs"] = (
+            [
                 OutputParameterRef._from_v1_1(out)
-                for out in raw_obj.output_set.output_parameter_ref
+                for out in obj.output_set.output_parameter_ref
             ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            thread=bool(raw_obj.thread),
+            if obj.output_set and obj.output_set.output_parameter_ref
+            else []
         )
+        kwargs["thread"] = bool(obj.thread)
+        return kwargs
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.InputOutputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_2(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_2(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_2(inp)
-                if isinstance(inp, xtce_1_2.InputParameterInstanceRefType)
-                else Constant._from_v1_2(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.InputOutputAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["outputs"] = (
+            [
                 OutputParameterRef._from_v1_2(out)
-                for out in raw_obj.output_set.output_parameter_ref
+                for out in obj.output_set.output_parameter_ref
             ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            thread=raw_obj.thread,
+            if obj.output_set and obj.output_set.output_parameter_ref
+            else []
         )
+        kwargs["thread"] = obj.thread
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.InputOutputAlgorithmType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_3(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_3(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_3(inp)
-                if isinstance(inp, xtce_1_3.InputParameterInstanceRefType)
-                else Constant._from_v1_3(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.InputOutputAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["outputs"] = (
+            [
                 OutputParameterRef._from_v1_3(out)
-                for out in raw_obj.output_set.output_parameter_ref
+                for out in obj.output_set.output_parameter_ref
             ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            thread=raw_obj.thread,
+            if obj.output_set and obj.output_set.output_parameter_ref
+            else []
         )
+        kwargs["thread"] = obj.thread
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputOutputAlgorithmType:
-        return xtce_1_1.InputOutputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_1(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_1(policy),
-            algorithm_text=self.algorithm_text._to_v1_1(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
-                external_algorithm=[
-                    algo._to_v1_1(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_1.InputAlgorithmType.InputSet(
-                choice=[inp._to_v1_1(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_1.InputOutputAlgorithmType.OutputSet(
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["output_set"] = (
+            xtce_1_1.InputOutputAlgorithmType.OutputSet(
                 output_parameter_ref=[out._to_v1_1(policy) for out in self.outputs]
             )
             if self.outputs
-            else None,
-            thread=self.thread,
+            else None
         )
+        kwargs["thread"] = self.thread
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.InputOutputAlgorithmType:
-        return xtce_1_2.InputOutputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            algorithm_text=self.algorithm_text._to_v1_2(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_2.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_2(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_2.InputSetType(
-                choice=[inp._to_v1_2(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_2.OutputSetType(
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["output_set"] = (
+            xtce_1_2.OutputSetType(
                 output_parameter_ref=[out._to_v1_2(policy) for out in self.outputs]
             )
             if self.outputs
-            else None,
-            thread=self.thread,
+            else None
         )
+        kwargs["thread"] = self.thread
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.InputOutputAlgorithmType:
-        return xtce_1_3.InputOutputAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            algorithm_text=self.algorithm_text._to_v1_3(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_3.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_3(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_3.InputSetType(
-                choice=[inp._to_v1_3(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_3.OutputSetType(
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["output_set"] = (
+            xtce_1_3.OutputSetType(
                 output_parameter_ref=[out._to_v1_3(policy) for out in self.outputs]
             )
             if self.outputs
-            else None,
-            thread=self.thread,
+            else None
         )
+        kwargs["thread"] = self.thread
+        return kwargs
 
 
 class InputOutputTriggerAlgorithm(InputOutputAlgorithm):
@@ -1139,250 +792,96 @@ class InputOutputTriggerAlgorithm(InputOutputAlgorithm):
 
     """
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], raw_obj: xtce_1_1.InputOutputTriggerAlgorithmType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_1(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_1(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_1(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_1(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_1(inp)
-                if isinstance(
-                    inp, xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
-                )
-                else Constant._from_v1_1(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
-                OutputParameterRef._from_v1_1(out)
-                for out in raw_obj.output_set.output_parameter_ref
-            ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            triggers=TriggerSet._from_v1_1(raw_obj.trigger_set)
-            if raw_obj.trigger_set is not None
-            else None,
-            trigger_container=XtcePath(raw_obj.trigger_container)
-            if raw_obj.trigger_container is not None
-            else None,
-            priority=raw_obj.priority,
-            thread=bool(raw_obj.thread),
-        )
+    _v1_1_type = xtce_1_1.InputOutputTriggerAlgorithmType
+    _v1_2_type = xtce_1_2.InputOutputTriggerAlgorithmType
+    _v1_3_type = xtce_1_3.InputOutputTriggerAlgorithmType
 
     @classmethod
-    def _from_v1_2(
-        cls: type[Self], raw_obj: xtce_1_2.InputOutputTriggerAlgorithmType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_2(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_2(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_2(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_2(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_2(inp)
-                if isinstance(inp, xtce_1_2.InputParameterInstanceRefType)
-                else Constant._from_v1_2(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
-                OutputParameterRef._from_v1_2(out)
-                for out in raw_obj.output_set.output_parameter_ref
-            ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            triggers=TriggerSet._from_v1_2(raw_obj.trigger_set)
-            if raw_obj.trigger_set is not None
-            else None,
-            trigger_container=XtcePath(raw_obj.trigger_container)
-            if raw_obj.trigger_container is not None
-            else None,
-            priority=raw_obj.priority,
-            thread=raw_obj.thread,
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.InputOutputTriggerAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["triggers"] = (
+            TriggerSet._from_v1_1(obj.trigger_set)
+            if obj.trigger_set is not None
+            else None
         )
+        kwargs["trigger_container"] = (
+            XtcePath(obj.trigger_container)
+            if obj.trigger_container is not None
+            else None
+        )
+        kwargs["priority"] = obj.priority
+        return kwargs
 
     @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.InputOutputTriggerAlgorithmType
-    ) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=cls._aliases_from_v1_3(raw_obj.alias_set),
-            ancillary_data=cls._ancillary_data_from_v1_3(raw_obj.ancillary_data_set),
-            algorithm_text=AlgorithmText._from_v1_3(raw_obj.algorithm_text)
-            if raw_obj.algorithm_text
-            else None,
-            external_algorithms=[
-                ExternalAlgorithm._from_v1_3(algo)
-                for algo in raw_obj.external_algorithm_set.external_algorithm
-            ]
-            if raw_obj.external_algorithm_set
-            and raw_obj.external_algorithm_set.external_algorithm
-            else [],
-            inputs=[
-                InputParameterInstanceRef._from_v1_3(inp)
-                if isinstance(inp, xtce_1_3.InputParameterInstanceRefType)
-                else Constant._from_v1_3(inp)
-                for inp in raw_obj.input_set.choice
-            ]
-            if raw_obj.input_set and raw_obj.input_set.choice
-            else [],
-            outputs=[
-                OutputParameterRef._from_v1_3(out)
-                for out in raw_obj.output_set.output_parameter_ref
-            ]
-            if raw_obj.output_set and raw_obj.output_set.output_parameter_ref
-            else [],
-            triggers=TriggerSet._from_v1_3(raw_obj.trigger_set)
-            if raw_obj.trigger_set is not None
-            else None,
-            trigger_container=XtcePath(raw_obj.trigger_container)
-            if raw_obj.trigger_container is not None
-            else None,
-            priority=raw_obj.priority,
-            thread=raw_obj.thread,
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.InputOutputTriggerAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["triggers"] = (
+            TriggerSet._from_v1_2(obj.trigger_set)
+            if obj.trigger_set is not None
+            else None
         )
+        kwargs["trigger_container"] = (
+            XtcePath(obj.trigger_container)
+            if obj.trigger_container is not None
+            else None
+        )
+        kwargs["priority"] = obj.priority
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.InputOutputTriggerAlgorithmType:
-        return xtce_1_1.InputOutputTriggerAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_1(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_1(policy),
-            algorithm_text=self.algorithm_text._to_v1_1(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
-                external_algorithm=[
-                    algo._to_v1_1(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_1.InputAlgorithmType.InputSet(
-                choice=[inp._to_v1_1(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_1.InputOutputAlgorithmType.OutputSet(
-                output_parameter_ref=[out._to_v1_1(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None,
-            thread=self.thread,
-            trigger_set=self.triggers._to_v1_1(policy) if self.triggers else None,
-            trigger_container=str(self.trigger_container)
-            if self.trigger_container
-            else None,
-            priority=self.priority,
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.InputOutputTriggerAlgorithmType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["triggers"] = (
+            TriggerSet._from_v1_3(obj.trigger_set)
+            if obj.trigger_set is not None
+            else None
         )
+        kwargs["trigger_container"] = (
+            XtcePath(obj.trigger_container)
+            if obj.trigger_container is not None
+            else None
+        )
+        kwargs["priority"] = obj.priority
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.InputOutputTriggerAlgorithmType:
-        return xtce_1_2.InputOutputTriggerAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_2(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_2(policy),
-            algorithm_text=self.algorithm_text._to_v1_2(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_2.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_2(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_2.InputSetType(
-                choice=[inp._to_v1_2(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_2.OutputSetType(
-                output_parameter_ref=[out._to_v1_2(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None,
-            thread=self.thread,
-            trigger_set=self.triggers._to_v1_2(policy) if self.triggers else None,
-            trigger_container=str(self.trigger_container)
-            if self.trigger_container
-            else None,
-            priority=self.priority,
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["trigger_set"] = (
+            self.triggers._to_v1_1(policy) if self.triggers else None
         )
+        kwargs["trigger_container"] = (
+            str(self.trigger_container) if self.trigger_container else None
+        )
+        kwargs["priority"] = self.priority
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.InputOutputTriggerAlgorithmType:
-        return xtce_1_3.InputOutputTriggerAlgorithmType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=self._aliases_to_v1_3(policy),
-            ancillary_data_set=self._ancillary_data_to_v1_3(policy),
-            algorithm_text=self.algorithm_text._to_v1_3(policy)
-            if self.algorithm_text
-            else None,
-            external_algorithm_set=xtce_1_3.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_3(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None,
-            input_set=xtce_1_3.InputSetType(
-                choice=[inp._to_v1_3(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None,
-            output_set=xtce_1_3.OutputSetType(
-                output_parameter_ref=[out._to_v1_3(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None,
-            trigger_set=self.triggers._to_v1_3(policy) if self.triggers else None,
-            trigger_container=str(self.trigger_container)
-            if self.trigger_container
-            else None,
-            priority=self.priority,
-            thread=self.thread,
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["trigger_set"] = (
+            self.triggers._to_v1_2(policy) if self.triggers else None
         )
+        kwargs["trigger_container"] = (
+            str(self.trigger_container) if self.trigger_container else None
+        )
+        kwargs["priority"] = self.priority
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["trigger_set"] = (
+            self.triggers._to_v1_3(policy) if self.triggers else None
+        )
+        kwargs["trigger_container"] = (
+            str(self.trigger_container) if self.trigger_container else None
+        )
+        kwargs["priority"] = self.priority
+        return kwargs
 
 
 class Checksum(XtceBaseModel):
@@ -1418,43 +917,42 @@ class Checksum(XtceBaseModel):
     checksum or hash based on this container.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ChecksumType
+    _v1_3_type = xtce_1_3.ChecksumType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ChecksumType) -> Self:
-        return cls(
-            input_algorithm=InputAlgorithm._from_v1_2(raw_obj.input_algorithm)
-            if raw_obj.input_algorithm
-            else None,
-            bits_from_reference=raw_obj.bits_from_reference or 0,
-            reference=ReferencePoint(raw_obj.reference.value),
-            name=ChecksumType(raw_obj.name.value),
-            hash_size_bits=raw_obj.hash_size_in_bits,
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ChecksumType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["input_algorithm"] = (
+            InputAlgorithm._from_v1_2(obj.input_algorithm)
+            if obj.input_algorithm
+            else None
         )
+        kwargs["bits_from_reference"] = obj.bits_from_reference or 0
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        kwargs["name"] = ChecksumType(obj.name.value)
+        kwargs["hash_size_bits"] = obj.hash_size_in_bits
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ChecksumType) -> Self:
-        return cls(
-            input_algorithm=InputAlgorithm._from_v1_3(raw_obj.input_algorithm)
-            if raw_obj.input_algorithm
-            else None,
-            bits_from_reference=raw_obj.bits_from_reference or 0,
-            reference=ReferencePoint(raw_obj.reference.value),
-            name=ChecksumType(raw_obj.name.value),
-            hash_size_bits=raw_obj.hash_size_in_bits,
-            parameter_ref=XtcePath(raw_obj.parameter_ref)
-            if raw_obj.parameter_ref
-            else None,
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ChecksumType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["input_algorithm"] = (
+            InputAlgorithm._from_v1_3(obj.input_algorithm)
+            if obj.input_algorithm
+            else None
         )
+        kwargs["bits_from_reference"] = obj.bits_from_reference or 0
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        kwargs["name"] = ChecksumType(obj.name.value)
+        kwargs["hash_size_bits"] = obj.hash_size_in_bits
+        kwargs["parameter_ref"] = (
+            XtcePath(obj.parameter_ref) if obj.parameter_ref else None
+        )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ChecksumType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         self._enforce_unsupported_field(
             field_name="parameter_ref",
             current_value=self.parameter_ref,
@@ -1463,31 +961,29 @@ class Checksum(XtceBaseModel):
             policy=policy,
         )
 
-        return xtce_1_2.ChecksumType(
-            input_algorithm=self.input_algorithm._to_v1_2(policy)
-            if self.input_algorithm
-            else None,
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_2.ReferencePointType(self.reference.value),
-            name=xtce_1_2.ChecksumTypeName(self.name.value),
-            hash_size_in_bits=self.hash_size_bits,
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["input_algorithm"] = (
+            self.input_algorithm._to_v1_2(policy) if self.input_algorithm else None
         )
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_2.ReferencePointType(self.reference.value)
+        kwargs["name"] = xtce_1_2.ChecksumTypeName(self.name.value)
+        kwargs["hash_size_in_bits"] = self.hash_size_bits
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ChecksumType:
-        return xtce_1_3.ChecksumType(
-            input_algorithm=self.input_algorithm._to_v1_3(policy)
-            if self.input_algorithm
-            else None,
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_3.ReferencePointType(self.reference.value),
-            name=xtce_1_3.ChecksumTypeName(self.name.value),
-            hash_size_in_bits=self.hash_size_bits,
-            parameter_ref=str(self.parameter_ref)
-            if self.parameter_ref is not None
-            else None,
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["input_algorithm"] = (
+            self.input_algorithm._to_v1_3(policy) if self.input_algorithm else None
         )
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_3.ReferencePointType(self.reference.value)
+        kwargs["name"] = xtce_1_3.ChecksumTypeName(self.name.value)
+        kwargs["hash_size_in_bits"] = self.hash_size_bits
+        kwargs["parameter_ref"] = (
+            str(self.parameter_ref) if self.parameter_ref is not None else None
+        )
+        return kwargs
 
 
 class CRC(XtceBaseModel):
@@ -1543,46 +1039,41 @@ class CRC(XtceBaseModel):
     this container.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.Crctype
+    _v1_3_type = xtce_1_3.Crctype
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.Crctype) -> Self:
-        return cls(
-            polynomial=raw_obj.polynomial,
-            init_remainder=raw_obj.init_remainder,
-            final_xor=raw_obj.final_xor,
-            width=raw_obj.width or 1,
-            reflect_data=raw_obj.reflect_data,
-            reflect_remainder=raw_obj.reflect_remainder,
-            bits_from_reference=raw_obj.bits_from_reference or 0,
-            reference=ReferencePoint(raw_obj.reference.value),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.Crctype) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["polynomial"] = obj.polynomial
+        kwargs["init_remainder"] = obj.init_remainder
+        kwargs["final_xor"] = obj.final_xor
+        kwargs["width"] = obj.width or 1
+        kwargs["reflect_data"] = obj.reflect_data
+        kwargs["reflect_remainder"] = obj.reflect_remainder
+        kwargs["bits_from_reference"] = obj.bits_from_reference or 0
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.Crctype) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["polynomial"] = obj.polynomial
+        kwargs["init_remainder"] = obj.init_remainder
+        kwargs["final_xor"] = obj.final_xor
+        kwargs["width"] = obj.width or 1
+        kwargs["reflect_data"] = obj.reflect_data
+        kwargs["reflect_remainder"] = obj.reflect_remainder
+        kwargs["direction"] = BitOrder(obj.direction.value)
+        kwargs["bits_from_reference"] = obj.bits_from_reference or 0
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        kwargs["parameter_ref"] = (
+            XtcePath(obj.parameter_ref) if obj.parameter_ref is not None else None
         )
+        return kwargs
 
-    @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.Crctype) -> Self:
-        return cls(
-            polynomial=raw_obj.polynomial,
-            init_remainder=raw_obj.init_remainder,
-            final_xor=raw_obj.final_xor,
-            width=raw_obj.width or 1,
-            reflect_data=raw_obj.reflect_data,
-            reflect_remainder=raw_obj.reflect_remainder,
-            direction=BitOrder(raw_obj.direction.value),
-            bits_from_reference=raw_obj.bits_from_reference or 0,
-            reference=ReferencePoint(raw_obj.reference.value),
-            parameter_ref=XtcePath(raw_obj.parameter_ref)
-            if raw_obj.parameter_ref is not None
-            else None,
-        )
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.Crctype:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_2
 
         self._enforce_unsupported_field(
@@ -1600,31 +1091,29 @@ class CRC(XtceBaseModel):
             policy=policy,
         )
 
-        return xtce_1_2.Crctype(
-            polynomial=self.polynomial,
-            init_remainder=self.init_remainder,
-            final_xor=self.final_xor,
-            width=self.width,
-            reflect_data=self.reflect_data,
-            reflect_remainder=self.reflect_remainder,
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_2.ReferencePointType(self.reference.value),
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["polynomial"] = self.polynomial
+        kwargs["init_remainder"] = self.init_remainder
+        kwargs["final_xor"] = self.final_xor
+        kwargs["width"] = self.width
+        kwargs["reflect_data"] = self.reflect_data
+        kwargs["reflect_remainder"] = self.reflect_remainder
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_2.ReferencePointType(self.reference.value)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.Crctype:
-        return xtce_1_3.Crctype(
-            polynomial=self.polynomial,
-            init_remainder=self.init_remainder,
-            final_xor=self.final_xor,
-            width=self.width,
-            reflect_data=self.reflect_data,
-            reflect_remainder=self.reflect_remainder,
-            direction=xtce_1_3.BitOrderType(self.direction.value),
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_3.ReferencePointType(self.reference.value),
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["polynomial"] = self.polynomial
+        kwargs["init_remainder"] = self.init_remainder
+        kwargs["final_xor"] = self.final_xor
+        kwargs["width"] = self.width
+        kwargs["reflect_data"] = self.reflect_data
+        kwargs["reflect_remainder"] = self.reflect_remainder
+        kwargs["direction"] = xtce_1_3.BitOrderType(self.direction.value)
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_3.ReferencePointType(self.reference.value)
+        return kwargs
 
 
 class XOR(XtceBaseModel):
@@ -1649,40 +1138,28 @@ class XOR(XtceBaseModel):
     this container.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = None
+    _v1_3_type = xtce_1_3.Xortype
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
-
-    @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.Xortype) -> Self:
-        return cls(
-            bits_from_reference=raw_obj.bits_from_reference,
-            reference=ReferencePoint(raw_obj.reference.value),
-            parameter_ref=XtcePath(raw_obj.parameter_ref)
-            if raw_obj.parameter_ref is not None
-            else None,
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.Xortype) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["bits_from_reference"] = obj.bits_from_reference
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        kwargs["parameter_ref"] = (
+            XtcePath(obj.parameter_ref) if obj.parameter_ref is not None else None
         )
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.Xortype:
-        return xtce_1_3.Xortype(
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_3.ReferencePointType(self.reference.value),
-            parameter_ref=str(self.parameter_ref)
-            if self.parameter_ref is not None
-            else None,
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_3.ReferencePointType(self.reference.value)
+        kwargs["parameter_ref"] = (
+            str(self.parameter_ref) if self.parameter_ref is not None else None
         )
+        return kwargs
 
 
 class Parity(XtceBaseModel):
@@ -1710,35 +1187,30 @@ class Parity(XtceBaseModel):
     this container.
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = None
+    _v1_2_type = xtce_1_2.ParityType
+    _v1_3_type = xtce_1_3.ParityType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ParityType) -> Self:
-        return cls(
-            parity_form=ParityForm(raw_obj.type_value.value),
-            bits_from_reference=raw_obj.bits_from_reference,
-            reference=ReferencePoint(raw_obj.reference.value),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ParityType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["parity_form"] = ParityForm(obj.type_value.value)
+        kwargs["bits_from_reference"] = obj.bits_from_reference
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ParityType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["parity_form"] = ParityForm(obj.type_value.value)
+        kwargs["bits_from_reference"] = obj.bits_from_reference
+        kwargs["reference"] = ReferencePoint(obj.reference.value)
+        kwargs["parameter_ref"] = (
+            XtcePath(obj.parameter_ref) if obj.parameter_ref is not None else None
         )
+        return kwargs
 
-    @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ParityType) -> Self:
-        return cls(
-            parity_form=ParityForm(raw_obj.type_value.value),
-            bits_from_reference=raw_obj.bits_from_reference,
-            reference=ReferencePoint(raw_obj.reference.value),
-            parameter_ref=XtcePath(raw_obj.parameter_ref)
-            if raw_obj.parameter_ref is not None
-            else None,
-        )
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ParityType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         self._enforce_unsupported_field(
             field_name="parameter_ref",
             current_value=self.parameter_ref,
@@ -1747,20 +1219,18 @@ class Parity(XtceBaseModel):
             policy=policy,
         )
 
-        return xtce_1_2.ParityType(
-            type_value=xtce_1_2.ParityFormType(self.parity_form.value),
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_2.ReferencePointType(self.reference.value),
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["type_value"] = xtce_1_2.ParityFormType(self.parity_form.value)
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_2.ReferencePointType(self.reference.value)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ParityType:
-        return xtce_1_3.ParityType(
-            type_value=xtce_1_3.ParityFormType(self.parity_form.value),
-            bits_from_reference=self.bits_from_reference,
-            reference=xtce_1_3.ReferencePointType(self.reference.value),
-            parameter_ref=str(self.parameter_ref)
-            if self.parameter_ref is not None
-            else None,
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["type_value"] = xtce_1_3.ParityFormType(self.parity_form.value)
+        kwargs["bits_from_reference"] = self.bits_from_reference
+        kwargs["reference"] = xtce_1_3.ReferencePointType(self.reference.value)
+        kwargs["parameter_ref"] = (
+            str(self.parameter_ref) if self.parameter_ref is not None else None
         )
+        return kwargs

@@ -1,8 +1,12 @@
 """Command models."""
 
 import datetime
+from typing import Annotated
 
-from pydantic import Field
+from pydantic import AfterValidator, Field
+
+from xtce_lib.common.xtce_path import XtcePath, require_regex
+from xtce_lib.xtce._pattern import EXPD_NAME_REF_W_PATH
 
 from ._base import XtceBaseModel
 from .algorithm import (
@@ -22,7 +26,7 @@ from .argument import (
     StringArgument,
 )
 from .calibrator import ArgumentMathOperation
-from .common import NameDescriptionBase, NameReferenceWithPath
+from .common import NameDescriptionBase
 from .condition import ContextMatch, MatchCriteria
 from .container import CommandContainer, SequenceContainer
 from .enum import ConsequenceLevel, VerifierType
@@ -131,12 +135,31 @@ class MetaCommand(NameDescriptionBase):
     abstract: bool = Field(default=False)
 
 
-class MetaCommandRef(NameReferenceWithPath):
+class MetaCommandRef(XtceBaseModel):
     """A reference to a MetaCommand.
 
     Used to include a MetaCommand defined in another sub-system in this sub-system.
 
     """
+
+    name: Annotated[XtcePath, AfterValidator(require_regex(EXPD_NAME_REF_W_PATH))] = (
+        Field(
+            ...,
+            examples=[
+                "/ConkSat/Bus/BatteryVoltage",
+                "../Bus/BatteryVoltage",
+                "../Payload/Camera/ExposureTime",
+            ],
+            json_schema_extra={"pattern": EXPD_NAME_REF_W_PATH},
+        )
+    )
+    """A Unix-like path to a parameter.
+
+    Can not include array or aggregate references.
+
+    """
+
+    # TODO fix docstring and examples
 
 
 class MetaCommandStep(XtceBaseModel):

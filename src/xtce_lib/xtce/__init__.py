@@ -111,11 +111,7 @@ from .common import (
     Alias,
     AncillaryData,
     DescriptionBase,
-    ExpandedNameReferenceNoPath,
-    ExpandedNameReferenceWithPath,
     NameDescriptionBase,
-    NameReferenceNoPath,
-    NameReferenceWithPath,
     OptionalNameDescriptionBase,
 )
 from .condition import (
@@ -413,11 +409,7 @@ __all__ = [
     "Alias",
     "AncillaryData",
     "DescriptionBase",
-    "ExpandedNameReferenceNoPath",
-    "ExpandedNameReferenceWithPath",
     "NameDescriptionBase",
-    "NameReferenceNoPath",
-    "NameReferenceWithPath",
     "OptionalNameDescriptionBase",
     "AndedConditions",
     "ArgumentAndedConditions",

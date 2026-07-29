@@ -5,7 +5,16 @@ from __future__ import annotations
 import logging
 from abc import ABC
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Literal, Self, TypeVar, assert_never, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Literal,
+    Self,
+    TypeVar,
+    assert_never,
+    overload,
+)
 
 from pydantic import BaseModel, ConfigDict
 
@@ -36,6 +45,10 @@ class XtceBaseModel(BaseModel, ABC):
         extra="forbid",
     )
 
+    _v1_1_type: ClassVar[type | None] = None
+    _v1_2_type: ClassVar[type | None] = None
+    _v1_3_type: ClassVar[type | None] = None
+
     def validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
@@ -43,7 +56,6 @@ class XtceBaseModel(BaseModel, ABC):
         scope: XtcePath,
     ) -> None:
         """Validate this object's semantics."""
-        # If no subclass overrides this, nothing happens here
         pass
 
     @classmethod
@@ -76,25 +88,64 @@ class XtceBaseModel(BaseModel, ABC):
                 assert_never(version)
 
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    def _from_v1_1_kwargs(cls: type[Self], obj: Any) -> dict[str, Any]:
+        return {}
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
+    def _from_v1_2_kwargs(cls: type[Self], obj: Any) -> dict[str, Any]:
+        return {}
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
+    def _from_v1_3_kwargs(cls: type[Self], obj: Any) -> dict[str, Any]:
+        return {}
+
+    @classmethod
+    def _from_v1_1(cls: type[Self], obj: Any) -> Self:
+        if cls._v1_1_type is None:
+            raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+        kwargs = cls._from_v1_1_kwargs(obj)
+        return cls(**kwargs)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], obj: Any) -> Self:
+        if cls._v1_2_type is None:
+            raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
+        kwargs = cls._from_v1_2_kwargs(obj)
+        return cls(**kwargs)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], obj: Any) -> Self:
+        if cls._v1_3_type is None:
+            raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
+        kwargs = cls._from_v1_3_kwargs(obj)
+        return cls(**kwargs)
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return {}
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return {}
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return {}
 
     def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+        target_class = self._v1_1_type
+        if target_class is None:
+            raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+        return target_class(**self._to_v1_1_kwargs(policy))
 
     def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
+        target_class = self._v1_2_type
+        if target_class is None:
+            raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
+        return target_class(**self._to_v1_2_kwargs(policy))
 
     def _to_v1_3(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
+        target_class = self._v1_3_type
+        if target_class is None:
+            raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
+        return target_class(**self._to_v1_3_kwargs(policy))
 
     def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""
