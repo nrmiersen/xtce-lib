@@ -147,7 +147,8 @@ class XtceBaseModel(BaseModel, ABC):
             raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
         return target_class(**self._to_v1_3_kwargs(policy))
 
-    def _handle_downgrade(self, message: str, policy: DowngradePolicy) -> None:
+    @staticmethod
+    def _handle_downgrade(message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""
         match policy:
             case DowngradePolicy.STRICT:

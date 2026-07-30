@@ -612,7 +612,7 @@ class TestMatchCriteria:
             ]
         )
 
-        for version in SUPPORTED_CONDITION_VERSIONS:
+        for version in VERSIONS:
             round_tripped = xtce.ContextMatch.from_xsdata(
                 original.to_xsdata(version),
                 version,

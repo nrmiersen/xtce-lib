@@ -675,20 +675,6 @@ class TestContextCalibrator:
 
         assert round_tripped == original
 
-    def test_v1_1_is_unsupported_due_to_context_match(self) -> None:
-        """XTCE 1.1 export should fail because ContextMatch is unsupported in 1.1."""
-        model = xtce.ContextCalibrator(
-            context_match=_make_context_match(),
-            calibrator=xtce.Calibrator(
-                calibrator_type=xtce.PolynomialCalibrator(
-                    terms=[xtce.Term(coefficient=1.0, exponent=0)]
-                )
-            ),
-        )
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
 
 class TestLinearAdjustment:
     """Test LinearAdjustment model."""

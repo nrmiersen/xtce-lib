@@ -1019,9 +1019,13 @@ class ArgumentMatchCriteria(XtceBaseModel):
 class ContextMatch(MatchCriteria):
     """Define match criteria for context-based selection."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.MatchCriteriaType
     _v1_2_type = xtce_1_2.ContextMatchType
     _v1_3_type = xtce_1_3.ContextMatchType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MatchCriteriaType) -> dict[str, Any]:
+        return super()._from_v1_1_kwargs(obj)
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.ContextMatchType) -> dict[str, Any]:
@@ -1030,6 +1034,9 @@ class ContextMatch(MatchCriteria):
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.ContextMatchType) -> dict[str, Any]:
         return super()._from_v1_3_kwargs(obj)
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        return super()._to_v1_1_kwargs(policy)
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         return super()._to_v1_2_kwargs(policy)

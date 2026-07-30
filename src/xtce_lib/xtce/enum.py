@@ -152,7 +152,7 @@ class ValidationStatus(StrEnum):
 
 
 class RangeForm(StrEnum):
-    """Defines inside and outside enumerated terms.
+    """Defines the valid range forms.
 
     Attributes:
         OUTSIDE: The range is (-inf, minimum) and (maximum, inf) - that is a range where
@@ -165,66 +165,35 @@ class RangeForm(StrEnum):
     """
 
     OUTSIDE = "outside"
+    """The range is (-inf, minimum) and (maximum, inf) - that is a range where acceptable values must be less than the minimum and greater than the maximum."""
+
     INSIDE = "inside"
+    """The range is (minimum, maximum) - that is acceptable values are between the minimum and maximum (either the min or max may be inclusive or exclusive)."""
 
 
 class ChangeSpan(StrEnum):
-    """Defines a changePerSecond and changePerSample for use in rate of change alarms.
-
-    Used by ChangeAlarmRangesType.
-
-    """
+    """Defines the change span options for a change alarm."""
 
     CHANGE_PER_SECOND = "changePerSecond"
+    """The change rate is measured per second."""
+
     CHANGE_PER_SAMPLE = "changePerSample"
+    """The change rate is measured per sample."""
 
 
 class ChangeBasis(StrEnum):
-    """Defines absoluteChange and percentageChange for use in rate of change alarms.
-
-    Used by ChangeAlarmRangesType.
-
-    """
+    """Defines the basis for measuring the change rate in a change alarm."""
 
     ABSOLUTE_CHANGE = "absoluteChange"
+    """The change rate is measured as an absolute change."""
+
     PERCENTAGE_CHANGE = "percentageChange"
+    """The change rate is measured as a percentage change."""
 
 
 class ConcernLevel(StrEnum):
-    """Defines six levels: Normal, Watch, Warning, Distress, Critical and Severe, in
-    that order of concern from least to most.
-
-    These level definitions are used throughout the alarm definitions. An implementation
-    should interpret these as best to match their uniqueness and provide documentation
-    on how this standard maps to their implementation. Not all are likely to be
-    provided, with some either ignored, promoted or demoted to others, or warned on
-    input. There exist some reasonable usage recommendations in the user community.
-
-    Attributes:
-        NORMAL: The case of "normal" or "no concern level" is generally the default.
-            This value can be useful when describing an exception or disabling when the
-            more typical case is a non-normal concern level.
-        WATCH: DEPRECATED: The lowest level of concern. Systems that support only 3 or 4
-            concern levels have been observed to promote "watch" to "warning" during
-            data processing, if this enumeration is not explicitly supported. This value
-            may not exist in future versions of this specification.
-        WARNING: A level of concern to be interpreted by the user as less than the
-            highest possible concern. This is intended by the specification to be quite
-            vague. The project operational concept will explicitly define how these are
-            to be used.
-        DISTRESS: A level of concern to be interpreted by the user as greater than the
-            least concern but not yet rising to the highest possible concern. This is
-            intended by the specification to be quite vague. The project operational
-            concept will explicitly define how these are to be used.
-        CRITICAL: A level of concern to be interpreted by the user as the highest
-            possible concern. This is intended by the specification to be quite vague.
-            The project operational concept will explicitly define how these are to be
-            used.
-        SEVERE: DEPRECATED: The highest level of concern. Systems that support only 3 or
-            4 concern levels have been observed to demote "severe" to "critical" during
-            data processing, if this enumeration is not explicitly supported. This value
-            may not exist in future versions of this specification.
-
+    """Defines six levels of concern for alarms: Normal, Watch, Warning, Distress,
+    Critical, and Severe, in that order of concern from least to most.
     """
 
     NORMAL = "normal"
