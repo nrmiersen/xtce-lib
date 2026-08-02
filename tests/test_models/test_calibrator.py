@@ -693,19 +693,7 @@ class TestLinearAdjustment:
         assert model.slope == 2.5
         assert model.intercept == -1.0
 
-    def test_from_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import is unsupported for LinearAdjustment."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.LinearAdjustment.from_xsdata(object(), XtceVersion.V1_1)
-
-    def test_to_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 export is unsupported for LinearAdjustment."""
-        model = xtce.LinearAdjustment()
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    @pytest.mark.parametrize("version", SUPPORTED_BASE_CALIBRATOR_VERSIONS)
+    @pytest.mark.parametrize("version", SUPPORTED_CALIBRATOR_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
         """Round-trip a linear adjustment through XTCE 1.2 and 1.3."""
         original = xtce.LinearAdjustment(slope=2.0, intercept=1.5)

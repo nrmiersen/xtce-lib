@@ -198,6 +198,66 @@ class XtceBaseModel(BaseModel, ABC):
         )
         self._handle_downgrade(message, policy)
 
+    def _enforce_required_field(
+        self,
+        field_name: str,
+        current_value: Any,
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+        *,
+        empty_value: Any = None,
+        fallback: Any = None,
+    ) -> Any:
+        """Enforce when a field is required in the target version but is currently
+        empty.
+        """
+        if current_value != empty_value:
+            return current_value
+
+        message = (
+            f"Missing Required Field: The attribute '{field_name}' is required in "
+            f"XTCE version {target_version.value} but is currently unset."
+        )
+
+        # If there is a fallback, can be treated normally
+        if fallback is not None:
+            self._handle_downgrade(message + f" Using fallback '{fallback}'.", policy)
+            return fallback
+
+        # If there is no fallback, this is an actual error
+        log.error(message)
+        raise ValueError(message)
+
+    def _enforce_list_length(
+        self,
+        field_name: str,
+        current_value: list[Any] | None,
+        min_length: int,
+        max_length: int,
+        target_version: XtceVersion,
+        policy: DowngradePolicy,
+        *,
+        fallback: Any,
+    ) -> Any:
+        """Enforce when a list field's length is not allowed in the target version."""
+        if current_value is None or min_length <= len(current_value) <= max_length:
+            return current_value
+
+        message = (
+            f"Incompatible List Length: The attribute '{field_name}' has length "
+            f"{len(current_value)} which is not allowed in XTCE version "
+            f"{target_version.value}."
+        )
+
+        # If there is a fallback, can be treated normally
+        if fallback is not None:
+            self._handle_downgrade(message + f" Using fallback '{fallback}'.", policy)
+            return fallback
+
+        # If there is no fallback, this is an actual error
+        log.error(message)
+        raise ValueError(message)
+
     @overload
     def _enforce_restricted_type(
         self,

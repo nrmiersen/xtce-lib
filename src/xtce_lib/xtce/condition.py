@@ -115,9 +115,19 @@ class ArgumentComparison(XtceBaseModel):
     value: int | float | str | bool | bytes | datetime.timedelta | datetime.datetime
     """The value to compare the parameter or argument instance against."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.ComparisonType
     _v1_2_type = xtce_1_2.ArgumentComparisonType
     _v1_3_type = xtce_1_3.ArgumentComparisonType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ComparisonType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["instance_ref"] = ParameterInstanceRef._from_v1_1(obj)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_1(
+            obj.comparison_operator
+        )
+        kwargs["value"] = coerce(obj.value)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentComparisonType) -> dict[str, Any]:
@@ -147,6 +157,22 @@ class ArgumentComparison(XtceBaseModel):
             obj.comparison_operator
         )
         kwargs["value"] = coerce(obj.value)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        instance_ref = self._enforce_restricted_type(
+            field_name="instance_ref",
+            current_value=self.instance_ref,
+            allowed_types=(ParameterInstanceRef,),
+            target_version=XtceVersion.V1_1,
+            policy=policy,
+            require_match=True,
+        )
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs.update(instance_ref._to_v1_1_kwargs(policy))
+        kwargs["comparison_operator"] = self.comparison_operator._to_v1_1(policy)
+        kwargs["value"] = uncoerce(self.value)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -405,9 +431,48 @@ class ArgumentComparisonCheck(BaseComparison):
 
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.ComparisonCheckType
     _v1_2_type = xtce_1_2.ArgumentComparisonCheckType
     _v1_3_type = xtce_1_3.ArgumentComparisonCheckType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ComparisonCheckType) -> dict[str, Any]:
+        items = list(obj.choice)
+
+        left_raw, op_raw = items[0], items[1]
+
+        if not isinstance(left_raw, xtce_1_1.ParameterInstanceRefType):
+            raise TypeError(
+                "invalid ComparisonCheckType.choice[0]: expected "
+                "ParameterInstanceRefType, got "
+                f"{type(left_raw).__name__}"
+            )
+        if not isinstance(op_raw, xtce_1_1.ComparisonOperatorsType):
+            raise TypeError(
+                "invalid ComparisonCheckType.choice[1]: expected "
+                "ComparisonOperatorsType, got "
+                f"{type(op_raw).__name__}"
+            )
+
+        if len(items) == 3:
+            right_raw = items[2]
+            if not isinstance(right_raw, xtce_1_1.ParameterInstanceRefType):
+                raise TypeError(
+                    "invalid ComparisonCheckType.choice[2]: expected "
+                    "ParameterInstanceRefType, got "
+                    f"{type(right_raw).__name__}"
+                )
+            right = ParameterInstanceRef._from_v1_1(right_raw)
+        else:
+            if obj.value is None:
+                raise ValueError("missing right-hand side value for comparison")
+            right = coerce(obj.value)
+
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["left"] = ParameterInstanceRef._from_v1_1(left_raw)
+        kwargs["comparison_operator"] = ComparisonOperator._from_v1_1(op_raw)
+        kwargs["right"] = right
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -487,6 +552,45 @@ class ArgumentComparisonCheck(BaseComparison):
             obj.comparison_operator
         )
         kwargs["right"] = right
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        left = self._enforce_restricted_type(
+            field_name="left",
+            current_value=self.left,
+            allowed_types=(ParameterInstanceRef,),
+            target_version=XtceVersion.V1_1,
+            policy=policy,
+            require_match=True,
+        )
+        right = self._enforce_restricted_type(
+            field_name="right",
+            current_value=self.right,
+            allowed_types=(
+                ParameterInstanceRef,
+                int,
+                float,
+                str,
+                bool,
+                bytes,
+                datetime.timedelta,
+                datetime.datetime,
+            ),
+            target_version=XtceVersion.V1_1,
+            policy=policy,
+            require_match=True,
+        )
+
+        choice = [left._to_v1_1(policy), self.comparison_operator._to_v1_1(policy)]
+        if isinstance(right, ParameterInstanceRef):
+            choice.append(right._to_v1_1(policy))
+            value = None
+        else:
+            value = uncoerce(right)
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = choice
+        kwargs["value"] = value
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -589,9 +693,20 @@ class ArgumentAndedConditions(BaseConditions):
     )
     """The list of conditions that are ANDed together."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.AndedConditionsType
     _v1_2_type = xtce_1_2.ArgumentAndedConditionsType
     _v1_3_type = xtce_1_3.ArgumentAndedConditionsType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.AndedConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_1(c)
+            if isinstance(c, xtce_1_1.ComparisonCheckType)
+            else ArgumentOredConditions._from_v1_1(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -617,6 +732,11 @@ class ArgumentAndedConditions(BaseConditions):
             else ArgumentOredConditions._from_v1_3(c)
             for c in obj.choice
         ]
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_1(policy) for c in self.conditions]
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -697,9 +817,20 @@ class ArgumentOredConditions(BaseConditions):
     )
     """The list of argument conditions that are ORed together."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.OredConditionsType
     _v1_2_type = xtce_1_2.ArgumentOredConditionsType
     _v1_3_type = xtce_1_3.ArgumentOredConditionsType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.OredConditionsType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["conditions"] = [
+            ArgumentComparisonCheck._from_v1_1(c)
+            if isinstance(c, xtce_1_1.ComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_1(c)
+            for c in obj.choice
+        ]
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -725,6 +856,11 @@ class ArgumentOredConditions(BaseConditions):
             else ArgumentAndedConditions._from_v1_3(c)
             for c in obj.choice
         ]
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [c._to_v1_1(policy) for c in self.conditions]
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -807,9 +943,21 @@ class ArgumentBooleanExpression(XtceBaseModel):
         ArgumentComparisonCheck | ArgumentAndedConditions | ArgumentOredConditions
     )
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.BooleanExpressionType
     _v1_2_type = xtce_1_2.ArgumentBooleanExpressionType
     _v1_3_type = xtce_1_3.ArgumentBooleanExpressionType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.BooleanExpressionType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["comparison"] = (
+            ArgumentComparisonCheck._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.ComparisonCheckType)
+            else ArgumentAndedConditions._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.AndedConditionsType)
+            else ArgumentOredConditions._from_v1_1(unwrap(obj.choice))
+        )
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -837,6 +985,11 @@ class ArgumentBooleanExpression(XtceBaseModel):
             if isinstance(obj.choice, xtce_1_3.ArgumentAndedConditionsType)
             else ArgumentOredConditions._from_v1_3(unwrap(obj.choice))
         )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = self.comparison._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -953,9 +1106,25 @@ class ArgumentMatchCriteria(XtceBaseModel):
     )
     """The criteria used to match a particular condition."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.MatchCriteriaType
     _v1_2_type = xtce_1_2.ArgumentMatchCriteriaType
     _v1_3_type = xtce_1_3.ArgumentMatchCriteriaType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MatchCriteriaType) -> dict[str, Any]:
+        from .algorithm import ArgumentInputAlgorithm
+
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["criteria"] = (
+            [ArgumentComparison._from_v1_1(c) for c in obj.choice.comparison]
+            if isinstance(obj.choice, xtce_1_1.MatchCriteriaType.ComparisonList)
+            else ArgumentComparison._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.ComparisonType)
+            else ArgumentBooleanExpression._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.BooleanExpressionType)
+            else ArgumentInputAlgorithm._from_v1_1(unwrap(obj.choice))
+        )
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -990,6 +1159,17 @@ class ArgumentMatchCriteria(XtceBaseModel):
             else ArgumentBooleanExpression._from_v1_3(obj.choice)
             if isinstance(obj.choice, xtce_1_3.ArgumentBooleanExpressionType)
             else ArgumentInputAlgorithm._from_v1_3(unwrap(obj.choice))
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_1.MatchCriteriaType.ComparisonList(
+                comparison=[c._to_v1_1(policy) for c in self.criteria]
+            )
+            if isinstance(self.criteria, list)
+            else self.criteria._to_v1_1(policy)
         )
         return kwargs
 
@@ -1051,9 +1231,17 @@ class DiscreteLookup(MatchCriteria):
     value: int
     """The value to use when the lookup conditions are true."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.IntegerValueType.DiscreteLookupList.DiscreteLookup
     _v1_2_type = xtce_1_2.DiscreteLookupType
     _v1_3_type = xtce_1_3.DiscreteLookupType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.IntegerValueType.DiscreteLookupList.DiscreteLookup
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.DiscreteLookupType) -> dict[str, Any]:
@@ -1065,6 +1253,11 @@ class DiscreteLookup(MatchCriteria):
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.DiscreteLookupType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["value"] = obj.value
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["value"] = self.value
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1083,9 +1276,17 @@ class ArgumentDiscreteLookup(ArgumentMatchCriteria):
 
     value: int
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.IntegerValueType.DiscreteLookupList.DiscreteLookup
     _v1_2_type = xtce_1_2.ArgumentDiscreteLookupType
     _v1_3_type = xtce_1_3.ArgumentDiscreteLookupType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.IntegerValueType.DiscreteLookupList.DiscreteLookup
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["value"] = obj.value
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -1101,6 +1302,11 @@ class ArgumentDiscreteLookup(ArgumentMatchCriteria):
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["value"] = obj.value
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["value"] = self.value
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1126,7 +1332,7 @@ class DiscreteLookupList(XtceBaseModel):
     lookups: list[DiscreteLookup] = Field(default_factory=list)
     """A lookup condition set using discrete values from parameters."""
 
-    default_value: int
+    default_value: int | None = None
     """In the event that no lookup condition evaluates to true, then this value will be
     used.
 
@@ -1134,15 +1340,24 @@ class DiscreteLookupList(XtceBaseModel):
 
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.IntegerValueType.DiscreteLookupList
     _v1_2_type = xtce_1_2.DiscreteLookupListType
     _v1_3_type = xtce_1_3.DiscreteLookupListType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.IntegerValueType.DiscreteLookupList
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["lookups"] = [DiscreteLookup._from_v1_1(l) for l in obj.discrete_lookup]
+        kwargs["default_value"] = None
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.DiscreteLookupListType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["lookups"] = [DiscreteLookup._from_v1_2(l) for l in obj.discrete_lookup]
-        kwargs["default_value"] = 0
+        kwargs["default_value"] = None
         return kwargs
 
     @classmethod
@@ -1150,6 +1365,18 @@ class DiscreteLookupList(XtceBaseModel):
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["lookups"] = [DiscreteLookup._from_v1_3(l) for l in obj.discrete_lookup]
         kwargs["default_value"] = obj.default_value
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        self._enforce_unsupported_field(
+            field_name="default_value",
+            current_value=self.default_value,
+            target_version=XtceVersion.V1_1,
+            policy=policy,
+        )
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_1(policy) for l in self.lookups]
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1165,6 +1392,13 @@ class DiscreteLookupList(XtceBaseModel):
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        self._enforce_required_field(
+            field_name="default_value",
+            current_value=self.default_value,
+            target_version=XtceVersion.V1_3,
+            policy=policy,
+        )
+
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["discrete_lookup"] = [l._to_v1_3(policy) for l in self.lookups]
         kwargs["default_value"] = self.default_value
@@ -1183,14 +1417,25 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
     lookups: list[ArgumentDiscreteLookup] = Field(default_factory=list)
     """A lookup condition set using discrete values from arguments."""
 
-    default_value: int
+    default_value: int | None = None
     """In the event that no lookup condition evaluates to true, then this value will be
     used.
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.IntegerValueType.DiscreteLookupList
     _v1_2_type = xtce_1_2.ArgumentDiscreteLookupListType
     _v1_3_type = xtce_1_3.ArgumentDiscreteLookupListType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.IntegerValueType.DiscreteLookupList
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["lookups"] = [
+            ArgumentDiscreteLookup._from_v1_1(l) for l in obj.discrete_lookup
+        ]
+        kwargs["default_value"] = None
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -1200,7 +1445,7 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
         kwargs["lookups"] = [
             ArgumentDiscreteLookup._from_v1_2(l) for l in obj.discrete_lookup
         ]
-        kwargs["default_value"] = 0
+        kwargs["default_value"] = None
         return kwargs
 
     @classmethod
@@ -1212,6 +1457,18 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
             ArgumentDiscreteLookup._from_v1_3(l) for l in obj.discrete_lookup
         ]
         kwargs["default_value"] = obj.default_value
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        self._enforce_unsupported_field(
+            field_name="default_value",
+            current_value=self.default_value,
+            target_version=XtceVersion.V1_1,
+            policy=policy,
+        )
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["discrete_lookup"] = [l._to_v1_1(policy) for l in self.lookups]
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1227,6 +1484,13 @@ class ArgumentDiscreteLookupList(XtceBaseModel):
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        self._enforce_required_field(
+            field_name="default_value",
+            current_value=self.default_value,
+            target_version=XtceVersion.V1_3,
+            policy=policy,
+        )
+
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["discrete_lookup"] = [l._to_v1_3(policy) for l in self.lookups]
         kwargs["default_value"] = self.default_value

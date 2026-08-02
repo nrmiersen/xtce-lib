@@ -104,22 +104,26 @@ class BaseAlarm(XtceBaseModel, ABC):
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["name"] = self.name
-        kwargs["description"] = self.description
-        kwargs["ancillary_data"] = (
-            [ad._to_v1_2_kwargs(policy) for ad in self.ancillary_data]
+        kwargs["short_description"] = self.description
+        kwargs["ancillary_data_set"] = (
+            xtce_1_2.AncillaryDataSetType(
+                ancillary_data=[ad._to_v1_2(policy) for ad in self.ancillary_data]
+            )
             if self.ancillary_data
-            else []
+            else None
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["name"] = self.name
-        kwargs["description"] = self.description
-        kwargs["ancillary_data"] = (
-            [ad._to_v1_3_kwargs(policy) for ad in self.ancillary_data]
+        kwargs["short_description"] = self.description
+        kwargs["ancillary_data_set"] = (
+            xtce_1_3.AncillaryDataSetType(
+                ancillary_data=[ad._to_v1_3(policy) for ad in self.ancillary_data]
+            )
             if self.ancillary_data
-            else []
+            else None
         )
         return kwargs
 
@@ -258,12 +262,12 @@ class CustomAlarm(BaseAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["input_algorithm"] = self.input_algorithm._to_v1_2_kwargs(policy)
+        kwargs["input_algorithm"] = self.input_algorithm._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["input_algorithm"] = self.input_algorithm._to_v1_3_kwargs(policy)
+        kwargs["input_algorithm"] = self.input_algorithm._to_v1_3(policy)
         return kwargs
 
 
@@ -316,6 +320,7 @@ class Alarm(BaseAlarm, ABC):
             if isinstance(obj.choice, xtce_1_1.InputAlgorithmType)
             else None
         )
+        kwargs["min_violations"] = obj.min_violations
         return kwargs
 
     @classmethod
@@ -351,9 +356,9 @@ class Alarm(BaseAlarm, ABC):
         # xtce_1_1.AlarmType has no parents
         kwargs = {}
         kwargs["choice"] = (
-            self.alarm._to_v1_1_kwargs(policy)
+            self.alarm._to_v1_1(policy)
             if isinstance(self.alarm, AlarmConditions)
-            else self.alarm.input_algorithm._to_v1_1_kwargs(policy)
+            else self.alarm.input_algorithm._to_v1_1(policy)
             if isinstance(self.alarm, CustomAlarm)
             else None
         )
@@ -371,19 +376,19 @@ class Alarm(BaseAlarm, ABC):
 
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["choice"] = (
-            self.alarm._to_v1_2_kwargs(policy) if self.alarm is not None else None
+            self.alarm._to_v1_2(policy) if self.alarm is not None else None
         )
         kwargs["min_violations"] = self.min_violations
-        kwargs["min_conformances"] = self.min_conformances
+        kwargs["min_conformance"] = self.min_conformances
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["choice"] = (
-            self.alarm._to_v1_3_kwargs(policy) if self.alarm is not None else None
+            self.alarm._to_v1_3(policy) if self.alarm is not None else None
         )
         kwargs["min_violations"] = self.min_violations
-        kwargs["min_conformances"] = self.min_conformances
+        kwargs["min_conformance"] = self.min_conformances
         kwargs["disabled"] = self.disabled
         return kwargs
 
@@ -515,6 +520,7 @@ class AlarmRanges(BaseAlarm):
             if obj.severe_range is not None
             else None
         )
+        kwargs["range_form"] = RangeForm(obj.range_form.value)
         return kwargs
 
     @classmethod
@@ -545,6 +551,7 @@ class AlarmRanges(BaseAlarm):
             if obj.severe_range is not None
             else None
         )
+        kwargs["range_form"] = RangeForm(obj.range_form.value)
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -558,27 +565,25 @@ class AlarmRanges(BaseAlarm):
 
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["watch_range"] = (
-            self.watch_range._to_v1_1_kwargs(policy)
-            if self.watch_range is not None
-            else None
+            self.watch_range._to_v1_1(policy) if self.watch_range is not None else None
         )
         kwargs["warning_range"] = (
-            self.warning_range._to_v1_1_kwargs(policy)
+            self.warning_range._to_v1_1(policy)
             if self.warning_range is not None
             else None
         )
         kwargs["distress_range"] = (
-            self.distress_range._to_v1_1_kwargs(policy)
+            self.distress_range._to_v1_1(policy)
             if self.distress_range is not None
             else None
         )
         kwargs["critical_range"] = (
-            self.critical_range._to_v1_1_kwargs(policy)
+            self.critical_range._to_v1_1(policy)
             if self.critical_range is not None
             else None
         )
         kwargs["severe_range"] = (
-            self.severe_range._to_v1_1_kwargs(policy)
+            self.severe_range._to_v1_1(policy)
             if self.severe_range is not None
             else None
         )
@@ -587,59 +592,57 @@ class AlarmRanges(BaseAlarm):
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["watch_range"] = (
-            self.watch_range._to_v1_2_kwargs(policy)
-            if self.watch_range is not None
-            else None
+            self.watch_range._to_v1_2(policy) if self.watch_range is not None else None
         )
         kwargs["warning_range"] = (
-            self.warning_range._to_v1_2_kwargs(policy)
+            self.warning_range._to_v1_2(policy)
             if self.warning_range is not None
             else None
         )
         kwargs["distress_range"] = (
-            self.distress_range._to_v1_2_kwargs(policy)
+            self.distress_range._to_v1_2(policy)
             if self.distress_range is not None
             else None
         )
         kwargs["critical_range"] = (
-            self.critical_range._to_v1_2_kwargs(policy)
+            self.critical_range._to_v1_2(policy)
             if self.critical_range is not None
             else None
         )
         kwargs["severe_range"] = (
-            self.severe_range._to_v1_2_kwargs(policy)
+            self.severe_range._to_v1_2(policy)
             if self.severe_range is not None
             else None
         )
+        kwargs["range_form"] = xtce_1_2.RangeFormType(self.range_form.value)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["watch_range"] = (
-            self.watch_range._to_v1_3_kwargs(policy)
-            if self.watch_range is not None
-            else None
+            self.watch_range._to_v1_3(policy) if self.watch_range is not None else None
         )
         kwargs["warning_range"] = (
-            self.warning_range._to_v1_3_kwargs(policy)
+            self.warning_range._to_v1_3(policy)
             if self.warning_range is not None
             else None
         )
         kwargs["distress_range"] = (
-            self.distress_range._to_v1_3_kwargs(policy)
+            self.distress_range._to_v1_3(policy)
             if self.distress_range is not None
             else None
         )
         kwargs["critical_range"] = (
-            self.critical_range._to_v1_3_kwargs(policy)
+            self.critical_range._to_v1_3(policy)
             if self.critical_range is not None
             else None
         )
         kwargs["severe_range"] = (
-            self.severe_range._to_v1_3_kwargs(policy)
+            self.severe_range._to_v1_3(policy)
             if self.severe_range is not None
             else None
         )
+        kwargs["range_form"] = xtce_1_3.RangeFormType(self.range_form.value)
         return kwargs
 
 
@@ -703,24 +706,28 @@ class ChangeAlarmRanges(AlarmRanges):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["change_type"] = self.change_type.value
-        kwargs["change_basis"] = self.change_basis.value
+        kwargs["change_type"] = xtce_1_1.ChangeAlarmRangesChangeType(
+            self.change_type.value
+        )
+        kwargs["change_basis"] = xtce_1_1.ChangeAlarmRangesChangeBasis(
+            self.change_basis.value
+        )
         kwargs["span_of_interest_in_samples"] = self.span_of_interest_samples
         kwargs["span_of_interest_in_seconds"] = self.span_of_interest_seconds
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["change_type"] = self.change_type.value
-        kwargs["change_basis"] = self.change_basis.value
+        kwargs["change_type"] = xtce_1_2.ChangeSpanType(self.change_type.value)
+        kwargs["change_basis"] = xtce_1_2.ChangeBasisType(self.change_basis.value)
         kwargs["span_of_interest_in_samples"] = self.span_of_interest_samples
         kwargs["span_of_interest_in_seconds"] = self.span_of_interest_seconds
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["change_type"] = self.change_type.value
-        kwargs["change_basis"] = self.change_basis.value
+        kwargs["change_type"] = xtce_1_3.ChangeSpanType(self.change_type.value)
+        kwargs["change_basis"] = xtce_1_3.ChangeBasisType(self.change_basis.value)
         kwargs["span_of_interest_in_samples"] = self.span_of_interest_samples
         kwargs["span_of_interest_in_seconds"] = self.span_of_interest_seconds
         return kwargs
@@ -783,12 +790,12 @@ class AlarmMultiRanges(BaseAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["ranges"] = [r._to_v1_2() for r in self.ranges]
+        kwargs["range"] = [r._to_v1_2(policy) for r in self.ranges]
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["ranges"] = [r._to_v1_3() for r in self.ranges]
+        kwargs["range"] = [r._to_v1_3(policy) for r in self.ranges]
         return kwargs
 
 
@@ -812,39 +819,39 @@ class StringAlarmLevel(XtceBaseModel):
         cls, obj: xtce_1_1.StringAlarmType.StringAlarmList.StringAlarm
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["match_pattern"] = obj.match_pattern
         return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.StringAlarmLevelType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["match_pattern"] = obj.match_pattern
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.StringAlarmLevelType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["match_pattern"] = obj.match_pattern
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["level"] = xtce_1_1.AlarmLevels[self.level]
+        kwargs["alarm_level"] = xtce_1_1.AlarmLevels(self.level.value)
         kwargs["match_pattern"] = self.match_pattern
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["level"] = xtce_1_2.ConcernLevelsType[self.level]
+        kwargs["alarm_level"] = xtce_1_2.ConcernLevelsType(self.level.value)
         kwargs["match_pattern"] = self.match_pattern
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["level"] = xtce_1_3.ConcernLevelsType[self.level]
+        kwargs["alarm_level"] = xtce_1_3.ConcernLevelsType(self.level.value)
         kwargs["match_pattern"] = self.match_pattern
         return kwargs
 
@@ -870,7 +877,7 @@ class EnumerationAlarmLevel(XtceBaseModel):
         cls, obj: xtce_1_1.EnumerationAlarmType.EnumerationAlarmList.EnumerationAlarm
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["enumeration_label"] = obj.enumeration_value
         return kwargs
 
@@ -879,7 +886,7 @@ class EnumerationAlarmLevel(XtceBaseModel):
         cls, obj: xtce_1_2.EnumerationAlarmLevelType
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["enumeration_label"] = obj.enumeration_label
         return kwargs
 
@@ -888,25 +895,25 @@ class EnumerationAlarmLevel(XtceBaseModel):
         cls, obj: xtce_1_3.EnumerationAlarmLevelType
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["level"] = ConcernLevel[obj.alarm_level.value]
+        kwargs["level"] = ConcernLevel(obj.alarm_level.value)
         kwargs["enumeration_label"] = obj.enumeration_label
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["level"] = xtce_1_1.AlarmLevels[self.level]
+        kwargs["alarm_level"] = xtce_1_1.AlarmLevels(self.level.value)
         kwargs["enumeration_value"] = self.enumeration_label
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["level"] = xtce_1_2.ConcernLevelsType[self.level]
+        kwargs["alarm_level"] = xtce_1_2.ConcernLevelsType(self.level.value)
         kwargs["enumeration_label"] = self.enumeration_label
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["level"] = xtce_1_3.ConcernLevelsType[self.level]
+        kwargs["alarm_level"] = xtce_1_3.ConcernLevelsType(self.level.value)
         kwargs["enumeration_label"] = self.enumeration_label
         return kwargs
 
@@ -996,23 +1003,32 @@ class NumericAlarm(Alarm):
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["name"] = self.name
+        kwargs["static_alarm_ranges"] = (
+            self.static_alarm_ranges._to_v1_1(policy)
+            if self.static_alarm_ranges is not None
+            else None
+        )
+        kwargs["change_alarm_ranges"] = (
+            self.change_alarm_ranges._to_v1_1(policy)
+            if self.change_alarm_ranges is not None
+            else None
+        )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["static_alarm_ranges"] = (
-            self.static_alarm_ranges._to_v1_2_kwargs(policy)
+            self.static_alarm_ranges._to_v1_2(policy)
             if self.static_alarm_ranges is not None
             else None
         )
         kwargs["change_alarm_ranges"] = (
-            self.change_alarm_ranges._to_v1_2_kwargs(policy)
+            self.change_alarm_ranges._to_v1_2(policy)
             if self.change_alarm_ranges is not None
             else None
         )
         kwargs["alarm_multi_ranges"] = (
-            self.alarm_multi_ranges._to_v1_2_kwargs(policy)
+            self.alarm_multi_ranges._to_v1_2(policy)
             if self.alarm_multi_ranges is not None
             else None
         )
@@ -1021,17 +1037,17 @@ class NumericAlarm(Alarm):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["static_alarm_ranges"] = (
-            self.static_alarm_ranges._to_v1_3_kwargs(policy)
+            self.static_alarm_ranges._to_v1_3(policy)
             if self.static_alarm_ranges is not None
             else None
         )
         kwargs["change_alarm_ranges"] = (
-            self.change_alarm_ranges._to_v1_3_kwargs(policy)
+            self.change_alarm_ranges._to_v1_3(policy)
             if self.change_alarm_ranges is not None
             else None
         )
         kwargs["alarm_multi_ranges"] = (
-            self.alarm_multi_ranges._to_v1_3_kwargs(policy)
+            self.alarm_multi_ranges._to_v1_3(policy)
             if self.alarm_multi_ranges is not None
             else None
         )
@@ -1058,46 +1074,60 @@ class StringAlarm(Alarm):
     @classmethod
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.StringAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
-        kwargs["alarms"] = [StringAlarmLevel._from_v1_1(a) for a in cls.alarms]
-        kwargs["default_level"] = ConcernLevel[obj.default_alarm_level.value]
+        kwargs["alarms"] = [
+            StringAlarmLevel._from_v1_1(a) for a in obj.string_alarm_list.string_alarm
+        ]
+        kwargs["default_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.StringAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
-        kwargs["alarms"] = [StringAlarmLevel._from_v1_2(a) for a in cls.alarms]
-        kwargs["default_level"] = ConcernLevel[obj.default_alarm_level.value]
+        kwargs["alarms"] = (
+            [StringAlarmLevel._from_v1_2(a) for a in obj.string_alarm_list.string_alarm]
+            if obj.string_alarm_list is not None
+            else []
+        )
+        kwargs["default_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.StringAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["alarms"] = [StringAlarmLevel._from_v1_3(a) for a in cls.alarms]
-        kwargs["default_level"] = ConcernLevel[obj.default_alarm_level.value]
+        kwargs["alarms"] = (
+            [StringAlarmLevel._from_v1_3(a) for a in obj.string_alarm_list.string_alarm]
+            if obj.string_alarm_list is not None
+            else []
+        )
+        kwargs["default_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["string_alarm_list"] = xtce_1_1.StringAlarmType.StringAlarmList(
-            string_alarm=[a._to_v1_1() for a in self.alarms]
+            string_alarm=[a._to_v1_1(policy) for a in self.alarms]
         )
-        kwargs["default_alarm_level"] = self.default_level
+        kwargs["default_alarm_level"] = xtce_1_1.AlarmLevels(self.default_level.value)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["string_alarm_list"] = xtce_1_2.StringAlarmListType(
-            string_alarm=[a._to_v1_2() for a in self.alarms]
+            string_alarm=[a._to_v1_2(policy) for a in self.alarms]
         )
-        kwargs["default_alarm_level"] = self.default_level
+        kwargs["default_alarm_level"] = xtce_1_2.ConcernLevelsType(
+            self.default_level.value
+        )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["string_alarm_list"] = xtce_1_3.StringAlarmListType(
-            string_alarm=[a._to_v1_3() for a in self.alarms]
+            string_alarm=[a._to_v1_3(policy) for a in self.alarms]
         )
-        kwargs["default_alarm_level"] = self.default_level
+        kwargs["default_alarm_level"] = xtce_1_3.ConcernLevelsType(
+            self.default_level.value
+        )
         return kwargs
 
 
@@ -1182,9 +1212,10 @@ class EnumerationAlarm(Alarm):
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.EnumerationAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
         kwargs["alarms"] = [
-            EnumerationAlarmLevel._from_v1_1_kwargs(alarm)
+            EnumerationAlarmLevel._from_v1_1(alarm)
             for alarm in obj.enumeration_alarm_list.enumeration_alarm
         ]
+        kwargs["default_alarm_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     @classmethod
@@ -1192,13 +1223,13 @@ class EnumerationAlarm(Alarm):
         kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["alarms"] = (
             [
-                EnumerationAlarmLevel._from_v1_2_kwargs(alarm)
+                EnumerationAlarmLevel._from_v1_2(alarm)
                 for alarm in obj.enumeration_alarm_list.enumeration_alarm
             ]
             if obj.enumeration_alarm_list is not None
             else []
         )
-        kwargs["default_alarm_level"] = ConcernLevel[obj.default_alarm_level.value]
+        kwargs["default_alarm_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     @classmethod
@@ -1206,43 +1237,45 @@ class EnumerationAlarm(Alarm):
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["alarms"] = (
             [
-                EnumerationAlarmLevel._from_v1_3_kwargs(alarm)
+                EnumerationAlarmLevel._from_v1_3(alarm)
                 for alarm in obj.enumeration_alarm_list.enumeration_alarm
             ]
             if obj.enumeration_alarm_list is not None
             else []
         )
-        kwargs["default_alarm_level"] = ConcernLevel[obj.default_alarm_level.value]
+        kwargs["default_alarm_level"] = ConcernLevel(obj.default_alarm_level.value)
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["alarms"] = xtce_1_1.EnumerationAlarmType.EnumerationAlarmList(
-            enumeration_alarm=[alarm._to_v1_1(policy) for alarm in self.alarms]
+        kwargs["enumeration_alarm_list"] = (
+            xtce_1_1.EnumerationAlarmType.EnumerationAlarmList(
+                enumeration_alarm=[alarm._to_v1_1(policy) for alarm in self.alarms]
+            )
         )
-        kwargs["default_alarm_level"] = xtce_1_1.AlarmLevels[
+        kwargs["default_alarm_level"] = xtce_1_1.AlarmLevels(
             self.default_alarm_level.value
-        ]
+        )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["alarms"] = xtce_1_2.EnumerationAlarmListType(
+        kwargs["enumeration_alarm_list"] = xtce_1_2.EnumerationAlarmListType(
             enumeration_alarm=[alarm._to_v1_2(policy) for alarm in self.alarms]
         )
-        kwargs["default_alarm_level"] = xtce_1_2.ConcernLevelsType[
+        kwargs["default_alarm_level"] = xtce_1_2.ConcernLevelsType(
             self.default_alarm_level.value
-        ]
+        )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["alarms"] = xtce_1_3.EnumerationAlarmListType(
+        kwargs["enumeration_alarm_list"] = xtce_1_3.EnumerationAlarmListType(
             enumeration_alarm=[alarm._to_v1_3(policy) for alarm in self.alarms]
         )
-        kwargs["default_alarm_level"] = xtce_1_3.ConcernLevelsType[
+        kwargs["default_alarm_level"] = xtce_1_3.ConcernLevelsType(
             self.default_alarm_level.value
-        ]
+        )
         return kwargs
 
 
@@ -1267,16 +1300,20 @@ class TimeAlarm(Alarm):
         # ChangePerSecondAlarmRanges are children of TimeAlarmType, but only inherit
         # from AlarmRangesType, so time_units has to be set manually
         static_alarm_ranges = (
-            TimeAlarmRanges._from_v1_1(obj.static_alarm_ranges)
+            TimeAlarmRanges(
+                **TimeAlarmRanges._from_v1_1_kwargs(obj.static_alarm_ranges)
+            )
             if obj.static_alarm_ranges is not None
             else None
         )
         if static_alarm_ranges is not None and obj.static_alarm_ranges is not None:
-            static_alarm_ranges.time_units = TimeUnits[
-                obj.static_alarm_ranges.time_units.value
-            ]
+            static_alarm_ranges.time_units = TimeUnits._from_v1_1(
+                obj.static_alarm_ranges.time_units
+            )
         change_per_second_alarm_ranges = (
-            TimeAlarmRanges._from_v1_1(obj.change_per_second_alarm_ranges)
+            TimeAlarmRanges(
+                **TimeAlarmRanges._from_v1_1_kwargs(obj.change_per_second_alarm_ranges)
+            )
             if obj.change_per_second_alarm_ranges is not None
             else None
         )
@@ -1284,9 +1321,9 @@ class TimeAlarm(Alarm):
             change_per_second_alarm_ranges is not None
             and obj.change_per_second_alarm_ranges is not None
         ):
-            change_per_second_alarm_ranges.time_units = TimeUnits[
-                obj.change_per_second_alarm_ranges.time_units.value
-            ]
+            change_per_second_alarm_ranges.time_units = TimeUnits._from_v1_1(
+                obj.change_per_second_alarm_ranges.time_units
+            )
 
         kwargs = super()._from_v1_1_kwargs(obj)
         kwargs["static_alarm_ranges"] = static_alarm_ranges
@@ -1330,7 +1367,7 @@ class TimeAlarm(Alarm):
         static_alarm_ranges = (
             xtce_1_1.TimeAlarmType.StaticAlarmRanges(
                 **self.static_alarm_ranges._to_v1_1_kwargs(policy),
-                time_units=xtce_1_1.TimeUnits[self.static_alarm_ranges.time_units],
+                time_units=self.static_alarm_ranges.time_units._to_v1_1(policy),
             )
             if self.static_alarm_ranges is not None
             else None
@@ -1338,9 +1375,9 @@ class TimeAlarm(Alarm):
         change_per_second_alarm_ranges = (
             xtce_1_1.TimeAlarmType.ChangePerSecondAlarmRanges(
                 **self.change_per_second_alarm_ranges._to_v1_1_kwargs(policy),
-                time_units=xtce_1_1.TimeUnits[
-                    self.change_per_second_alarm_ranges.time_units
-                ],
+                time_units=self.change_per_second_alarm_ranges.time_units._to_v1_1(
+                    policy
+                ),
             )
             if self.change_per_second_alarm_ranges is not None
             else None
@@ -1353,12 +1390,12 @@ class TimeAlarm(Alarm):
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["static_alarm_ranges"] = (
-            self.static_alarm_ranges._to_v1_2_kwargs(policy)
+            self.static_alarm_ranges._to_v1_2(policy)
             if self.static_alarm_ranges is not None
             else None
         )
         kwargs["change_per_second_alarm_ranges"] = (
-            self.change_per_second_alarm_ranges._to_v1_2_kwargs(policy)
+            self.change_per_second_alarm_ranges._to_v1_2(policy)
             if self.change_per_second_alarm_ranges is not None
             else None
         )
@@ -1367,12 +1404,12 @@ class TimeAlarm(Alarm):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["static_alarm_ranges"] = (
-            self.static_alarm_ranges._to_v1_3_kwargs(policy)
+            self.static_alarm_ranges._to_v1_3(policy)
             if self.static_alarm_ranges is not None
             else None
         )
         kwargs["change_per_second_alarm_ranges"] = (
-            self.change_per_second_alarm_ranges._to_v1_3_kwargs(policy)
+            self.change_per_second_alarm_ranges._to_v1_3(policy)
             if self.change_per_second_alarm_ranges is not None
             else None
         )
@@ -1411,17 +1448,17 @@ class NumericContextAlarm(NumericAlarm):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs
 
 
@@ -1449,12 +1486,12 @@ class StringContextAlarm(StringAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs
 
 
@@ -1470,28 +1507,24 @@ class BinaryContextAlarm(BinaryAlarm):
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.BinaryContextAlarmType) -> dict[str, Any]:
-        # XTCE 1.2 inheritance chain doesn't have BinaryAlarmType, need to skip it
-        kwargs = super(Alarm, cls)._from_v1_2_kwargs(obj)
-        kwargs["context_match"] = ContextMatch._from_v1_2_kwargs(obj.context_match)
+        kwargs = super(BinaryAlarm, cls)._from_v1_2_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_2(obj.context_match)
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.BinaryContextAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["context_match"] = ContextMatch._from_v1_3_kwargs(obj.context_match)
+        kwargs["context_match"] = ContextMatch._from_v1_3(obj.context_match)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
-        # XTCE 1.2 inheritance chain doesn't have BinaryAlarmType, don't really need to
-        # skip it here cause BinaryAlarm and Alarm are currently the same, but if
-        # attributes are added to BinaryAlarm in the future, this will be required
-        kwargs = super(Alarm, self)._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs = super(BinaryAlarm, self)._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs
 
 
@@ -1521,12 +1554,12 @@ class BooleanContextAlarm(BooleanAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs
 
 
@@ -1560,12 +1593,12 @@ class EnumerationContextAlarm(EnumerationAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs
 
 
@@ -1593,10 +1626,10 @@ class TimeContextAlarm(TimeAlarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["context_match"] = self.context_match._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
         return kwargs

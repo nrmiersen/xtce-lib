@@ -25,7 +25,7 @@ class Endian(StrEnum):
     LITTLE = "leastSignificantByteFirst"
 
 
-class FloatEncoding(StrEnum):
+class FloatEncoding(XtceBaseEnum):
     """The encoding of a floating point value."""
 
     IEEE754_1985 = "IEEE754_1985"
@@ -35,8 +35,45 @@ class FloatEncoding(StrEnum):
     IBM = "IBM"
     TI = "TI"
 
+    @classmethod
+    def _from_v1_1(
+        cls: type[Self], encoding: xtce_1_1.FloatDataEncodingTypeEncoding
+    ) -> Self:
+        return cls(encoding.value)
 
-class IntegerEncoding(StrEnum):
+    @classmethod
+    def _from_v1_2(cls: type[Self], encoding: xtce_1_2.FloatEncodingType) -> Self:
+        return cls(encoding.value)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], encoding: xtce_1_3.FloatEncodingType) -> Self:
+        return cls(encoding.value)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.FloatDataEncodingTypeEncoding:
+        # XTCE 1.1 only supports IEEE754_1985 and MILSTD_1750A
+        try:
+            return xtce_1_1.FloatDataEncodingTypeEncoding(self.value)
+        except ValueError:
+            return self._enforce_unmapped_value(
+                XtceVersion.V1_1,
+                policy,
+                fallback=xtce_1_1.FloatDataEncodingTypeEncoding.IEEE754_1985,
+            )
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.FloatEncodingType:
+        return xtce_1_2.FloatEncodingType(self.value)
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.FloatEncodingType:
+        return xtce_1_3.FloatEncodingType(self.value)
+
+
+class IntegerEncoding(XtceBaseEnum):
     """The encoding of an integer value."""
 
     UNSIGNED = "unsigned"
@@ -46,42 +83,131 @@ class IntegerEncoding(StrEnum):
     BCD = "BCD"
     PACKED_BCD = "packedBCD"
 
+    @classmethod
+    def _from_v1_1(
+        cls: type[Self], encoding: xtce_1_1.IntegerDataEncodingTypeEncoding
+    ) -> Self:
+        # XTCE 1.1 misspells "complement" as "compliment"
+        name = {
+            "twosCompliment": "TWOS_COMPLEMENT",
+            "onesCompliment": "ONES_COMPLEMENT",
+        }.get(encoding.value)
+        return cls[name] if name is not None else cls(encoding.value)
 
-class StringEncoding(StrEnum):
-    """The encoding of a string value.
+    @classmethod
+    def _from_v1_2(cls: type[Self], encoding: xtce_1_2.IntegerEncodingType) -> Self:
+        return cls(encoding.value)
 
-    Attributes:
-        US_ASCII:
-        ISO_8859_1:
-        WINDOWS_1252:
-        UTF_8:
-        UTF_16: With UTF-16, encoded bits must be prepended with a Byte Order
-            Mark. This mark indicates whether the data is encoded in big or
-            little endian.
-        UTF_16_LE: With UTF-16LE, encoded bits will always be represented as
-            little endian. Bits are not prepended with a Byte Order Mark.
-        UTF_16_BE: With UTF-16BE, encoded bits will always be represented as big
-            endian. Bits are not prepended with a Byte Order Mark.
-        UTF_32: With UTF-32, encoded bits must be prepended with a Byte Order
-            Mark. This mark indicates whether the data is encoded in big or
-            little endian.
-        UTF_32_LE: With UTF-32LE, encoded bits will always be represented as
-            little endian. Bits are not prepended with a Byte Order Mark.
-        UTF_32_BE: With UTF-32BE, encoded bits will always be represented as big
-            endian. Bits are not prepended with a Byte Order Mark.
+    @classmethod
+    def _from_v1_3(cls: type[Self], encoding: xtce_1_3.IntegerEncodingType) -> Self:
+        return cls(encoding.value)
 
-    """
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.IntegerDataEncodingTypeEncoding:
+        # XTCE 1.1 misspells "complement" as "compliment"
+        name = {
+            "TWOS_COMPLEMENT": "TWOS_COMPLIMENT",
+            "ONES_COMPLEMENT": "ONES_COMPLIMENT",
+        }.get(self.name, self.name)
+        return xtce_1_1.IntegerDataEncodingTypeEncoding[name]
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.IntegerEncodingType:
+        return xtce_1_2.IntegerEncodingType(self.value)
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.IntegerEncodingType:
+        return xtce_1_3.IntegerEncodingType(self.value)
+
+
+class StringEncoding(XtceBaseEnum):
+    """The encoding of a string value."""
 
     US_ASCII = "US-ASCII"
     ISO_8859_1 = "ISO-8859-1"
     WINDOWS_1252 = "Windows-1252"
     UTF_8 = "UTF-8"
     UTF_16 = "UTF-16"
+    """Encoded bits must be prepended with a byte order mark.
+
+    The byte order mark indicates if the encoding is big or little endian.
+
+    """
+
     UTF_16_LE = "UTF-16LE"
+    """Encoded bits will always be represented as little endian.
+
+    Bits are not prepended with a byte order mark.
+
+    """
+
     UTF_16_BE = "UTF-16BE"
+    """Encoded bits will always be represented as big endian.
+
+    Bits are not prepended with a byte order mark.
+
+    """
+
     UTF_32 = "UTF-32"
+    """Encoded bits must be prepended with a byte order mark.
+
+    The byte order mark indicates if the encoding is big or little endian.
+
+    """
+
     UTF_32_LE = "UTF-32LE"
+    """Encoded bits will always be represented as little endian.
+
+    Bits are not prepended with a byte order mark.
+
+    """
+
     UTF_32_BE = "UTF-32BE"
+    """Encoded bits will always be represented as big endian.
+
+    Bits are not prepended with a byte order mark.
+
+    """
+
+    @classmethod
+    def _from_v1_1(
+        cls: type[Self], encoding: xtce_1_1.StringDataEncodingTypeEncoding
+    ) -> Self:
+        return cls(encoding.value)
+
+    @classmethod
+    def _from_v1_2(cls: type[Self], encoding: xtce_1_2.StringEncodingType) -> Self:
+        return cls(encoding.value)
+
+    @classmethod
+    def _from_v1_3(cls: type[Self], encoding: xtce_1_3.StringEncodingType) -> Self:
+        return cls(encoding.value)
+
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.StringDataEncodingTypeEncoding:
+        # XTCE 1.1 only has UTF-8 and UTF-16
+        try:
+            return xtce_1_1.StringDataEncodingTypeEncoding[self.name]
+        except KeyError:
+            return self._enforce_unmapped_value(
+                XtceVersion.V1_1,
+                policy,
+                fallback=xtce_1_1.StringDataEncodingTypeEncoding.UTF_8,
+            )
+
+    def _to_v1_2(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_2.StringEncodingType:
+        return xtce_1_2.StringEncodingType[self.name]
+
+    def _to_v1_3(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_3.StringEncodingType:
+        return xtce_1_3.StringEncodingType[self.name]
 
 
 class SystemType(StrEnum):
@@ -235,6 +361,18 @@ class TimeUnits(XtceBaseEnum):
     YEARS = "years"
 
     @classmethod
+    def _from_v1_1(cls: type[Self], unit: xtce_1_1.TimeUnits) -> Self:
+        mapping = {
+            xtce_1_1.TimeUnits.SECONDS: "seconds",
+            xtce_1_1.TimeUnits.PICO_SECONDS: "picoseconds",
+            xtce_1_1.TimeUnits.DAYS: "days",
+            xtce_1_1.TimeUnits.MONTHS: "months",
+            xtce_1_1.TimeUnits.YEARS: "years",
+        }
+
+        return cls(mapping[unit])
+
+    @classmethod
     def _from_v1_2(cls: type[Self], unit: xtce_1_2.TimeUnitsType) -> Self:
         mapping = {
             xtce_1_2.TimeUnitsType.SECONDS: "seconds",
@@ -250,6 +388,26 @@ class TimeUnits(XtceBaseEnum):
     def _from_v1_3(cls: type[Self], unit: xtce_1_3.TimeUnitsType) -> Self:
         return cls(unit.value)
 
+    def _to_v1_1(
+        self, policy: DowngradePolicy = DowngradePolicy.STRICT
+    ) -> xtce_1_1.TimeUnits:
+        mapping = {
+            TimeUnits.SECONDS: xtce_1_1.TimeUnits.SECONDS,
+            TimeUnits.PICOSECONDS: xtce_1_1.TimeUnits.PICO_SECONDS,
+            TimeUnits.DAYS: xtce_1_1.TimeUnits.DAYS,
+            TimeUnits.MONTHS: xtce_1_1.TimeUnits.MONTHS,
+            TimeUnits.YEARS: xtce_1_1.TimeUnits.YEARS,
+        }
+
+        try:
+            return mapping[self]
+        except KeyError:
+            return self._enforce_unmapped_value(
+                XtceVersion.V1_1,
+                policy,
+                fallback=xtce_1_1.TimeUnits.SECONDS,
+            )
+
     def _to_v1_2(
         self, policy: DowngradePolicy = DowngradePolicy.STRICT
     ) -> xtce_1_2.TimeUnitsType:
@@ -261,9 +419,9 @@ class TimeUnits(XtceBaseEnum):
             TimeUnits.YEARS: xtce_1_2.TimeUnitsType.YEARS,
         }
 
-        if self in mapping:
+        try:
             return mapping[self]
-        else:
+        except KeyError:
             return self._enforce_unmapped_value(
                 XtceVersion.V1_2,
                 policy,
@@ -333,9 +491,9 @@ class TimeAssociationUnits(XtceBaseEnum):
             TimeAssociationUnits.YEARS: xtce_1_2.TimeAssociationUnitType.JULIAN_YEAR,
         }
 
-        if self in mapping:
+        try:
             return mapping[self]
-        else:
+        except KeyError:
             return self._enforce_unmapped_value(
                 XtceVersion.V1_2,
                 policy,
@@ -766,7 +924,6 @@ class ComparisonOperator(StrEnum):
 
     EQ = "=="
     """Equal to."""
-
     NEQ = "!="
     """Not equal to."""
 

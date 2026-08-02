@@ -406,9 +406,26 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
     )
     """The list of input parameters or arguments for the input algorithm."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.InputAlgorithmType
     _v1_2_type = xtce_1_2.ArgumentInputAlgorithmType
     _v1_3_type = xtce_1_3.ArgumentInputAlgorithmType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.InputAlgorithmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["inputs"] = (
+            [
+                InputParameterInstanceRef._from_v1_1(inp)
+                if isinstance(
+                    inp, xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
+                )
+                else Constant._from_v1_1(inp)
+                for inp in obj.input_set.choice
+            ]
+            if obj.input_set and obj.input_set.choice
+            else []
+        )
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -443,6 +460,29 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
             ]
             if obj.input_set and obj.input_set.choice
             else []
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        inputs = [
+            self._enforce_restricted_type(
+                field_name=f"inputs[{i}]",
+                current_value=inp,
+                allowed_types=(InputParameterInstanceRef, Constant),
+                target_version=XtceVersion.V1_1,
+                policy=policy,
+                require_match=True,
+            )
+            for i, inp in enumerate(self.inputs)
+        ]
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["input_set"] = (
+            xtce_1_1.InputAlgorithmType.InputSet(
+                choice=[inp._to_v1_1(policy) for inp in inputs]
+            )
+            if self.inputs
+            else None
         )
         return kwargs
 

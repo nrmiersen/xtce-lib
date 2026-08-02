@@ -1,11 +1,11 @@
 """Xtce-lib exceptions."""
 
-from enum import Enum
+from enum import StrEnum
 
 from xtce_lib.common.xtce_version import XtceVersion
 
 
-class DowngradePolicy(str, Enum):
+class DowngradePolicy(StrEnum):
     """Defines how the library handles data loss when exporting to older XTCE
     versions.
     """

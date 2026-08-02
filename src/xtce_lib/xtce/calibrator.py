@@ -7,7 +7,7 @@ from pydantic import Field, field_validator, model_validator
 
 from xtce_lib.common.xtce_path import XtcePath
 from xtce_lib.common.xtce_version import XtceVersion
-from xtce_lib.exceptions import DowngradePolicy, XtceUnsupportedError
+from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
@@ -323,6 +323,10 @@ class ArgumentMathOperation(XtceBaseModel):
         | ArgumentInstanceRef
     ] = Field(default_factory=list)
 
+    _v1_1_type = None
+    _v1_2_type = None
+    _v1_3_type = xtce_1_3.ArgumentMathOperationType
+
     @model_validator(mode="after")
     def validate_rpn_sequence(self) -> Self:
         """Validate that the math operation sequence is a valid RPN expression."""
@@ -358,71 +362,53 @@ class ArgumentMathOperation(XtceBaseModel):
         return self
 
     @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.ArgumentMathOperationType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=item.value)
+            if isinstance(item, xtce_1_3.ArgumentMathOperationType.ValueOperand)
+            else ThisParameterOperand()
+            if isinstance(item, xtce_1_3.ArgumentMathOperationType.ThisParameterOperand)
+            else ParameterInstanceRef(
+                ref=XtcePath(item.parameter_ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_3.ParameterInstanceRefType)
+            else ArgumentInstanceRef(
+                ref=item.argument_ref,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_3.ArgumentInstanceRefType)
+            else MathOperator(value=item.value)
+            for item in obj.choice
+        ]
+        return kwargs
 
-    @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
-
-    @classmethod
-    def _from_v1_3(
-        cls: type[Self], raw_obj: xtce_1_3.ArgumentMathOperationType
-    ) -> Self:
-        return cls(
-            operation=[
-                ValueOperand(value=item.value)
-                if isinstance(item, xtce_1_3.ArgumentMathOperationType.ValueOperand)
-                else ThisParameterOperand()
-                if isinstance(
-                    item, xtce_1_3.ArgumentMathOperationType.ThisParameterOperand
-                )
-                else ParameterInstanceRef(
-                    ref=XtcePath(item.parameter_ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                if isinstance(item, xtce_1_3.ParameterInstanceRefType)
-                else ArgumentInstanceRef(
-                    ref=item.argument_ref,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                if isinstance(item, xtce_1_3.ArgumentInstanceRefType)
-                else MathOperator(value=item.value)
-                for item in raw_obj.choice
-            ],
-        )
-
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-
-    def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ArgumentMathOperationType:
-        return xtce_1_3.ArgumentMathOperationType(
-            choice=[
-                xtce_1_3.ArgumentMathOperationType.ValueOperand(value=str(item.value))
-                if isinstance(item, ValueOperand)
-                else xtce_1_3.ArgumentMathOperationType.ThisParameterOperand()
-                if isinstance(item, ThisParameterOperand)
-                else xtce_1_3.MathOperatorsType(value=item.value)
-                if isinstance(item, MathOperator)
-                else xtce_1_3.ParameterInstanceRefType(
-                    parameter_ref=str(item.ref),
-                    instance=item.instance,
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                if isinstance(item, ParameterInstanceRef)
-                else xtce_1_3.ArgumentInstanceRefType(
-                    argument_ref=str(item.ref),
-                    use_calibrated_value=item.use_calibrated_value,
-                )
-                for item in self.operation
-            ],
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = [
+            xtce_1_3.ArgumentMathOperationType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_3.ArgumentMathOperationType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_3.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_3.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, ParameterInstanceRef)
+            else xtce_1_3.ArgumentInstanceRefType(
+                argument_ref=str(item.ref),
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in self.operation
+        ]
+        return kwargs
 
 
 class SplinePoint(XtceBaseModel):
@@ -445,56 +431,54 @@ class SplinePoint(XtceBaseModel):
     calibrated: float
     """The calibrated value corresponding to the raw encoded value."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.SplinePointType) -> Self:
-        return cls(
-            order=raw_obj.order,
-            raw=raw_obj.raw,
-            calibrated=raw_obj.calibrated,
-        )
+    _v1_1_type = xtce_1_1.SplinePointType
+    _v1_2_type = xtce_1_2.SplinePointType
+    _v1_3_type = xtce_1_3.SplinePointType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.SplinePointType) -> Self:
-        return cls(
-            order=raw_obj.order,
-            raw=raw_obj.raw,
-            calibrated=raw_obj.calibrated,
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.SplinePointType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["order"] = obj.order
+        kwargs["raw"] = obj.raw
+        kwargs["calibrated"] = obj.calibrated
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.SplinePointType) -> Self:
-        return cls(
-            order=raw_obj.order,
-            raw=raw_obj.raw,
-            calibrated=raw_obj.calibrated,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.SplinePointType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["order"] = obj.order
+        kwargs["raw"] = obj.raw
+        kwargs["calibrated"] = obj.calibrated
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SplinePointType:
-        return xtce_1_1.SplinePointType(
-            order=self.order,
-            raw=self.raw,
-            calibrated=self.calibrated,
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.SplinePointType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["order"] = obj.order
+        kwargs["raw"] = obj.raw
+        kwargs["calibrated"] = obj.calibrated
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.SplinePointType:
-        return xtce_1_2.SplinePointType(
-            order=self.order,
-            raw=self.raw,
-            calibrated=self.calibrated,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["order"] = self.order
+        kwargs["raw"] = self.raw
+        kwargs["calibrated"] = self.calibrated
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.SplinePointType:
-        return xtce_1_3.SplinePointType(
-            order=self.order,
-            raw=self.raw,
-            calibrated=self.calibrated,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["order"] = self.order
+        kwargs["raw"] = self.raw
+        kwargs["calibrated"] = self.calibrated
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["order"] = self.order
+        kwargs["raw"] = self.raw
+        kwargs["calibrated"] = self.calibrated
+        return kwargs
 
 
 class SplineCalibrator(BaseCalibrator):
@@ -523,108 +507,62 @@ class SplineCalibrator(BaseCalibrator):
     extrapolate: bool = False
     """Whether to allow extrapolation beyond the defined spline points."""
 
-    @classmethod
-    def _from_v1_1(
-        cls: type[Self], raw_obj: xtce_1_1.CalibratorType.SplineCalibrator
-    ) -> Self:
-        return cls(
-            spline_points=[SplinePoint._from_v1_1(sp) for sp in raw_obj.spline_point],
-            order=raw_obj.order,
-            extrapolate=raw_obj.extrapolate,
-        )
+    _v1_1_type = xtce_1_1.CalibratorType.SplineCalibrator
+    _v1_2_type = xtce_1_2.SplineCalibratorType
+    _v1_3_type = xtce_1_3.SplineCalibratorType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.SplineCalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_2(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            spline_points=[SplinePoint._from_v1_2(sp) for sp in raw_obj.spline_point],
-            order=raw_obj.order,
-            extrapolate=raw_obj.extrapolate,
-        )
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.CalibratorType.SplineCalibrator
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["spline_points"] = [
+            SplinePoint._from_v1_1(sp) for sp in obj.spline_point
+        ]
+        kwargs["order"] = obj.order
+        kwargs["extrapolate"] = obj.extrapolate
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.SplineCalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_3(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            spline_points=[SplinePoint._from_v1_3(sp) for sp in raw_obj.spline_point],
-            order=raw_obj.order,
-            extrapolate=raw_obj.extrapolate,
-        )
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.SplineCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["spline_points"] = [
+            SplinePoint._from_v1_2(sp) for sp in obj.spline_point
+        ]
+        kwargs["order"] = obj.order
+        kwargs["extrapolate"] = obj.extrapolate
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.CalibratorType.SplineCalibrator:
-        version = XtceVersion.V1_1
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.SplineCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["spline_points"] = [
+            SplinePoint._from_v1_3(sp) for sp in obj.spline_point
+        ]
+        kwargs["order"] = obj.order
+        kwargs["extrapolate"] = obj.extrapolate
+        return kwargs
 
-        self._enforce_unsupported_field(
-            field_name="name",
-            current_value=self.name,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="short_description",
-            current_value=self.short_description,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="ancillary_data",
-            current_value=self.ancillary_data,
-            empty_value=[],
-            target_version=version,
-            policy=policy,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["spline_point"] = [sp._to_v1_1(policy) for sp in self.spline_points]
+        kwargs["order"] = self.order
+        kwargs["extrapolate"] = self.extrapolate
+        return kwargs
 
-        return xtce_1_1.CalibratorType.SplineCalibrator(
-            spline_point=[sp._to_v1_1(policy) for sp in self.spline_points],
-            order=self.order,
-            extrapolate=self.extrapolate,
-        )
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["spline_point"] = [sp._to_v1_2(policy) for sp in self.spline_points]
+        kwargs["order"] = self.order
+        kwargs["extrapolate"] = self.extrapolate
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.SplineCalibratorType:
-        return xtce_1_2.SplineCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            ),
-            spline_point=[sp._to_v1_2(policy) for sp in self.spline_points],
-            order=self.order,
-            extrapolate=self.extrapolate,
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.SplineCalibratorType:
-        return xtce_1_3.SplineCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            ),
-            spline_point=[sp._to_v1_3(policy) for sp in self.spline_points],
-            order=self.order,
-            extrapolate=self.extrapolate,
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["spline_point"] = [sp._to_v1_3(policy) for sp in self.spline_points]
+        kwargs["order"] = self.order
+        kwargs["extrapolate"] = self.extrapolate
+        return kwargs
 
 
 class Term(XtceBaseModel):
@@ -636,34 +574,48 @@ class Term(XtceBaseModel):
     exponent: int = Field(..., ge=0)
     """The exponent of the term."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.PolynomialType.Term) -> Self:
-        return cls(coefficient=raw_obj.coefficient, exponent=int(raw_obj.exponent))
+    _v1_1_type = xtce_1_1.PolynomialType.Term
+    _v1_2_type = xtce_1_2.TermType
+    _v1_3_type = xtce_1_3.TermType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.TermType) -> Self:
-        return cls(coefficient=raw_obj.coefficient, exponent=raw_obj.exponent)
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.PolynomialType.Term) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["coefficient"] = obj.coefficient
+        kwargs["exponent"] = int(obj.exponent)
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.TermType) -> Self:
-        return cls(coefficient=raw_obj.coefficient, exponent=raw_obj.exponent)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.TermType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["coefficient"] = obj.coefficient
+        kwargs["exponent"] = obj.exponent
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.PolynomialType.Term:
-        return xtce_1_1.PolynomialType.Term(
-            coefficient=self.coefficient, exponent=float(self.exponent)
-        )
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.TermType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["coefficient"] = obj.coefficient
+        kwargs["exponent"] = obj.exponent
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.TermType:
-        return xtce_1_2.TermType(coefficient=self.coefficient, exponent=self.exponent)
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["coefficient"] = self.coefficient
+        kwargs["exponent"] = self.exponent
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.TermType:
-        return xtce_1_3.TermType(coefficient=self.coefficient, exponent=self.exponent)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["coefficient"] = self.coefficient
+        kwargs["exponent"] = self.exponent
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["coefficient"] = self.coefficient
+        kwargs["exponent"] = self.exponent
+        return kwargs
 
 
 class PolynomialCalibrator(BaseCalibrator):
@@ -681,92 +633,46 @@ class PolynomialCalibrator(BaseCalibrator):
 
     """
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.PolynomialType) -> Self:
-        return cls(
-            terms=[Term._from_v1_1(t) for t in raw_obj.term],
-        )
+    _v1_1_type = xtce_1_1.PolynomialType
+    _v1_2_type = xtce_1_2.PolynomialCalibratorType
+    _v1_3_type = xtce_1_3.PolynomialCalibratorType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.PolynomialCalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_2(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            terms=[Term._from_v1_2(t) for t in raw_obj.term],
-        )
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.PolynomialType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["terms"] = [Term._from_v1_1(t) for t in obj.term]
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.PolynomialCalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_3(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set is not None
-            else [],
-            terms=[Term._from_v1_3(t) for t in raw_obj.term],
-        )
+    def _from_v1_2_kwargs(
+        cls, obj: xtce_1_2.PolynomialCalibratorType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["terms"] = [Term._from_v1_2(t) for t in obj.term]
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.PolynomialType:
-        version = XtceVersion.V1_1
+    @classmethod
+    def _from_v1_3_kwargs(
+        cls, obj: xtce_1_3.PolynomialCalibratorType
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["terms"] = [Term._from_v1_3(t) for t in obj.term]
+        return kwargs
 
-        self._enforce_unsupported_field(
-            field_name="name",
-            current_value=self.name,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="short_description",
-            current_value=self.short_description,
-            empty_value=None,
-            target_version=version,
-            policy=policy,
-        )
-        self._enforce_unsupported_field(
-            field_name="ancillary_data",
-            current_value=self.ancillary_data,
-            empty_value=[],
-            target_version=version,
-            policy=policy,
-        )
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["term"] = [t._to_v1_1(policy) for t in self.terms]
+        return kwargs
 
-        return xtce_1_1.PolynomialType(term=[t._to_v1_1(policy) for t in self.terms])
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["term"] = [t._to_v1_2(policy) for t in self.terms]
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.PolynomialCalibratorType:
-        return xtce_1_2.PolynomialCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            ),
-            term=[t._to_v1_2(policy) for t in self.terms],
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.PolynomialCalibratorType:
-        return xtce_1_3.PolynomialCalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            ),
-            term=[t._to_v1_3(policy) for t in self.terms],
-        )
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["term"] = [t._to_v1_3(policy) for t in self.terms]
+        return kwargs
 
 
 class Calibrator(BaseCalibrator):
@@ -792,83 +698,66 @@ class Calibrator(BaseCalibrator):
     calibrator_type: SplineCalibrator | PolynomialCalibrator | MathOperationCalibrator
     """The specific calibrator instance used for this generic calibrator."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.CalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            long_description=raw_obj.long_description,
-            aliases=[Alias._from_v1_1(alias) for alias in raw_obj.alias_set.alias]
-            if raw_obj.alias_set
-            else [],
-            ancillary_data=[
-                AncillaryData._from_v1_1(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set
-            else [],
-            calibrator_type=SplineCalibrator._from_v1_1(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_1.CalibratorType.SplineCalibrator)
-            else PolynomialCalibrator._from_v1_1(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_1.PolynomialType)
-            else MathOperationCalibrator._from_v1_1(unwrap(raw_obj.choice)),
-        )
+    _v1_1_type = xtce_1_1.CalibratorType
+    _v1_2_type = xtce_1_2.CalibratorType
+    _v1_3_type = xtce_1_3.CalibratorType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.CalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_2(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set
-            else [],
-            calibrator_type=SplineCalibrator._from_v1_2(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_2.SplineCalibratorType)
-            else PolynomialCalibrator._from_v1_2(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_2.PolynomialCalibratorType)
-            else MathOperationCalibrator._from_v1_2(unwrap(raw_obj.choice)),
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.CalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["long_description"] = obj.long_description
+        kwargs["aliases"] = (
+            [Alias._from_v1_1(a) for a in obj.alias_set.alias]
+            if obj.alias_set is not None
+            else []
         )
+        kwargs["calibrator_type"] = (
+            SplineCalibrator._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.CalibratorType.SplineCalibrator)
+            else PolynomialCalibrator._from_v1_1(obj.choice)
+            if isinstance(obj.choice, xtce_1_1.PolynomialType)
+            else MathOperationCalibrator._from_v1_1(unwrap(obj.choice))
+        )
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.CalibratorType) -> Self:
-        return cls(
-            name=raw_obj.name,
-            short_description=raw_obj.short_description,
-            ancillary_data=[
-                AncillaryData._from_v1_3(data)
-                for data in raw_obj.ancillary_data_set.ancillary_data
-            ]
-            if raw_obj.ancillary_data_set
-            else [],
-            calibrator_type=SplineCalibrator._from_v1_3(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_3.SplineCalibratorType)
-            else PolynomialCalibrator._from_v1_3(raw_obj.choice)
-            if isinstance(raw_obj.choice, xtce_1_3.PolynomialCalibratorType)
-            else MathOperationCalibrator._from_v1_3(unwrap(raw_obj.choice)),
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.CalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["calibrator_type"] = (
+            SplineCalibrator._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.SplineCalibratorType)
+            else PolynomialCalibrator._from_v1_2(obj.choice)
+            if isinstance(obj.choice, xtce_1_2.PolynomialCalibratorType)
+            else MathOperationCalibrator._from_v1_2(unwrap(obj.choice))
         )
+        return kwargs
 
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.CalibratorType:
-        return xtce_1_1.CalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=xtce_1_1.AliasSetType(
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.CalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["calibrator_type"] = (
+            SplineCalibrator._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.SplineCalibratorType)
+            else PolynomialCalibrator._from_v1_3(obj.choice)
+            if isinstance(obj.choice, xtce_1_3.PolynomialCalibratorType)
+            else MathOperationCalibrator._from_v1_3(unwrap(obj.choice))
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["long_description"] = self.long_description
+        kwargs["alias_set"] = (
+            xtce_1_1.AliasSetType(
                 alias=[alias._to_v1_1(policy) for alias in self.aliases]
-            ),
-            ancillary_data_set=xtce_1_1.DescriptionType.AncillaryDataSet(
-                ancillary_data=[data._to_v1_1(policy) for data in self.ancillary_data]
-            ),
-            choice=self.calibrator_type._to_v1_1(policy),
+            )
+            if self.aliases
+            else None
         )
+        kwargs["choice"] = self.calibrator_type._to_v1_1(policy)
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.CalibratorType:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_2
 
         self._enforce_unsupported_field(
@@ -886,18 +775,11 @@ class Calibrator(BaseCalibrator):
             policy=policy,
         )
 
-        return xtce_1_2.CalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            ),
-            choice=self.calibrator_type._to_v1_2(policy),
-        )
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = self.calibrator_type._to_v1_2(policy)
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.CalibratorType:
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_3
 
         self._enforce_unsupported_field(
@@ -915,14 +797,9 @@ class Calibrator(BaseCalibrator):
             policy=policy,
         )
 
-        return xtce_1_3.CalibratorType(
-            name=self.name,
-            short_description=self.short_description,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            ),
-            choice=self.calibrator_type._to_v1_3(policy),
-        )
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = self.calibrator_type._to_v1_3(policy)
+        return kwargs
 
 
 class ContextCalibrator(XtceBaseModel):
@@ -938,49 +815,54 @@ class ContextCalibrator(XtceBaseModel):
     calibrator: Calibrator
     """The calibrator to apply when the context match is true."""
 
+    _v1_1_type = xtce_1_1.ContextCalibratorType
+    _v1_2_type = xtce_1_2.ContextCalibratorType
+    _v1_3_type = xtce_1_3.ContextCalibratorType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ContextCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        kwargs["calibrator"] = Calibrator._from_v1_1(obj.calibrator)
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ContextCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_2(obj.context_match)
+        kwargs["calibrator"] = Calibrator._from_v1_2(obj.calibrator)
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ContextCalibratorType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_3(obj.context_match)
+        kwargs["calibrator"] = Calibrator._from_v1_3(obj.calibrator)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
+        kwargs["calibrator"] = self.calibrator._to_v1_1(policy)
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_2(policy)
+        kwargs["calibrator"] = self.calibrator._to_v1_2(policy)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_3(policy)
+        kwargs["calibrator"] = self.calibrator._to_v1_3(policy)
+        return kwargs
+
     @classmethod
     def _from_v1_1(cls: type[Self], raw_obj: xtce_1_1.ContextCalibratorType) -> Self:
         return cls(
             context_match=ContextMatch._from_v1_1(raw_obj.context_match),
             calibrator=Calibrator._from_v1_1(raw_obj.calibrator),
-        )
-
-    @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.ContextCalibratorType) -> Self:
-        return cls(
-            context_match=ContextMatch._from_v1_2(raw_obj.context_match),
-            calibrator=Calibrator._from_v1_2(raw_obj.calibrator),
-        )
-
-    @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.ContextCalibratorType) -> Self:
-        return cls(
-            context_match=ContextMatch._from_v1_3(raw_obj.context_match),
-            calibrator=Calibrator._from_v1_3(raw_obj.calibrator),
-        )
-
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.ContextCalibratorType:
-        return xtce_1_1.ContextCalibratorType(
-            context_match=self.context_match._to_v1_1(policy),
-            calibrator=self.calibrator._to_v1_1(policy),
-        )
-
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.ContextCalibratorType:
-        return xtce_1_2.ContextCalibratorType(
-            context_match=self.context_match._to_v1_2(policy),
-            calibrator=self.calibrator._to_v1_2(policy),
-        )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.ContextCalibratorType:
-        return xtce_1_3.ContextCalibratorType(
-            context_match=self.context_match._to_v1_3(policy),
-            calibrator=self.calibrator._to_v1_3(policy),
         )
 
 
@@ -998,30 +880,50 @@ class LinearAdjustment(XtceBaseModel):
     intercept: float = 0.0
     """The intercept of the linear adjustment."""
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], raw_obj: Any) -> Self:
-        raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
+    _v1_1_type = xtce_1_1.DecimalValueType.DynamicValue.LinearAdjustment
+    _v1_2_type = xtce_1_2.LinearAdjustmentType
+    _v1_3_type = xtce_1_3.LinearAdjustmentType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], raw_obj: xtce_1_2.LinearAdjustmentType) -> Self:
-        return cls(slope=(raw_obj.slope or 1.0), intercept=raw_obj.intercept)
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.DecimalValueType.DynamicValue.LinearAdjustment
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["slope"] = obj.slope
+        kwargs["intercept"] = obj.intercept
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], raw_obj: xtce_1_3.LinearAdjustmentType) -> Self:
-        return cls(slope=raw_obj.slope, intercept=raw_obj.intercept)
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.LinearAdjustmentType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["slope"] = obj.slope or 1.0
+        kwargs["intercept"] = obj.intercept
+        return kwargs
 
-    def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.LinearAdjustmentType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["slope"] = obj.slope
+        kwargs["intercept"] = obj.intercept
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.LinearAdjustmentType:
-        return xtce_1_2.LinearAdjustmentType(slope=self.slope, intercept=self.intercept)
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["slope"] = self.slope
+        kwargs["intercept"] = self.intercept
+        return kwargs
 
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.LinearAdjustmentType:
-        return xtce_1_3.LinearAdjustmentType(slope=self.slope, intercept=self.intercept)
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["slope"] = self.slope
+        kwargs["intercept"] = self.intercept
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["slope"] = self.slope
+        kwargs["intercept"] = self.intercept
+        return kwargs
 
 
 class MathOperation(MathOperationCalibrator, ABC):

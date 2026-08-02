@@ -5,138 +5,24 @@ from __future__ import annotations
 from typing import Any, Self
 
 from pydantic import model_validator
-from typing_extensions import assert_never
 
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
-from .codec import ArgumentDynamicValue, DynamicValue
+from .codec import (
+    ArgumentDynamicValue,
+    DynamicValue,
+    pack_argument_integer_value_v1_2,
+    pack_argument_integer_value_v1_3,
+    pack_integer_value_v1_2,
+    pack_integer_value_v1_3,
+    parse_argument_integer_value_v1_2,
+    parse_argument_integer_value_v1_3,
+    parse_integer_value_v1_2,
+    parse_integer_value_v1_3,
+)
 from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
-
-
-def _parse_integer_value_v1_2(
-    integer_value: xtce_1_2.IntegerValueType,
-) -> int | DynamicValue | DiscreteLookupList:
-    """Parse an IntegerValueType into the unified model types."""
-    match integer_value.choice:
-        case int() as val:
-            return val
-        case xtce_1_2.DynamicValueType() as val:
-            return DynamicValue._from_v1_2(val)
-        case xtce_1_2.DiscreteLookupListType() as val:
-            return DiscreteLookupList._from_v1_2(val)
-        case None:
-            raise ValueError("invalid XTCE XML: dimension index is missing a value")
-        case _:
-            assert_never(integer_value.choice)
-
-
-def _parse_integer_value_v1_3(
-    integer_value: xtce_1_3.IntegerValueType,
-) -> int | DynamicValue | DiscreteLookupList:
-    """Parse an IntegerValueType into the unified model types."""
-    match integer_value.choice:
-        case int() as val:
-            return val
-        case xtce_1_3.DynamicValueType() as val:
-            return DynamicValue._from_v1_3(val)
-        case xtce_1_3.DiscreteLookupListType() as val:
-            return DiscreteLookupList._from_v1_3(val)
-        case None:
-            raise ValueError("invalid XTCE XML: dimension index is missing a value")
-        case _:
-            assert_never(integer_value.choice)
-
-
-def _pack_integer_value_v1_2(
-    value: int | DynamicValue | DiscreteLookupList,
-    policy: DowngradePolicy,
-) -> xtce_1_2.IntegerValueType:
-    """Pack a unified model index value into an IntegerValueType."""
-    match value:
-        case int():
-            return xtce_1_2.IntegerValueType(choice=value)
-        case DynamicValue():
-            return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
-        case DiscreteLookupList():
-            return xtce_1_2.IntegerValueType(choice=value._to_v1_2(policy))
-
-
-def _pack_integer_value_v1_3(
-    value: int | DynamicValue | DiscreteLookupList,
-    policy: DowngradePolicy,
-) -> xtce_1_3.IntegerValueType:
-    """Pack a unified model index value into an IntegerValueType."""
-    match value:
-        case int():
-            return xtce_1_3.IntegerValueType(choice=value)
-        case DynamicValue():
-            return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
-        case DiscreteLookupList():
-            return xtce_1_3.IntegerValueType(choice=value._to_v1_3(policy))
-
-
-def _parse_argument_integer_value_v1_2(
-    integer_value: xtce_1_2.ArgumentIntegerValueType,
-) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
-    """Parse an ArgumentIntegerValueType into the unified model types."""
-    match integer_value.choice:
-        case int() as val:
-            return val
-        case xtce_1_2.ArgumentDynamicValueType() as val:
-            return ArgumentDynamicValue._from_v1_2(val)
-        case xtce_1_2.ArgumentDiscreteLookupListType() as val:
-            return ArgumentDiscreteLookupList._from_v1_2(val)
-        case None:
-            raise ValueError("invalid XTCE XML: dimension index is missing a value")
-        case _:
-            assert_never(integer_value.choice)
-
-
-def _parse_argument_integer_value_v1_3(
-    integer_value: xtce_1_3.ArgumentIntegerValueType,
-) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
-    """Parse an ArgumentIntegerValueType into the unified model types."""
-    match integer_value.choice:
-        case int() as val:
-            return val
-        case xtce_1_3.ArgumentDynamicValueType() as val:
-            return ArgumentDynamicValue._from_v1_3(val)
-        case xtce_1_3.ArgumentDiscreteLookupListType() as val:
-            return ArgumentDiscreteLookupList._from_v1_3(val)
-        case None:
-            raise ValueError("invalid XTCE XML: dimension index is missing a value")
-        case _:
-            assert_never(integer_value.choice)
-
-
-def _pack_argument_integer_value_v1_2(
-    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
-    policy: DowngradePolicy,
-) -> xtce_1_2.ArgumentIntegerValueType:
-    """Pack a unified model argument index value into an ArgumentIntegerValueType."""
-    match value:
-        case int():
-            return xtce_1_2.ArgumentIntegerValueType(choice=value)
-        case ArgumentDynamicValue():
-            return xtce_1_2.ArgumentIntegerValueType(choice=value._to_v1_2(policy))
-        case ArgumentDiscreteLookupList():
-            return xtce_1_2.ArgumentIntegerValueType(choice=value._to_v1_2(policy))
-
-
-def _pack_argument_integer_value_v1_3(
-    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
-    policy: DowngradePolicy,
-) -> xtce_1_3.ArgumentIntegerValueType:
-    """Pack a unified model argument index value into an ArgumentIntegerValueType."""
-    match value:
-        case int():
-            return xtce_1_3.ArgumentIntegerValueType(choice=value)
-        case ArgumentDynamicValue():
-            return xtce_1_3.ArgumentIntegerValueType(choice=value._to_v1_3(policy))
-        case ArgumentDiscreteLookupList():
-            return xtce_1_3.ArgumentIntegerValueType(choice=value._to_v1_3(policy))
 
 
 class Dimension(XtceBaseModel):
@@ -194,27 +80,27 @@ class Dimension(XtceBaseModel):
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.DimensionType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
-        kwargs["start_index"] = _parse_integer_value_v1_2(obj.starting_index)
-        kwargs["end_index"] = _parse_integer_value_v1_2(obj.ending_index)
+        kwargs["start_index"] = parse_integer_value_v1_2(obj.starting_index)
+        kwargs["end_index"] = parse_integer_value_v1_2(obj.ending_index)
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.DimensionType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["start_index"] = _parse_integer_value_v1_3(obj.starting_index)
-        kwargs["end_index"] = _parse_integer_value_v1_3(obj.ending_index)
+        kwargs["start_index"] = parse_integer_value_v1_3(obj.starting_index)
+        kwargs["end_index"] = parse_integer_value_v1_3(obj.ending_index)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["starting_index"] = _pack_integer_value_v1_2(self.start_index, policy)
-        kwargs["ending_index"] = _pack_integer_value_v1_2(self.end_index, policy)
+        kwargs["starting_index"] = pack_integer_value_v1_2(self.start_index, policy)
+        kwargs["ending_index"] = pack_integer_value_v1_2(self.end_index, policy)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["starting_index"] = _pack_integer_value_v1_3(self.start_index, policy)
-        kwargs["ending_index"] = _pack_integer_value_v1_3(self.end_index, policy)
+        kwargs["starting_index"] = pack_integer_value_v1_3(self.start_index, policy)
+        kwargs["ending_index"] = pack_integer_value_v1_3(self.end_index, policy)
         return kwargs
 
 
@@ -275,33 +161,33 @@ class ArgumentDimension(XtceBaseModel):
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentDimensionType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
-        kwargs["start_index"] = _parse_argument_integer_value_v1_2(obj.starting_index)
-        kwargs["end_index"] = _parse_argument_integer_value_v1_2(obj.ending_index)
+        kwargs["start_index"] = parse_argument_integer_value_v1_2(obj.starting_index)
+        kwargs["end_index"] = parse_argument_integer_value_v1_2(obj.ending_index)
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.ArgumentDimensionType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
-        kwargs["start_index"] = _parse_argument_integer_value_v1_3(obj.starting_index)
-        kwargs["end_index"] = _parse_argument_integer_value_v1_3(obj.ending_index)
+        kwargs["start_index"] = parse_argument_integer_value_v1_3(obj.starting_index)
+        kwargs["end_index"] = parse_argument_integer_value_v1_3(obj.ending_index)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["starting_index"] = _pack_argument_integer_value_v1_2(
+        kwargs["starting_index"] = pack_argument_integer_value_v1_2(
             self.start_index, policy
         )
-        kwargs["ending_index"] = _pack_argument_integer_value_v1_2(
+        kwargs["ending_index"] = pack_argument_integer_value_v1_2(
             self.end_index, policy
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["starting_index"] = _pack_argument_integer_value_v1_3(
+        kwargs["starting_index"] = pack_argument_integer_value_v1_3(
             self.start_index, policy
         )
-        kwargs["ending_index"] = _pack_argument_integer_value_v1_3(
+        kwargs["ending_index"] = pack_argument_integer_value_v1_3(
             self.end_index, policy
         )
         return kwargs

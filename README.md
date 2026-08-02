@@ -118,8 +118,8 @@ True
   - [x] Time models
   - [x] Trigger models
   - [x] Verifier models
-  - [x] Alarm models (need unit tests)
-  - [ ] Codec models
+  - [x] Alarm models
+  - [x] Codec models
   - [ ] Datatype models
   - [ ] Argument models
   - [ ] Container models

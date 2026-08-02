@@ -195,17 +195,33 @@ class TestInputAlgorithm:
 class TestArgumentInputAlgorithm:
     """Test ArgumentInputAlgorithm model."""
 
-    def test_from_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import is unsupported for ArgumentInputAlgorithm."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ArgumentInputAlgorithm.from_xsdata(object(), XtceVersion.V1_1)
+    def test_round_trip_v1_1_with_parameter_and_constant_inputs(self) -> None:
+        """Round-trip inputs cast to XTCE 1.1's InputAlgorithmType.
 
-    def test_to_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 export is unsupported for ArgumentInputAlgorithm."""
-        model = xtce.ArgumentInputAlgorithm(name="MyAlgorithm")
+        XTCE 1.1 has no ArgumentInputAlgorithmType, so inputs must be restricted to
+        parameter references and constants (no ArgumentInstanceRef).
 
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
+        """
+        original = xtce.ArgumentInputAlgorithm(
+            name="MyAlgorithm",
+            inputs=[_make_input_parameter_ref(), _make_constant()],
+        )
+
+        round_tripped = xtce.ArgumentInputAlgorithm.from_xsdata(
+            original.to_xsdata(XtceVersion.V1_1), XtceVersion.V1_1
+        )
+
+        assert round_tripped == original
+
+    def test_v1_1_strict_rejects_argument_instance_ref_input(self) -> None:
+        """An ArgumentInstanceRef input cannot be cast down to XTCE 1.1."""
+        model = xtce.ArgumentInputAlgorithm(
+            name="MyAlgorithm",
+            inputs=[_make_input_parameter_ref(), xtce.ArgumentInstanceRef(ref="ArgA")],
+        )
+
+        with pytest.raises((XtceDowngradeError, TypeError)):
+            model.to_xsdata(XtceVersion.V1_1, DowngradePolicy.STRICT)
 
     def test_round_trip_v1_2_with_parameter_and_argument_inputs(self) -> None:
         """Round-trip inputs restricted to parameter/argument refs through 1.2."""
