@@ -50,7 +50,7 @@ class Dimension(XtceBaseModel):
                 raise ValueError("array index must be greater than or equal to 0")
             return value
         if isinstance(value, DiscreteLookupList):
-            if value.default_value < 0:
+            if value.default_value is None or value.default_value < 0:
                 raise ValueError("array index must be greater than or equal to 0")
             return value.default_value
         return None
@@ -131,7 +131,7 @@ class ArgumentDimension(XtceBaseModel):
                 raise ValueError("array index must be greater than or equal to 0")
             return value
         if isinstance(value, ArgumentDiscreteLookupList):
-            if value.default_value < 0:
+            if value.default_value is None or value.default_value < 0:
                 raise ValueError("array index must be greater than or equal to 0")
             return value.default_value
         return None

@@ -634,6 +634,26 @@ class TestValidFloatRanges:
         ("version", "raw_obj"),
         [
             (
+                XtceVersion.V1_1,
+                xtce_1_1.ArgumentTypeSetType.FloatArgumentType.ValidRangeSet(
+                    valid_range=[
+                        xtce_1_1.FloatRangeType(
+                            min_inclusive=0.0,
+                            min_exclusive=None,
+                            max_inclusive=1.0,
+                            max_exclusive=None,
+                        ),
+                        xtce_1_1.FloatRangeType(
+                            min_inclusive=None,
+                            min_exclusive=5.0,
+                            max_inclusive=None,
+                            max_exclusive=6.0,
+                        ),
+                    ],
+                    valid_range_applies_to_calibrated=False,
+                ),
+            ),
+            (
                 XtceVersion.V1_2,
                 xtce_1_2.ValidFloatRangeSetType(
                     valid_range=[
@@ -691,27 +711,13 @@ class TestValidFloatRanges:
         assert model.valid_ranges[1].max_exclusive == 6.0
         assert model.applies_to_calibrated is False
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support ValidFloatRanges."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ValidFloatRanges.from_xsdata(
-                xtce_1_2.ValidFloatRangeSetType(
-                    valid_range=[
-                        xtce_1_2.FloatRangeType(
-                            min_inclusive=1.0,
-                            min_exclusive=None,
-                            max_inclusive=2.0,
-                            max_exclusive=None,
-                        ),
-                    ],
-                    valid_range_applies_to_calibrated=True,
-                ),
-                XtceVersion.V1_1,
-            )
-
     @pytest.mark.parametrize(
         ("version", "expected_type"),
         [
+            (
+                XtceVersion.V1_1,
+                xtce_1_1.ArgumentTypeSetType.FloatArgumentType.ValidRangeSet,
+            ),
             (XtceVersion.V1_2, xtce_1_2.ValidFloatRangeSetType),
             (XtceVersion.V1_3, xtce_1_3.ValidFloatRangeSetType),
         ],
@@ -740,17 +746,9 @@ class TestValidFloatRanges:
         assert raw_obj.valid_range[1].max_exclusive == 6.0
         assert raw_obj.valid_range_applies_to_calibrated is True
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for ValidFloatRanges."""
-        model = xtce.ValidFloatRanges(
-            valid_ranges=[xtce.FloatRange(min_inclusive=1.0, max_inclusive=2.0)],
-            applies_to_calibrated=True,
-        )
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
     def test_round_trip_through_xsdata_preserves_fields(
         self,
         version: XtceVersion,

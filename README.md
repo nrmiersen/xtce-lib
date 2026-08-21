@@ -120,8 +120,8 @@ True
   - [x] Verifier models
   - [x] Alarm models
   - [x] Codec models
-  - [ ] Datatype models
-  - [ ] Argument models
+  - [x] Datatype models
+  - [x] Argument models
   - [ ] Container models
   - [ ] Command models
   - [ ] Parameter models

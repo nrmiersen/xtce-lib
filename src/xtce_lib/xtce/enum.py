@@ -708,8 +708,10 @@ class MathOperator(StrEnum):
 
     POWER = "^"
     """Power function: ``x1 x2 -- x1**x2``."""
+
     REVERSE_POWER = "y^x"
     """Reverse power function: ``x1 x2 -- x2**x1``."""
+
     MIN = "min"
     """Minimum of two values: ``x1 x2 -- min(x1, x2)``."""
 
@@ -724,8 +726,10 @@ class MathOperator(StrEnum):
 
     LOG = "log"
     """Base-10 logarithm: ``x -- log(x)``."""
+
     RECIPROCAL = "1/x"
     """Inversion: ``x -- 1/x``."""
+
     FACTORIAL = "x!"
     """Factorial: ``x -- x!``."""
 
@@ -740,8 +744,10 @@ class MathOperator(StrEnum):
 
     COS = "cos"
     """Cosine in radians: ``x -- cos(x)``."""
+
     SIN = "sin"
     """Sine in radians: ``x -- sin(x)``."""
+
     TAN = "tan"
     """Tangent in radians: ``x -- tan(x)``."""
 
@@ -750,62 +756,60 @@ class MathOperator(StrEnum):
 
     ASIN = "asin"
     """Arcsine in radians: ``x -- asin(x)``."""
-
     ATAN = "atan"
     """Arctangent in radians: ``x -- atan(x)``."""
-
     ATAN2 = "atan2"
     """Two-argument arctangent in radians: ``x1 x2 -- atan2(x2, x1)``."""
     COSH = "cosh"
     """Hyperbolic cosine: ``x -- cosh(x)``."""
     SINH = "sinh"
     """Hyperbolic sine: ``x -- sinh(x)``."""
-
     TANH = "tanh"
     """Hyperbolic tangent: ``x -- tanh(x)``."""
-
     ACOSH = "acosh"
     """Hyperbolic arccosine: ``x -- acosh(x)``."""
-
     ASINH = "asinh"
     """Hyperbolic arcsine: ``x -- asinh(x)``."""
-
     ATANH = "atanh"
     """Hyperbolic arctangent: ``x -- atanh(x)``."""
     DROP = "drop"
     """Remove the top item from the stack: ``x --``."""
     DUP = "dup"
     """Duplicate the top item on the stack: ``x -- x x``."""
-
     OVER = "over"
     """Duplicate the second item onto the top of the stack: ``x1 x2 -- x1 x2 x1``."""
-
     SWAP = "swap"
     """Swap the top two stack items: ``x1 x2 -- x2 x1``."""
-
     LEFT_SHIFT = "<<"
     """Signed bitwise left shift: ``x1 x2 -- x1 << x2``."""
-
     RIGHT_SHIFT = ">>"
     """Signed bitwise right shift: ``x1 x2 -- x1 >> x2``."""
+
     BITWISE_AND = "&"
     """Bitwise and: ``x1 x2 -- x1 & x2``."""
+
     BITWISE_OR = "|"
     """Bitwise or: ``x1 x2 -- x1 | x2``."""
+
     BITWISE_XOR = "xor"
     """Bitwise exclusive or: ``x1 x2 -- x1 xor x2``."""
+
     BITWISE_NOT = "~"
     """Bitwise not: ``x -- ~x``.
 
     The result can only be 0 or 1.
 
     """
+
     LOGICAL_AND = "&&"
     """Logical and: ``x1 x2 -- x1 && x2``."""
+
     LOGICAL_OR = "||"
     """Logical or: ``x1 x2 -- x1 || x2``."""
+
     LOGICAL_NOT = "!"
     """Logical not: ``x -- !x``."""
+
     EQUAL = "=="
     """Equal to: ``x1 x2 -- x1 == x2``."""
 

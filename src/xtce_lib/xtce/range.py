@@ -423,7 +423,7 @@ class ValidFloatRanges(XtceBaseModel):
 
     """
 
-    valid_ranges: list[FloatRange] = Field(default_factory=list, min_length=1)
+    valid_ranges: list[FloatRange] = Field(..., min_length=1)
     """Defines one or more valid ranges.
 
     Multiple ranges can be used to specify non- contiguous valid values. Typically, only
@@ -439,9 +439,20 @@ class ValidFloatRanges(XtceBaseModel):
 
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.ArgumentTypeSetType.FloatArgumentType.ValidRangeSet
     _v1_2_type = xtce_1_2.ValidFloatRangeSetType
     _v1_3_type = xtce_1_3.ValidFloatRangeSetType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.ArgumentTypeSetType.FloatArgumentType.ValidRangeSet
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            FloatRange._from_v1_1(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.ValidFloatRangeSetType) -> dict[str, Any]:
@@ -459,6 +470,12 @@ class ValidFloatRanges(XtceBaseModel):
             FloatRange._from_v1_3(range) for range in obj.valid_range
         ]
         kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_1(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
