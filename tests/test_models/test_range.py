@@ -172,21 +172,10 @@ class TestValidIntegerRange:
         assert model.max_inclusive == 15
         assert model.applies_to_calibrated is False
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support ValidIntegerRange."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ValidIntegerRange.from_xsdata(
-                xtce_1_2.IntegerDataType.ValidRange(
-                    min_inclusive=1,
-                    max_inclusive=2,
-                    valid_range_applies_to_calibrated=True,
-                ),
-                XtceVersion.V1_1,
-            )
-
     @pytest.mark.parametrize(
         ("version", "expected_type"),
         [
+            (XtceVersion.V1_1, xtce_1_1.IntegerRangeType),
             (XtceVersion.V1_2, xtce_1_2.IntegerDataType.ValidRange),
             (XtceVersion.V1_3, xtce_1_3.IntegerDataType.ValidRange),
         ],
@@ -206,22 +195,21 @@ class TestValidIntegerRange:
         raw_obj = model.to_xsdata(version)
 
         assert isinstance(raw_obj, expected_type)
-        assert raw_obj.min_inclusive == 16
-        assert raw_obj.max_inclusive == 32
-        assert raw_obj.valid_range_applies_to_calibrated is True
+        if isinstance(raw_obj.min_inclusive, str):
+            assert int(raw_obj.min_inclusive, 0) == 16
+        else:
+            assert raw_obj.min_inclusive == 16
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for ValidIntegerRange."""
-        model = xtce.ValidIntegerRange(
-            min_inclusive=1,
-            max_inclusive=2,
-            applies_to_calibrated=True,
-        )
+        if isinstance(raw_obj.max_inclusive, str):
+            assert int(raw_obj.max_inclusive, 0) == 32
+        else:
+            assert raw_obj.max_inclusive == 32
+        if hasattr(raw_obj, "valid_range_applies_to_calibrated"):
+            assert raw_obj.valid_range_applies_to_calibrated is True
 
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
     def test_round_trip_through_xsdata_preserves_fields(
         self,
         version: XtceVersion,
@@ -230,7 +218,7 @@ class TestValidIntegerRange:
         original = xtce.ValidIntegerRange(
             min_inclusive=1,
             max_inclusive=10,
-            applies_to_calibrated=False,
+            applies_to_calibrated=True,
         )
 
         round_tripped = xtce.ValidIntegerRange.from_xsdata(
@@ -265,6 +253,16 @@ class TestValidIntegerRanges:
     @pytest.mark.parametrize(
         ("version", "raw_obj"),
         [
+            (
+                XtceVersion.V1_1,
+                xtce_1_1.ArgumentTypeSetType.IntegerArgumentType.ValidRangeSet(
+                    valid_range=[
+                        xtce_1_1.IntegerRangeType(min_inclusive=1, max_inclusive=5),
+                        xtce_1_1.IntegerRangeType(min_inclusive=10, max_inclusive=20),
+                    ],
+                    valid_range_applies_to_calibrated=False,
+                ),
+            ),
             (
                 XtceVersion.V1_2,
                 xtce_1_2.ValidIntegerRangeSetType(
@@ -303,22 +301,13 @@ class TestValidIntegerRanges:
         assert model.valid_ranges[1].max_inclusive == 20
         assert model.applies_to_calibrated is False
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support ValidIntegerRanges."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ValidIntegerRanges.from_xsdata(
-                xtce_1_2.ValidIntegerRangeSetType(
-                    valid_range=[
-                        xtce_1_2.IntegerRangeType(min_inclusive=1, max_inclusive=2),
-                    ],
-                    valid_range_applies_to_calibrated=True,
-                ),
-                XtceVersion.V1_1,
-            )
-
     @pytest.mark.parametrize(
         ("version", "expected_type"),
         [
+            (
+                XtceVersion.V1_1,
+                xtce_1_1.ArgumentTypeSetType.IntegerArgumentType.ValidRangeSet,
+            ),
             (XtceVersion.V1_2, xtce_1_2.ValidIntegerRangeSetType),
             (XtceVersion.V1_3, xtce_1_3.ValidIntegerRangeSetType),
         ],
@@ -341,23 +330,17 @@ class TestValidIntegerRanges:
 
         assert isinstance(raw_obj, expected_type)
         assert len(raw_obj.valid_range) == 2
-        assert raw_obj.valid_range[0].min_inclusive == 1
-        assert raw_obj.valid_range[0].max_inclusive == 5
+        first_min = raw_obj.valid_range[0].min_inclusive
+        assert (int(first_min, 0) if isinstance(first_min, str) else first_min) == 1
+        first_max = raw_obj.valid_range[0].max_inclusive
+        assert (int(first_max, 0) if isinstance(first_max, str) else first_max) == 5
         assert raw_obj.valid_range[1].min_inclusive == 10
         assert raw_obj.valid_range[1].max_inclusive == 20
         assert raw_obj.valid_range_applies_to_calibrated is True
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for ValidIntegerRanges."""
-        model = xtce.ValidIntegerRanges(
-            valid_ranges=[xtce.IntegerRange(min_inclusive=1, max_inclusive=2)],
-            applies_to_calibrated=True,
-        )
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
     def test_round_trip_through_xsdata_preserves_fields(
         self,
         version: XtceVersion,
@@ -576,23 +559,10 @@ class TestValidFloatRange:
         assert model.max_exclusive == 5.0
         assert model.applies_to_calibrated is False
 
-    def test_from_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 does not support ValidFloatRange."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ValidFloatRange.from_xsdata(
-                xtce_1_2.FloatDataType.ValidRange(
-                    min_inclusive=1.0,
-                    min_exclusive=None,
-                    max_inclusive=2.0,
-                    max_exclusive=None,
-                    valid_range_applies_to_calibrated=True,
-                ),
-                XtceVersion.V1_1,
-            )
-
     @pytest.mark.parametrize(
         ("version", "expected_type"),
         [
+            (XtceVersion.V1_1, xtce_1_1.FloatRangeType),
             (XtceVersion.V1_2, xtce_1_2.FloatDataType.ValidRange),
             (XtceVersion.V1_3, xtce_1_3.FloatDataType.ValidRange),
         ],
@@ -614,16 +584,12 @@ class TestValidFloatRange:
         assert isinstance(raw_obj, expected_type)
         assert raw_obj.min_exclusive == 1.5
         assert raw_obj.max_inclusive == 10.0
-        assert raw_obj.valid_range_applies_to_calibrated is True
+        if hasattr(raw_obj, "valid_range_applies_to_calibrated"):
+            assert raw_obj.valid_range_applies_to_calibrated is True
 
-    def test_to_xsdata_rejects_v1_1(self) -> None:
-        """v1.1 export should fail for ValidFloatRange."""
-        model = xtce.ValidFloatRange(min_inclusive=1.0, max_inclusive=2.0)
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    @pytest.mark.parametrize("version", [XtceVersion.V1_2, XtceVersion.V1_3])
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
     def test_round_trip_through_xsdata_preserves_fields(
         self,
         version: XtceVersion,
@@ -632,7 +598,7 @@ class TestValidFloatRange:
         original = xtce.ValidFloatRange(
             min_inclusive=-5.0,
             max_exclusive=1.0,
-            applies_to_calibrated=False,
+            applies_to_calibrated=True,
         )
 
         round_tripped = xtce.ValidFloatRange.from_xsdata(

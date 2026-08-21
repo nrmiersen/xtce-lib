@@ -6,7 +6,7 @@ from typing import cast
 import pytest
 
 from xtce_lib import ResolvedReference, XtcePath, XtceRegistry
-from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
+from xtce_lib.xtce._type_aliases_ext import ReferenceableXtceObject
 
 
 @dataclass

@@ -19,11 +19,11 @@ from .range import ValidFloatRanges, ValidIntegerRanges
 
 
 class IntegerArgument(ArgumentIntegerData):
-    valid_ranges: ValidIntegerRanges | None = Field(default=None)
+    valid_ranges: ValidIntegerRanges | None = None
 
 
 class FloatArgument(ArgumentFloatData):
-    valid_ranges: ValidFloatRanges | None = Field(default=None)
+    valid_ranges: ValidFloatRanges | None = None
 
 
 class StringArgument(ArgumentStringData):

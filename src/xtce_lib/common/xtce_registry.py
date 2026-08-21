@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from xtce_lib.common.xtce_path import XtcePath
 
 if TYPE_CHECKING:
-    from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
+    from xtce_lib.xtce._type_aliases_ext import ReferenceableXtceObject
 
 log = logging.getLogger(__name__)
 

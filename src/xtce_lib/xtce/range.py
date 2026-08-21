@@ -105,16 +105,28 @@ class ValidIntegerRange(IntegerRange):
 
     """
 
-    applies_to_calibrated: bool = Field(default=True)
+    applies_to_calibrated: bool = True
     """Whether this valid range applies to calibrated values.
 
     If False, it applies to raw values.
 
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.IntegerRangeType
     _v1_2_type = xtce_1_2.IntegerDataType.ValidRange
     _v1_3_type = xtce_1_3.IntegerDataType.ValidRange
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.IntegerRangeType,
+        applies_to_calibrated: bool = True,
+    ) -> dict[str, Any]:
+        # XTCE 1.1 has `valid_range_applies_to_calibrated` in IntegerDataType (inherited
+        # from NumericDataType), so it needs to be passed in from the parent here
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["applies_to_calibrated"] = applies_to_calibrated
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -130,6 +142,13 @@ class ValidIntegerRange(IntegerRange):
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        # XTCE 1.1 has `valid_range_applies_to_calibrated` in IntegerDataType (inherited
+        # from NumericDataType), so instead of being included here, the parent needs to
+        # extract the value
+        kwargs = super()._to_v1_1_kwargs(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -151,7 +170,7 @@ class ValidIntegerRanges(XtceBaseModel):
 
     """
 
-    valid_ranges: list[IntegerRange] = Field(default_factory=list, min_length=1)
+    valid_ranges: list[IntegerRange] = Field(..., min_length=1)
     """Defines one or more valid ranges.
 
     Multiple ranges can be used to specify non- contiguous valid values. Typically, only
@@ -160,16 +179,27 @@ class ValidIntegerRanges(XtceBaseModel):
 
     """
 
-    applies_to_calibrated: bool = Field(default=True)
+    applies_to_calibrated: bool = True
     """Whether these valid ranges apply to calibrated values.
 
     If False, they apply to raw values.
 
     """
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.ArgumentTypeSetType.IntegerArgumentType.ValidRangeSet
     _v1_2_type = xtce_1_2.ValidIntegerRangeSetType
     _v1_3_type = xtce_1_3.ValidIntegerRangeSetType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls, obj: xtce_1_1.ArgumentTypeSetType.IntegerArgumentType.ValidRangeSet
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["valid_ranges"] = [
+            IntegerRange._from_v1_1(range) for range in obj.valid_range
+        ]
+        kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -191,6 +221,12 @@ class ValidIntegerRanges(XtceBaseModel):
             IntegerRange._from_v1_3(range) for range in obj.valid_range
         ]
         kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["valid_range"] = [range._to_v1_1(policy) for range in self.valid_ranges]
+        kwargs["valid_range_applies_to_calibrated"] = self.applies_to_calibrated
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -327,11 +363,23 @@ class ValidFloatRange(FloatRange):
 
     """
 
-    applies_to_calibrated: bool = Field(default=True)
+    applies_to_calibrated: bool = True
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.FloatRangeType
     _v1_2_type = xtce_1_2.FloatDataType.ValidRange
     _v1_3_type = xtce_1_3.FloatDataType.ValidRange
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.FloatRangeType,
+        applies_to_calibrated: bool = True,
+    ) -> dict[str, Any]:
+        # XTCE 1.1 has `valid_range_applies_to_calibrated` in FloatDataType (inherited
+        # from NumericDataType), so it needs to be passed in from the parent here
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["applies_to_calibrated"] = applies_to_calibrated
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -347,6 +395,13 @@ class ValidFloatRange(FloatRange):
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["applies_to_calibrated"] = obj.valid_range_applies_to_calibrated
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        # XTCE 1.1 has `valid_range_applies_to_calibrated` in FloatDataType (inherited
+        # from NumericDataType), so instead of being included here, the parent needs to
+        # extract the value
+        kwargs = super()._to_v1_1_kwargs(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:

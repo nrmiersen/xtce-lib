@@ -617,7 +617,6 @@ class ReferencePoint(StrEnum):
 
     START = "start"
     """The start of the reference."""
-
     END = "end"
     """The end of the reference."""
 
@@ -670,7 +669,6 @@ class ParityForm(StrEnum):
 
     EVEN = "Even"
     """Even parity."""
-
     ODD = "Odd"
     """Odd parity."""
 
@@ -696,7 +694,6 @@ class MathOperator(StrEnum):
 
     ADD = "+"
     """Addition: ``x1 x2 -- x1+x2``."""
-
     SUBTRACT = "-"
     """Subtraction: ``x1 x2 -- x1-x2``."""
 
@@ -711,10 +708,8 @@ class MathOperator(StrEnum):
 
     POWER = "^"
     """Power function: ``x1 x2 -- x1**x2``."""
-
     REVERSE_POWER = "y^x"
     """Reverse power function: ``x1 x2 -- x2**x1``."""
-
     MIN = "min"
     """Minimum of two values: ``x1 x2 -- min(x1, x2)``."""
 
@@ -729,10 +724,8 @@ class MathOperator(StrEnum):
 
     LOG = "log"
     """Base-10 logarithm: ``x -- log(x)``."""
-
     RECIPROCAL = "1/x"
     """Inversion: ``x -- 1/x``."""
-
     FACTORIAL = "x!"
     """Factorial: ``x -- x!``."""
 
@@ -747,10 +740,8 @@ class MathOperator(StrEnum):
 
     COS = "cos"
     """Cosine in radians: ``x -- cos(x)``."""
-
     SIN = "sin"
     """Sine in radians: ``x -- sin(x)``."""
-
     TAN = "tan"
     """Tangent in radians: ``x -- tan(x)``."""
 
@@ -765,10 +756,8 @@ class MathOperator(StrEnum):
 
     ATAN2 = "atan2"
     """Two-argument arctangent in radians: ``x1 x2 -- atan2(x2, x1)``."""
-
     COSH = "cosh"
     """Hyperbolic cosine: ``x -- cosh(x)``."""
-
     SINH = "sinh"
     """Hyperbolic sine: ``x -- sinh(x)``."""
 
@@ -783,10 +772,8 @@ class MathOperator(StrEnum):
 
     ATANH = "atanh"
     """Hyperbolic arctangent: ``x -- atanh(x)``."""
-
     DROP = "drop"
     """Remove the top item from the stack: ``x --``."""
-
     DUP = "dup"
     """Duplicate the top item on the stack: ``x -- x x``."""
 
@@ -801,32 +788,24 @@ class MathOperator(StrEnum):
 
     RIGHT_SHIFT = ">>"
     """Signed bitwise right shift: ``x1 x2 -- x1 >> x2``."""
-
     BITWISE_AND = "&"
     """Bitwise and: ``x1 x2 -- x1 & x2``."""
-
     BITWISE_OR = "|"
     """Bitwise or: ``x1 x2 -- x1 | x2``."""
-
     BITWISE_XOR = "xor"
     """Bitwise exclusive or: ``x1 x2 -- x1 xor x2``."""
-
     BITWISE_NOT = "~"
     """Bitwise not: ``x -- ~x``.
 
     The result can only be 0 or 1.
 
     """
-
     LOGICAL_AND = "&&"
     """Logical and: ``x1 x2 -- x1 && x2``."""
-
     LOGICAL_OR = "||"
     """Logical or: ``x1 x2 -- x1 || x2``."""
-
     LOGICAL_NOT = "!"
     """Logical not: ``x -- !x``."""
-
     EQUAL = "=="
     """Equal to: ``x1 x2 -- x1 == x2``."""
 
@@ -924,6 +903,7 @@ class ComparisonOperator(StrEnum):
 
     EQ = "=="
     """Equal to."""
+
     NEQ = "!="
     """Not equal to."""
 
@@ -985,18 +965,32 @@ class ComparisonOperator(StrEnum):
 
 
 class Radix(StrEnum):
-    """Specifies the number base."""
+    """Define the radix for numerical values."""
 
     DECIMAL = "Decimal"
+    """Decimal radix (i.e. 1, 2, 3, ...)."""
+
     HEXADECIMAL = "Hexadecimal"
+    """Hexadecimal radix (i.e. 0x1, 0x2, 0x3, ...)."""
+
     OCTAL = "Octal"
+    """Octal radix (i.e. 0o1, 0o2, 0o3, ...)."""
+
     BINARY = "Binary"
+    """Binary radix (i.e. 0b1, 0b10, 0b11, ...)."""
 
 
 class FloatingPointNotation(StrEnum):
+    """Define the notation to use for floating point numbers."""
+
     NORMAL = "normal"
+    """Normal floating point notation (e.g., 123.45)."""
+
     SCIENTIFIC = "scientific"
+    """Scientific floating point notation (e.g., 1.2345e2)."""
+
     ENGINEERING = "engineering"
+    """Engineering floating point notation (e.g., 123.45e0)."""
 
 
 class EpochTime(StrEnum):

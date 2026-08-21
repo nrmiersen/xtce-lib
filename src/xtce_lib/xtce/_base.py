@@ -148,6 +148,13 @@ class XtceBaseModel(BaseModel, ABC):
         return target_class(**self._to_v1_3_kwargs(policy))
 
     @staticmethod
+    def _extract_mixed_field(content: list[Any]) -> str:
+        """Extract the string content from a mixed type XML field."""
+        if not content:
+            return ""
+        return "".join(str(item) for item in content if isinstance(item, str)).strip()
+
+    @staticmethod
     def _handle_downgrade(message: str, policy: DowngradePolicy) -> None:
         """Handle downgrade reporting according to the specified policy."""
         match policy:

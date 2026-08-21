@@ -11,7 +11,7 @@ from xsdata.formats.dataclass.serializers.config import SerializerConfig
 
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
-from xtce_lib.xtce._type_aliases import ReferenceableXtceObject
+from xtce_lib.xtce._type_aliases_ext import ReferenceableXtceObject
 from xtce_lib.xtce.command import CommandMetadata, MetaCommandRef
 from xtce_lib.xtce.common import Alias, AncillaryData
 from xtce_lib.xtce.enum import SystemType
