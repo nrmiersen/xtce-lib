@@ -38,9 +38,11 @@ from .reference import ArgumentInstanceRef, ParameterInstanceRef
 
 
 def parse_integer_value_v1_1(
-    integer_value: xtce_1_1.IntegerValueType,
-) -> int | DynamicValue | DiscreteLookupList:
+    integer_value: xtce_1_1.IntegerValueType | None,
+) -> int | DynamicValue | DiscreteLookupList | None:
     """Parse an IntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -57,9 +59,11 @@ def parse_integer_value_v1_1(
 
 
 def parse_integer_value_v1_2(
-    integer_value: xtce_1_2.IntegerValueType,
-) -> int | DynamicValue | DiscreteLookupList:
+    integer_value: xtce_1_2.IntegerValueType | None,
+) -> int | DynamicValue | DiscreteLookupList | None:
     """Parse an IntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -74,9 +78,11 @@ def parse_integer_value_v1_2(
 
 
 def parse_integer_value_v1_3(
-    integer_value: xtce_1_3.IntegerValueType,
-) -> int | DynamicValue | DiscreteLookupList:
+    integer_value: xtce_1_3.IntegerValueType | None,
+) -> int | DynamicValue | DiscreteLookupList | None:
     """Parse an IntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -91,10 +97,12 @@ def parse_integer_value_v1_3(
 
 
 def pack_integer_value_v1_1(
-    value: int | DynamicValue | DiscreteLookupList,
+    value: int | DynamicValue | DiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_1.IntegerValueType:
+) -> xtce_1_1.IntegerValueType | None:
     """Pack a unified model index value into an IntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_1.IntegerValueType(choice=value)
@@ -105,10 +113,12 @@ def pack_integer_value_v1_1(
 
 
 def pack_integer_value_v1_2(
-    value: int | DynamicValue | DiscreteLookupList,
+    value: int | DynamicValue | DiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_2.IntegerValueType:
+) -> xtce_1_2.IntegerValueType | None:
     """Pack a unified model index value into an IntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_2.IntegerValueType(choice=value)
@@ -119,10 +129,12 @@ def pack_integer_value_v1_2(
 
 
 def pack_integer_value_v1_3(
-    value: int | DynamicValue | DiscreteLookupList,
+    value: int | DynamicValue | DiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_3.IntegerValueType:
+) -> xtce_1_3.IntegerValueType | None:
     """Pack a unified model index value into an IntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_3.IntegerValueType(choice=value)
@@ -133,9 +145,11 @@ def pack_integer_value_v1_3(
 
 
 def parse_argument_integer_value_v1_1(
-    integer_value: xtce_1_1.IntegerValueType,
-) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
+    integer_value: xtce_1_1.IntegerValueType | None,
+) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None:
     """Parse an ArgumentIntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -152,9 +166,11 @@ def parse_argument_integer_value_v1_1(
 
 
 def parse_argument_integer_value_v1_2(
-    integer_value: xtce_1_2.ArgumentIntegerValueType,
-) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
+    integer_value: xtce_1_2.ArgumentIntegerValueType | None,
+) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None:
     """Parse an ArgumentIntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -169,9 +185,11 @@ def parse_argument_integer_value_v1_2(
 
 
 def parse_argument_integer_value_v1_3(
-    integer_value: xtce_1_3.ArgumentIntegerValueType,
-) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList:
+    integer_value: xtce_1_3.ArgumentIntegerValueType | None,
+) -> int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None:
     """Parse an ArgumentIntegerValueType into the unified model types."""
+    if integer_value is None:
+        return None
     match integer_value.choice:
         case int() as val:
             return val
@@ -186,10 +204,12 @@ def parse_argument_integer_value_v1_3(
 
 
 def pack_argument_integer_value_v1_1(
-    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
+    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_1.IntegerValueType:
+) -> xtce_1_1.IntegerValueType | None:
     """Pack a unified model argument index value into an ArgumentIntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_1.IntegerValueType(choice=value)
@@ -200,10 +220,12 @@ def pack_argument_integer_value_v1_1(
 
 
 def pack_argument_integer_value_v1_2(
-    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
+    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_2.ArgumentIntegerValueType:
+) -> xtce_1_2.ArgumentIntegerValueType | None:
     """Pack a unified model argument index value into an ArgumentIntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_2.ArgumentIntegerValueType(choice=value)
@@ -214,10 +236,12 @@ def pack_argument_integer_value_v1_2(
 
 
 def pack_argument_integer_value_v1_3(
-    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList,
+    value: int | ArgumentDynamicValue | ArgumentDiscreteLookupList | None,
     policy: DowngradePolicy,
-) -> xtce_1_3.ArgumentIntegerValueType:
+) -> xtce_1_3.ArgumentIntegerValueType | None:
     """Pack a unified model argument index value into an ArgumentIntegerValueType."""
+    if value is None:
+        return None
     match value:
         case int():
             return xtce_1_3.ArgumentIntegerValueType(choice=value)
