@@ -52,7 +52,7 @@ class Repeat(XtceBaseModel):
 
     """
 
-    offset: int | DynamicValue | DiscreteLookupList = Field(default=0, ge=1)
+    offset: int | DynamicValue | DiscreteLookupList = Field(default=0, ge=0)
     """The number of bits between repeats of the entry."""
 
     # TODO may need to validate >0 for DynamicValue and DiscreteLookupList
@@ -65,21 +65,21 @@ class Repeat(XtceBaseModel):
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.RepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
         kwargs["count"] = parse_integer_value_v1_1(obj.count)
-        kwargs["offset"] = parse_integer_value_v1_1(obj.offset)
+        kwargs["offset"] = parse_integer_value_v1_1(obj.offset) or 0
         return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.RepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["count"] = parse_integer_value_v1_2(obj.count)
-        kwargs["offset"] = parse_integer_value_v1_2(obj.offset)
+        kwargs["offset"] = parse_integer_value_v1_2(obj.offset) or 0
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.RepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["count"] = parse_integer_value_v1_3(obj.count)
-        kwargs["offset"] = parse_integer_value_v1_3(obj.offset)
+        kwargs["offset"] = parse_integer_value_v1_3(obj.offset) or 0
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -112,7 +112,7 @@ class ArgumentRepeat(XtceBaseModel):
     """
 
     offset: int | ArgumentDynamicValue | ArgumentDiscreteLookupList = Field(
-        default=0, ge=1
+        default=0, ge=0
     )
     """The number of bits between repeats of the entry."""
 
@@ -124,21 +124,21 @@ class ArgumentRepeat(XtceBaseModel):
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.RepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_1_kwargs(obj)
         kwargs["count"] = parse_argument_integer_value_v1_1(obj.count)
-        kwargs["offset"] = parse_argument_integer_value_v1_1(obj.offset)
+        kwargs["offset"] = parse_argument_integer_value_v1_1(obj.offset) or 0
         return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.ArgumentRepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["count"] = parse_argument_integer_value_v1_2(obj.count)
-        kwargs["offset"] = parse_argument_integer_value_v1_2(obj.offset)
+        kwargs["offset"] = parse_argument_integer_value_v1_2(obj.offset) or 0
         return kwargs
 
     @classmethod
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.ArgumentRepeatType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["count"] = parse_argument_integer_value_v1_3(obj.count)
-        kwargs["offset"] = parse_argument_integer_value_v1_3(obj.offset)
+        kwargs["offset"] = parse_argument_integer_value_v1_3(obj.offset) or 0
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -204,7 +204,8 @@ class LocationInContainer(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["choice"] = pack_integer_value_v1_1(self.offset, policy)
+        offset = pack_integer_value_v1_1(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = (
             xtce_1_1.LocationInContainerInBitsReferenceLocation(
                 self.reference_location.value
@@ -214,7 +215,8 @@ class LocationInContainer(XtceBaseModel):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["choice"] = pack_integer_value_v1_2(self.offset, policy)
+        offset = pack_integer_value_v1_2(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = xtce_1_2.ReferenceLocationType(
             self.reference_location.value
         )
@@ -222,7 +224,8 @@ class LocationInContainer(XtceBaseModel):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["choice"] = pack_integer_value_v1_3(self.offset, policy)
+        offset = pack_integer_value_v1_3(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = xtce_1_3.ReferenceLocationType(
             self.reference_location.value
         )
@@ -273,7 +276,8 @@ class ArgumentLocationInContainer(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["choice"] = pack_argument_integer_value_v1_1(self.offset, policy)
+        offset = pack_argument_integer_value_v1_1(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = (
             xtce_1_1.LocationInContainerInBitsReferenceLocation(
                 self.reference_location.value
@@ -283,7 +287,8 @@ class ArgumentLocationInContainer(XtceBaseModel):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["choice"] = pack_argument_integer_value_v1_2(self.offset, policy)
+        offset = pack_argument_integer_value_v1_2(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = xtce_1_2.ReferenceLocationType(
             self.reference_location.value
         )
@@ -291,7 +296,8 @@ class ArgumentLocationInContainer(XtceBaseModel):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["choice"] = pack_argument_integer_value_v1_3(self.offset, policy)
+        offset = pack_argument_integer_value_v1_3(self.offset, policy)
+        kwargs["choice"] = offset.choice if offset is not None else None
         kwargs["reference_location"] = xtce_1_3.ReferenceLocationType(
             self.reference_location.value
         )
@@ -374,7 +380,7 @@ class SequenceEntry(XtceBaseModel, ABC):
                 for ad in obj.ancillary_data_set.ancillary_data
             ]
             if obj.ancillary_data_set is not None
-            else None
+            else []
         )
         kwargs["short_description"] = obj.short_description
         return kwargs
@@ -408,7 +414,7 @@ class SequenceEntry(XtceBaseModel, ABC):
                 for ad in obj.ancillary_data_set.ancillary_data
             ]
             if obj.ancillary_data_set is not None
-            else None
+            else []
         )
         kwargs["short_description"] = obj.short_description
         return kwargs
@@ -437,18 +443,18 @@ class SequenceEntry(XtceBaseModel, ABC):
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_1_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_1(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_1_kwargs(policy)
+            self.repeat_entry._to_v1_1(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_1_kwargs(policy)
+            self.include_condition._to_v1_1(policy)
             if self.include_condition is not None
             else None
         )
@@ -456,23 +462,23 @@ class SequenceEntry(XtceBaseModel, ABC):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_2_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_2(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_2_kwargs(policy)
+            self.repeat_entry._to_v1_2(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_2_kwargs(policy)
+            self.include_condition._to_v1_2(policy)
             if self.include_condition is not None
             else None
         )
         kwargs["time_association"] = (
-            self.time_association._to_v1_2_kwargs(policy)
+            self.time_association._to_v1_2(policy)
             if self.time_association is not None
             else None
         )
@@ -488,23 +494,23 @@ class SequenceEntry(XtceBaseModel, ABC):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_3_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_3(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_3_kwargs(policy)
+            self.repeat_entry._to_v1_3(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_3_kwargs(policy)
+            self.include_condition._to_v1_3(policy)
             if self.include_condition is not None
             else None
         )
         kwargs["time_association"] = (
-            self.time_association._to_v1_3_kwargs(policy)
+            self.time_association._to_v1_3(policy)
             if self.time_association is not None
             else None
         )
@@ -589,7 +595,7 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
                 for ad in obj.ancillary_data_set.ancillary_data
             ]
             if obj.ancillary_data_set is not None
-            else None
+            else []
         )
         kwargs["short_description"] = obj.short_description
         return kwargs
@@ -622,7 +628,7 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
                 for ad in obj.ancillary_data_set.ancillary_data
             ]
             if obj.ancillary_data_set is not None
-            else None
+            else []
         )
         kwargs["short_description"] = obj.short_description
         return kwargs
@@ -644,18 +650,18 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_1_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_1(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_1_kwargs(policy)
+            self.repeat_entry._to_v1_1(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_1_kwargs(policy)
+            self.include_condition._to_v1_1(policy)
             if self.include_condition is not None
             else None
         )
@@ -663,18 +669,18 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_2_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_2(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_2_kwargs(policy)
+            self.repeat_entry._to_v1_2(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_2_kwargs(policy)
+            self.include_condition._to_v1_2(policy)
             if self.include_condition is not None
             else None
         )
@@ -690,18 +696,18 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["location_in_container"] = (
-            self.location_in_container._to_v1_3_kwargs(policy)
+        kwargs["location_in_container_in_bits"] = (
+            self.location_in_container._to_v1_3(policy)
             if self.location_in_container is not None
             else None
         )
         kwargs["repeat_entry"] = (
-            self.repeat_entry._to_v1_3_kwargs(policy)
+            self.repeat_entry._to_v1_3(policy)
             if self.repeat_entry is not None
             else None
         )
         kwargs["include_condition"] = (
-            self.include_condition._to_v1_3_kwargs(policy)
+            self.include_condition._to_v1_3(policy)
             if self.include_condition is not None
             else None
         )
@@ -1442,19 +1448,19 @@ class IndirectParameterRefEntry(SequenceEntry):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_1_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_1(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_2_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_2(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_3_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_3(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
@@ -1509,19 +1515,19 @@ class ArgumentIndirectParameterRefEntry(ArgumentSequenceEntry):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_1_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_1(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_2_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_2(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["parameter_instance"] = self.parameter_instance._to_v1_3_kwargs(policy)
+        kwargs["parameter_instance"] = self.parameter_instance._to_v1_3(policy)
         kwargs["alias_name_space"] = self.alias_name_space
         return kwargs
 
@@ -1599,7 +1605,7 @@ class ArrayParameterRefEntry(SequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
+        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
             dimension=[d._to_v1_1(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1611,7 +1617,7 @@ class ArrayParameterRefEntry(SequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_2.DimensionListType(
+        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
             dimension=[d._to_v1_2(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1619,7 +1625,7 @@ class ArrayParameterRefEntry(SequenceEntry):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_3.DimensionListType(
+        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
             dimension=[d._to_v1_3(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1648,7 +1654,7 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
     last_entry: bool = False
     """Indicates if this is the last entry for the array instance."""
 
-    _v1_1_type = xtce_1_1.ArrayParameterRefEntryType
+    _v1_1_type = xtce_1_1.CommandContainerEntryListType.ArrayParameterRefEntry
     _v1_2_type = xtce_1_2.ArgumentArrayParameterRefEntryType
     _v1_3_type = xtce_1_3.ArgumentArrayParameterRefEntryType
 
@@ -1711,7 +1717,7 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
+        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
             dimension=[d._to_v1_1(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1723,7 +1729,7 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_2.DimensionListType(
+        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
             dimension=[d._to_v1_2(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1732,7 +1738,7 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_3.DimensionListType(
+        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
             dimension=[d._to_v1_3(policy) for d in self.dimensions]
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
@@ -1826,7 +1832,7 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
     last_entry: bool = False
     """Indicates if this is the last entry for the array instance."""
 
-    _v1_1_type = xtce_1_1.ArrayParameterRefEntryType
+    _v1_1_type = xtce_1_1.CommandContainerEntryListType.ArrayArgumentRefEntry
     _v1_2_type = xtce_1_2.ArgumentArrayArgumentRefEntryType
     _v1_3_type = xtce_1_3.ArgumentArrayArgumentRefEntryType
 
@@ -1896,10 +1902,10 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
         validator(self.argument_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
+        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
             dimension=[d._to_v1_1(policy) for d in self.dimensions]
         )
-        kwargs["argument_ref"] = str(self.argument_ref)
+        kwargs["parameter_ref"] = str(self.argument_ref)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1908,7 +1914,7 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
         validator(self.argument_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_2.ArgumentDimensionListType(
+        kwargs["dimension_list"] = xtce_1_2.ArgumentDimensionListType(
             dimension=[d._to_v1_2(policy) for d in self.dimensions]
         )
         kwargs["argument_ref"] = str(self.argument_ref)
@@ -1917,7 +1923,7 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimensions"] = xtce_1_3.ArgumentDimensionListType(
+        kwargs["dimension_list"] = xtce_1_3.ArgumentDimensionListType(
             dimension=[d._to_v1_3(policy) for d in self.dimensions]
         )
         kwargs["argument_ref"] = str(self.argument_ref)
@@ -2100,6 +2106,7 @@ class BaseContainer(XtceBaseModel):
         kwargs["restriction_criteria"] = RestrictionCriteria._from_v1_1_kwargs(
             obj.restriction_criteria
         )
+        kwargs["container_ref"] = XtcePath(obj.container_ref)
         return kwargs
 
     @classmethod
@@ -2134,14 +2141,14 @@ class BaseContainer(XtceBaseModel):
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["restriction_criteria"] = restriction_criteria._to_v1_1_kwargs(policy)
+        kwargs["restriction_criteria"] = restriction_criteria._to_v1_1(policy)
         kwargs["container_ref"] = str(self.container_ref)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["restriction_criteria"] = (
-            self.restriction_criteria._to_v1_2_kwargs(policy)
+            self.restriction_criteria._to_v1_2(policy)
             if self.restriction_criteria is not None
             else None
         )
@@ -2151,7 +2158,7 @@ class BaseContainer(XtceBaseModel):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["restriction_criteria"] = (
-            self.restriction_criteria._to_v1_3_kwargs(policy)
+            self.restriction_criteria._to_v1_3(policy)
             if self.restriction_criteria is not None
             else None
         )
@@ -2334,15 +2341,15 @@ class Container(NameDescriptionBase, ABC):
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["default_rate_in_stream"] = (
-            self.default_rate_in_stream._to_v1_1_kwargs(policy)
+            self.default_rate_in_stream._to_v1_1(policy)
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_streams"] = xtce_1_1.ContainerType.RateInStreamSet(
+        kwargs["rate_in_stream_set"] = xtce_1_1.ContainerType.RateInStreamSet(
             rate_in_stream=[r._to_v1_1(policy) for r in self.rate_in_streams]
         )
         kwargs["binary_encoding"] = (
-            self.binary_encoding._to_v1_1_kwargs(policy)
+            self.binary_encoding._to_v1_1(policy)
             if self.binary_encoding is not None
             else None
         )
@@ -2351,15 +2358,15 @@ class Container(NameDescriptionBase, ABC):
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["default_rate_in_stream"] = (
-            self.default_rate_in_stream._to_v1_2_kwargs(policy)
+            self.default_rate_in_stream._to_v1_2(policy)
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_streams"] = xtce_1_2.RateInStreamSetType(
+        kwargs["rate_in_stream_set"] = xtce_1_2.RateInStreamSetType(
             rate_in_stream=[r._to_v1_2(policy) for r in self.rate_in_streams]
         )
         kwargs["binary_encoding"] = (
-            self.binary_encoding._to_v1_2_kwargs(policy)
+            self.binary_encoding._to_v1_2(policy)
             if self.binary_encoding is not None
             else None
         )
@@ -2368,15 +2375,15 @@ class Container(NameDescriptionBase, ABC):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["default_rate_in_stream"] = (
-            self.default_rate_in_stream._to_v1_3_kwargs(policy)
+            self.default_rate_in_stream._to_v1_3(policy)
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_streams"] = xtce_1_3.RateInStreamSetType(
+        kwargs["rate_in_stream_set"] = xtce_1_3.RateInStreamSetType(
             rate_in_stream=[r._to_v1_3(policy) for r in self.rate_in_streams]
         )
         kwargs["binary_encoding"] = (
-            self.binary_encoding._to_v1_3_kwargs(policy)
+            self.binary_encoding._to_v1_3(policy)
             if self.binary_encoding is not None
             else None
         )
@@ -2598,7 +2605,11 @@ class CommandContainer(Container):
             else None
             for e in obj.entry_list.choice
         ]
-        kwargs["base_container"] = BaseContainer._from_v1_1(obj.base_container)
+        kwargs["base_container"] = (
+            BaseContainer._from_v1_1(obj.base_container)
+            if obj.base_container is not None
+            else None
+        )
         return kwargs
 
     @classmethod
@@ -2606,17 +2617,17 @@ class CommandContainer(Container):
         kwargs = super()._from_v1_2_kwargs(obj)
         kwargs["entries"] = [
             ArgumentParameterRefEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.ParameterRefEntryType)
+            if isinstance(e, xtce_1_2.ArgumentParameterRefEntryType)
             else ArgumentParameterSegmentRefEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.ParameterSegmentRefEntryType)
+            if isinstance(e, xtce_1_2.ArgumentParameterSegmentRefEntryType)
             else ArgumentContainerRefEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.ContainerRefEntryType)
+            if isinstance(e, xtce_1_2.ArgumentContainerRefEntryType)
             else ArgumentContainerSegmentRefEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.ContainerSegmentRefEntryType)
+            if isinstance(e, xtce_1_2.ArgumentContainerSegmentRefEntryType)
             else ArgumentStreamSegmentEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.StreamSegmentEntryType)
+            if isinstance(e, xtce_1_2.ArgumentStreamSegmentEntryType)
             else ArgumentIndirectParameterRefEntry._from_v1_2(e)
-            if isinstance(e, xtce_1_2.IndirectParameterRefEntryType)
+            if isinstance(e, xtce_1_2.ArgumentIndirectParameterRefEntryType)
             else ArgumentArrayParameterRefEntry._from_v1_2(e)
             if isinstance(e, xtce_1_2.ArgumentArrayParameterRefEntryType)
             else ArgumentArgumentRefEntry._from_v1_2(e)
@@ -2628,7 +2639,11 @@ class CommandContainer(Container):
             else None
             for e in obj.entry_list.choice
         ]
-        kwargs["base_container"] = BaseContainer._from_v1_2(obj.base_container)
+        kwargs["base_container"] = (
+            BaseContainer._from_v1_2(obj.base_container)
+            if obj.base_container is not None
+            else None
+        )
         return kwargs
 
     @classmethod
@@ -2636,17 +2651,17 @@ class CommandContainer(Container):
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["entries"] = [
             ArgumentParameterRefEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.ParameterRefEntryType)
+            if isinstance(e, xtce_1_3.ArgumentParameterRefEntryType)
             else ArgumentParameterSegmentRefEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.ParameterSegmentRefEntryType)
+            if isinstance(e, xtce_1_3.ArgumentParameterSegmentRefEntryType)
             else ArgumentContainerRefEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.ContainerRefEntryType)
+            if isinstance(e, xtce_1_3.ArgumentContainerRefEntryType)
             else ArgumentContainerSegmentRefEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.ContainerSegmentRefEntryType)
+            if isinstance(e, xtce_1_3.ArgumentContainerSegmentRefEntryType)
             else ArgumentStreamSegmentEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.StreamSegmentEntryType)
+            if isinstance(e, xtce_1_3.ArgumentStreamSegmentEntryType)
             else ArgumentIndirectParameterRefEntry._from_v1_3(e)
-            if isinstance(e, xtce_1_3.IndirectParameterRefEntryType)
+            if isinstance(e, xtce_1_3.ArgumentIndirectParameterRefEntryType)
             else ArgumentArrayParameterRefEntry._from_v1_3(e)
             if isinstance(e, xtce_1_3.ArgumentArrayParameterRefEntryType)
             else ArgumentArgumentRefEntry._from_v1_3(e)
@@ -2658,7 +2673,11 @@ class CommandContainer(Container):
             else None
             for e in obj.entry_list.choice
         ]
-        kwargs["base_container"] = BaseContainer._from_v1_3(obj.base_container)
+        kwargs["base_container"] = (
+            BaseContainer._from_v1_3(obj.base_container)
+            if obj.base_container is not None
+            else None
+        )
         return kwargs
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:

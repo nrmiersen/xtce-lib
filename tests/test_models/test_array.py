@@ -9,12 +9,12 @@ from xtce_lib import (
     DowngradePolicy,
     XtceDowngradeError,
     XtcePath,
-    XtceUnsupportedError,
     XtceVersion,
     xtce,
 )
 
 SUPPORTED_ARRAY_VERSIONS = [XtceVersion.V1_2, XtceVersion.V1_3]
+SUPPORTED_DIMENSION_VERSIONS = [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
 
 
 def _make_parameter_instance_ref() -> xtce.ParameterInstanceRef:
@@ -88,7 +88,7 @@ def _make_argument_discrete_lookup_list(
 class TestDimension:
     """Test Dimension model."""
 
-    @pytest.mark.parametrize("version", SUPPORTED_ARRAY_VERSIONS)
+    @pytest.mark.parametrize("version", SUPPORTED_DIMENSION_VERSIONS)
     def test_round_trip_with_integer_indexes(self, version: XtceVersion) -> None:
         """Round-trip Dimension with static integer bounds."""
         original = xtce.Dimension(start_index=1, end_index=4)
@@ -146,13 +146,19 @@ class TestDimension:
         with pytest.raises(XtceDowngradeError):
             original.to_xsdata(XtceVersion.V1_2, DowngradePolicy.STRICT)
 
-    def test_v1_1_is_unsupported(self) -> None:
-        """Verify Dimension rejects XTCE v1.1."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.Dimension.from_xsdata(object(), XtceVersion.V1_1)
+    def test_round_trip_with_dynamic_index_on_v1_1(self) -> None:
+        """Round-trip Dimension with a dynamic start index through XTCE v1.1."""
+        original = xtce.Dimension.model_construct(
+            start_index=_make_dynamic_value(),
+            end_index=6,
+        )
 
-        with pytest.raises(XtceUnsupportedError):
-            xtce.Dimension(start_index=1, end_index=2).to_xsdata(XtceVersion.V1_1)
+        round_tripped = xtce.Dimension.from_xsdata(
+            original.to_xsdata(XtceVersion.V1_1),
+            XtceVersion.V1_1,
+        )
+
+        assert round_tripped == original
 
     def test_rejects_descending_static_indexes(self) -> None:
         """Reject Dimension instances whose static bounds are inverted."""
@@ -163,7 +169,7 @@ class TestDimension:
 class TestArgumentDimension:
     """Test ArgumentDimension model."""
 
-    @pytest.mark.parametrize("version", SUPPORTED_ARRAY_VERSIONS)
+    @pytest.mark.parametrize("version", SUPPORTED_DIMENSION_VERSIONS)
     def test_round_trip_with_integer_indexes(self, version: XtceVersion) -> None:
         """Round-trip ArgumentDimension with static integer bounds."""
         original = xtce.ArgumentDimension(start_index=2, end_index=7)
@@ -221,15 +227,23 @@ class TestArgumentDimension:
         with pytest.raises(XtceDowngradeError):
             original.to_xsdata(XtceVersion.V1_2, DowngradePolicy.STRICT)
 
-    def test_v1_1_is_unsupported(self) -> None:
-        """Verify ArgumentDimension rejects XTCE v1.1."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ArgumentDimension.from_xsdata(object(), XtceVersion.V1_1)
+    def test_round_trip_with_dynamic_index_on_v1_1(self) -> None:
+        """Round-trip ArgumentDimension with a dynamic index through XTCE v1.1.
 
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ArgumentDimension(start_index=1, end_index=2).to_xsdata(
-                XtceVersion.V1_1
-            )
+        v1.1 has no argument-specific dynamic value type, so the dynamic value must
+        reference a parameter instance rather than an argument instance.
+        """
+        original = xtce.ArgumentDimension.model_construct(
+            start_index=xtce.ArgumentDynamicValue(instance=_make_parameter_instance_ref()),
+            end_index=8,
+        )
+
+        round_tripped = xtce.ArgumentDimension.from_xsdata(
+            original.to_xsdata(XtceVersion.V1_1),
+            XtceVersion.V1_1,
+        )
+
+        assert round_tripped == original
 
     def test_rejects_descending_static_indexes(self) -> None:
         """Reject ArgumentDimension instances whose static bounds are inverted."""

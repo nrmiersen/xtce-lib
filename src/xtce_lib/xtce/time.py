@@ -111,28 +111,36 @@ class TimeAssociation(ParameterInstanceRef):
             target_version=version,
             policy=policy,
         )
-        offset = self._enforce_restricted_type(
-            field_name="offset",
-            current_value=self.offset,
-            allowed_types=(datetime.date,),
-            target_version=version,
-            policy=policy,
-            require_match=True,
+        offset = (
+            self._enforce_restricted_type(
+                field_name="offset",
+                current_value=self.offset,
+                allowed_types=(datetime.date,),
+                target_version=version,
+                policy=policy,
+                require_match=True,
+            )
+            if self.offset is not None
+            else None
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["interpolate_time"] = self.interpolate_time
-        kwargs["offset"] = XmlDate.from_date(offset)
+        kwargs["offset"] = XmlDate.from_date(offset) if offset is not None else None
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
-        offset = self._enforce_restricted_type(
-            field_name="offset",
-            current_value=self.offset,
-            allowed_types=(float,),
-            target_version=XtceVersion.V1_2,
-            policy=policy,
-            require_match=True,
+        offset = (
+            self._enforce_restricted_type(
+                field_name="offset",
+                current_value=self.offset,
+                allowed_types=(float,),
+                target_version=XtceVersion.V1_2,
+                policy=policy,
+                require_match=True,
+            )
+            if self.offset is not None
+            else None
         )
 
         kwargs = super()._to_v1_2_kwargs(policy)
@@ -142,13 +150,17 @@ class TimeAssociation(ParameterInstanceRef):
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
-        offset = self._enforce_restricted_type(
-            field_name="offset",
-            current_value=self.offset,
-            allowed_types=(float,),
-            target_version=XtceVersion.V1_3,
-            policy=policy,
-            require_match=True,
+        offset = (
+            self._enforce_restricted_type(
+                field_name="offset",
+                current_value=self.offset,
+                allowed_types=(float,),
+                target_version=XtceVersion.V1_3,
+                policy=policy,
+                require_match=True,
+            )
+            if self.offset is not None
+            else None
         )
 
         kwargs = super()._to_v1_3_kwargs(policy)
