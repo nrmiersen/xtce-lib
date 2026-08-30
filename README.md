@@ -11,7 +11,7 @@
 It focuses on three pieces of functionality:
 
 - A unified, Pythonic XTCE model that flattens version-specific XML structure into a cleaner API.
-- XTCE file parsing and schema validation for XTCE 1.1, 1.2, and 1.3 documents.
+- XTCE file parsing and schema validation for XTCE 1.1, 1.2, and 1.3 files.
 - XTCE path and registry helpers for resolving references inside a database.
 
 **Alpha software:** the API is not stable yet and may change in future releases.
@@ -131,6 +131,8 @@ True
 - [x] Refactor translation methods for inherited classes
 - [x] Implement unified model serialization and deserialization
 - [x] Release alpha
+- [ ] Fix the many things I messed up in the alpha
+- [ ] Fix unit tests
 - [ ] Implement full model semantic validation
 - [ ] Write end-to-end tests for generating and parsing XTCE files
 - [ ] Write documentation

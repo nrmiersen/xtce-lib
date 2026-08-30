@@ -4,12 +4,29 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xtce-lib"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "Python tools for working with XTCE databases"
-readme = "README.md"
 authors = [{ name = "Nathan Miersen", email = "nrmiersen@gmail.com" }]
+readme = "README.md"
+license = { file = "LICENSE" }
 requires-python = ">=3.11"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License", 
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+keywords = ["xtce", "telemetry", "xml", "space", "parser", "command"]
 dependencies = ["lxml>=6.1.0", "pydantic>=2.13.4", "xsdata>=26.2"]
+[project.urls]
+Homepage = "https://github.com/nrmiersen/xtce-lib"
+Repository = "https://github.com/nrmiersen/xtce-lib"
+"Bug Tracker" = "https://github.com/nrmiersen/xtce-lib/issues"
 
 [dependency-groups]
 dev = [
