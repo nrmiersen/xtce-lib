@@ -1,7 +1,6 @@
 """XTCE database object."""
 
 import itertools
-from functools import cached_property
 from pathlib import Path
 from typing import Any, Iterable, Self
 
@@ -180,7 +179,7 @@ class XtceDatabase:
         """The root SpaceSystem of the database."""
         return self._root_system
 
-    @cached_property
+    @property
     def registry(self) -> XtceRegistry:
         """Get the registry of all XTCE objects in this database."""
         if self._registry is None:
@@ -222,8 +221,7 @@ class XtceDatabase:
 
         # Serialize to file
         config_kwargs: dict[str, Any] = {
-            "pretty_print": True,
-            "pretty_print_indent": "    ",
+            "indent": "    ",
         }
         config_kwargs.update(kwargs)
         config = SerializerConfig(**config_kwargs)
