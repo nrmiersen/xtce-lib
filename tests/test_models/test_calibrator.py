@@ -9,7 +9,6 @@ from xtce_lib import (
     DowngradePolicy,
     XtceDowngradeError,
     XtcePath,
-    XtceUnsupportedError,
     XtceVersion,
     xtce,
 )
@@ -292,30 +291,6 @@ class TestArgumentMathOperation:
             )
 
         assert "RPN stack underflow" in str(exc_info.value)
-
-    def test_from_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import is unsupported for ArgumentMathOperation."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ArgumentMathOperation.from_xsdata(object(), XtceVersion.V1_1)
-
-    def test_from_v1_2_is_unsupported(self) -> None:
-        """XTCE 1.2 import is unsupported for ArgumentMathOperation."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.ArgumentMathOperation.from_xsdata(object(), XtceVersion.V1_2)
-
-    def test_to_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 export is unsupported for ArgumentMathOperation."""
-        model = xtce.ArgumentMathOperation(operation=[xtce.ValueOperand(value=1.0)])
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_1)
-
-    def test_to_v1_2_is_unsupported(self) -> None:
-        """XTCE 1.2 export is unsupported for ArgumentMathOperation."""
-        model = xtce.ArgumentMathOperation(operation=[xtce.ValueOperand(value=1.0)])
-
-        with pytest.raises(XtceUnsupportedError):
-            model.to_xsdata(XtceVersion.V1_2)
 
     def test_round_trip_v1_3(self) -> None:
         """Round-trip an operation with all operand kinds through XTCE 1.3.

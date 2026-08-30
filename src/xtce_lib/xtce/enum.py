@@ -619,6 +619,7 @@ class ReferencePoint(StrEnum):
 
     START = "start"
     """The start of the reference."""
+
     END = "end"
     """The end of the reference."""
 
@@ -671,6 +672,7 @@ class ParityForm(StrEnum):
 
     EVEN = "Even"
     """Even parity."""
+
     ODD = "Odd"
     """Odd parity."""
 
@@ -696,6 +698,7 @@ class MathOperator(StrEnum):
 
     ADD = "+"
     """Addition: ``x1 x2 -- x1+x2``."""
+
     SUBTRACT = "-"
     """Subtraction: ``x1 x2 -- x1-x2``."""
 
@@ -752,58 +755,40 @@ class MathOperator(StrEnum):
 
     TAN = "tan"
     """Tangent in radians: ``x -- tan(x)``."""
-
     ACOS = "acos"
     """Arccosine in radians: ``x -- acos(x)``."""
-
     ASIN = "asin"
     """Arcsine in radians: ``x -- asin(x)``."""
-
     ATAN = "atan"
     """Arctangent in radians: ``x -- atan(x)``."""
-
     ATAN2 = "atan2"
     """Two-argument arctangent in radians: ``x1 x2 -- atan2(x2, x1)``."""
-
     COSH = "cosh"
     """Hyperbolic cosine: ``x -- cosh(x)``."""
-
     SINH = "sinh"
     """Hyperbolic sine: ``x -- sinh(x)``."""
-
     TANH = "tanh"
     """Hyperbolic tangent: ``x -- tanh(x)``."""
-
     ACOSH = "acosh"
     """Hyperbolic arccosine: ``x -- acosh(x)``."""
-
     ASINH = "asinh"
     """Hyperbolic arcsine: ``x -- asinh(x)``."""
-
     ATANH = "atanh"
     """Hyperbolic arctangent: ``x -- atanh(x)``."""
-
     DROP = "drop"
     """Remove the top item from the stack: ``x --``."""
-
     DUP = "dup"
     """Duplicate the top item on the stack: ``x -- x x``."""
-
     OVER = "over"
     """Duplicate the second item onto the top of the stack: ``x1 x2 -- x1 x2 x1``."""
-
     SWAP = "swap"
     """Swap the top two stack items: ``x1 x2 -- x2 x1``."""
-
     LEFT_SHIFT = "<<"
     """Signed bitwise left shift: ``x1 x2 -- x1 << x2``."""
-
     RIGHT_SHIFT = ">>"
     """Signed bitwise right shift: ``x1 x2 -- x1 >> x2``."""
-
     BITWISE_AND = "&"
     """Bitwise and: ``x1 x2 -- x1 & x2``."""
-
     BITWISE_OR = "|"
     """Bitwise or: ``x1 x2 -- x1 | x2``."""
 
@@ -923,16 +908,12 @@ class ComparisonOperator(StrEnum):
 
     EQ = "=="
     """Equal to."""
-
     NEQ = "!="
     """Not equal to."""
-
     LT = "<"
     """Less than."""
-
     LTE = "<="
     """Less than or equal to."""
-
     GT = ">"
     """Greater than."""
 
@@ -1005,6 +986,7 @@ class FloatingPointNotation(StrEnum):
 
     NORMAL = "normal"
     """Normal floating point notation (e.g., 123.45)."""
+
     SCIENTIFIC = "scientific"
     """Scientific floating point notation (e.g., 1.2345e2)."""
 
@@ -1078,5 +1060,6 @@ class TimeWindowIsRelativeTo(StrEnum):
 
     COMMAND_RELEASE = "commandRelease"
     """Reference point is the command release time."""
+
     TIME_LAST_VERIFIER_PASSED = "timeLastVerifierPassed"
     """Reference point is the time the last verifier passed."""

@@ -3,12 +3,7 @@
 import datetime
 from typing import Optional, TypeAlias, TypeVar
 
-from xsdata.models.datatype import (
-    DS_MONTH,
-    DS_YEAR,
-    XmlDateTime,
-    XmlDuration,
-)
+from xsdata.models.datatype import DS_MONTH, DS_YEAR, XmlDateTime, XmlDuration
 
 T = TypeVar("T")
 

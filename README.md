@@ -123,8 +123,8 @@ True
   - [x] Datatype models
   - [x] Argument models
   - [x] Container models
-  - [ ] Command models
-  - [ ] Parameter models
+  - [x] Command models
+  - [x] Parameter models
   - [ ] Telemetry models
   - [ ] Space system
   - [ ] Enum models

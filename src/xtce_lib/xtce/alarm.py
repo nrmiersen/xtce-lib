@@ -1140,7 +1140,7 @@ class BinaryAlarm(Alarm):
 
     @classmethod
     def _from_v1_1_kwargs(
-        cls, obj: xtce_1_1.BinaryAlarmConditionType
+        cls, obj: xtce_1_1.BinaryAlarmConditionType | xtce_1_1.AlarmType
     ) -> dict[str, Any]:
         return super()._from_v1_1_kwargs(obj)
 
@@ -1468,9 +1468,20 @@ class StringContextAlarm(StringAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = None
+    _v1_1_type = (
+        xtce_1_1.ParameterTypeSetType.StringParameterType.ContextAlarmList.ContextAlarm
+    )
     _v1_2_type = xtce_1_2.StringContextAlarmType
     _v1_3_type = xtce_1_3.StringContextAlarmType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.ParameterTypeSetType.StringParameterType.ContextAlarmList.ContextAlarm,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.StringContextAlarmType) -> dict[str, Any]:
@@ -1482,6 +1493,11 @@ class StringContextAlarm(StringAlarm):
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.StringContextAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["context_match"] = ContextMatch._from_v1_3_kwargs(obj.context_match)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1501,9 +1517,20 @@ class BinaryContextAlarm(BinaryAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = None
+    _v1_1_type = (
+        xtce_1_1.ParameterTypeSetType.BinaryParameterType.ContextAlarmList.ContextAlarm
+    )
     _v1_2_type = xtce_1_2.BinaryContextAlarmType
     _v1_3_type = xtce_1_3.BinaryContextAlarmType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.ParameterTypeSetType.BinaryParameterType.ContextAlarmList.ContextAlarm,
+    ) -> dict[str, Any]:
+        kwargs = super(BinaryAlarm, cls)._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.BinaryContextAlarmType) -> dict[str, Any]:
@@ -1515,6 +1542,11 @@ class BinaryContextAlarm(BinaryAlarm):
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.BinaryContextAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["context_match"] = ContextMatch._from_v1_3(obj.context_match)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super(BinaryAlarm, self)._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1536,9 +1568,20 @@ class BooleanContextAlarm(BooleanAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = None
+    _v1_1_type = (
+        xtce_1_1.ParameterTypeSetType.BooleanParameterType.ContextAlarmList.ContextAlarm
+    )
     _v1_2_type = xtce_1_2.BooleanContextAlarmType
     _v1_3_type = xtce_1_3.BooleanContextAlarmType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.ParameterTypeSetType.BooleanParameterType.ContextAlarmList.ContextAlarm,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.BooleanContextAlarmType) -> dict[str, Any]:
@@ -1550,6 +1593,11 @@ class BooleanContextAlarm(BooleanAlarm):
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.BooleanContextAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["context_match"] = ContextMatch._from_v1_3_kwargs(obj.context_match)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1571,9 +1619,20 @@ class EnumerationContextAlarm(EnumerationAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = None
+    _v1_1_type = (
+        xtce_1_1.ParameterTypeSetType.EnumeratedParameterType.ContextAlarmList.ContextAlarm
+    )
     _v1_2_type = xtce_1_2.EnumerationContextAlarmType
     _v1_3_type = xtce_1_3.EnumerationContextAlarmType
+
+    @classmethod
+    def _from_v1_1_kwargs(
+        cls,
+        obj: xtce_1_1.ParameterTypeSetType.EnumeratedParameterType.ContextAlarmList.ContextAlarm,
+    ) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(
@@ -1589,6 +1648,11 @@ class EnumerationContextAlarm(EnumerationAlarm):
     ) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["context_match"] = ContextMatch._from_v1_3_kwargs(obj.context_match)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
@@ -1608,9 +1672,15 @@ class TimeContextAlarm(TimeAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = None
+    _v1_1_type = xtce_1_1.TimeContextAlarmType
     _v1_2_type = xtce_1_2.TimeContextAlarmType
     _v1_3_type = xtce_1_3.TimeContextAlarmType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.TimeContextAlarmType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["context_match"] = ContextMatch._from_v1_1(obj.context_match)
+        return kwargs
 
     @classmethod
     def _from_v1_2_kwargs(cls, obj: xtce_1_2.TimeContextAlarmType) -> dict[str, Any]:
@@ -1622,6 +1692,11 @@ class TimeContextAlarm(TimeAlarm):
     def _from_v1_3_kwargs(cls, obj: xtce_1_3.TimeContextAlarmType) -> dict[str, Any]:
         kwargs = super()._from_v1_3_kwargs(obj)
         kwargs["context_match"] = ContextMatch._from_v1_3_kwargs(obj.context_match)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["context_match"] = self.context_match._to_v1_1(policy)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:

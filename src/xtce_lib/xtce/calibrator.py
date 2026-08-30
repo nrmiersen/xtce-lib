@@ -323,8 +323,8 @@ class ArgumentMathOperation(XtceBaseModel):
         | ArgumentInstanceRef
     ] = Field(default_factory=list)
 
-    _v1_1_type = None
-    _v1_2_type = None
+    _v1_1_type = xtce_1_1.MathOperationType
+    _v1_2_type = xtce_1_2.MathOperationType
     _v1_3_type = xtce_1_3.ArgumentMathOperationType
 
     @model_validator(mode="after")
@@ -362,6 +362,47 @@ class ArgumentMathOperation(XtceBaseModel):
         return self
 
     @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MathOperationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=item)
+            if isinstance(item, float)
+            else ParameterInstanceRef._from_v1_1_kwargs(item)
+            if isinstance(item, xtce_1_1.ParameterInstanceRefType)
+            else MathOperator(value=item.value)
+            if isinstance(item, xtce_1_1.MathOperatorsType)
+            else ThisParameterOperand()
+            for item in obj.choice
+        ]
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.MathOperationType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["operation"] = [
+            ValueOperand(value=item.value)
+            if isinstance(item, xtce_1_2.MathOperationCalibratorType.ValueOperand)
+            else ThisParameterOperand()
+            if isinstance(
+                item, xtce_1_2.MathOperationCalibratorType.ThisParameterOperand
+            )
+            else ParameterInstanceRef(
+                ref=XtcePath(item.parameter_ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_2.ParameterInstanceRefType)
+            else ArgumentInstanceRef(
+                ref=item.argument_ref,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            if isinstance(item, xtce_1_2.ArgumentInstanceRefType)
+            else MathOperator(value=item.value)
+            for item in obj.choice
+        ]
+        return kwargs
+
+    @classmethod
     def _from_v1_3_kwargs(
         cls, obj: xtce_1_3.ArgumentMathOperationType
     ) -> dict[str, Any]:
@@ -384,6 +425,72 @@ class ArgumentMathOperation(XtceBaseModel):
             if isinstance(item, xtce_1_3.ArgumentInstanceRefType)
             else MathOperator(value=item.value)
             for item in obj.choice
+        ]
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        operation = [
+            self._enforce_restricted_type(
+                field_name=f"operation[{i}]",
+                current_value=item,
+                allowed_types=(
+                    ValueOperand,
+                    ThisParameterOperand,
+                    ParameterInstanceRef,
+                    MathOperator,
+                ),
+                target_version=XtceVersion.V1_1,
+                policy=policy,
+                require_match=True,
+            )
+            for i, item in enumerate(self.operation)
+        ]
+
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = [
+            float(item.value)
+            if isinstance(item, ValueOperand)
+            else object()
+            if isinstance(item, ThisParameterOperand)
+            else item._to_v1_1_kwargs(policy)
+            if isinstance(item, ParameterInstanceRef)
+            else MathOperator(value=item.value)
+            for item in operation
+        ]
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        operation = [
+            self._enforce_restricted_type(
+                field_name=f"operation[{i}]",
+                current_value=item,
+                allowed_types=(
+                    ValueOperand,
+                    ThisParameterOperand,
+                    ParameterInstanceRef,
+                    MathOperator,
+                ),
+                target_version=XtceVersion.V1_2,
+                policy=policy,
+                require_match=True,
+            )
+            for i, item in enumerate(self.operation)
+        ]
+
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = [
+            xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
+            if isinstance(item, ValueOperand)
+            else xtce_1_2.MathOperationCalibratorType.ThisParameterOperand()
+            if isinstance(item, ThisParameterOperand)
+            else xtce_1_2.MathOperatorsType(value=item.value)
+            if isinstance(item, MathOperator)
+            else xtce_1_2.ParameterInstanceRefType(
+                parameter_ref=str(item.ref),
+                instance=item.instance,
+                use_calibrated_value=item.use_calibrated_value,
+            )
+            for item in operation
         ]
         return kwargs
 

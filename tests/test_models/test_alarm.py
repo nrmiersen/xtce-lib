@@ -601,9 +601,9 @@ class TestNumericContextAlarm:
 class TestStringContextAlarm:
     """Test StringContextAlarm model."""
 
-    @pytest.mark.parametrize("version", BASE_VERSIONS)
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
-        """Round-trip a string context alarm through XTCE 1.2 and 1.3."""
+        """Round-trip a string context alarm through all versions."""
         original = xtce.StringContextAlarm(
             context_match=_make_context_match(),
             alarms=[
@@ -619,20 +619,13 @@ class TestStringContextAlarm:
 
         assert round_tripped == original
 
-    def test_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import/export is unsupported for StringContextAlarm."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.StringContextAlarm(context_match=_make_context_match()).to_xsdata(
-                XtceVersion.V1_1
-            )
-
 
 class TestBinaryContextAlarm:
     """Test BinaryContextAlarm model."""
 
-    @pytest.mark.parametrize("version", BASE_VERSIONS)
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
-        """Round-trip a binary context alarm through XTCE 1.2 and 1.3."""
+        """Round-trip a binary context alarm through all versions."""
         original = xtce.BinaryContextAlarm(
             context_match=_make_context_match(),
             min_violations=2,
@@ -644,23 +637,13 @@ class TestBinaryContextAlarm:
 
         assert round_tripped == original
 
-    def test_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import/export is unsupported for BinaryContextAlarm."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.BinaryContextAlarm(context_match=_make_context_match()).to_xsdata(
-                XtceVersion.V1_1
-            )
-
-        with pytest.raises(XtceUnsupportedError):
-            xtce.BinaryContextAlarm.from_xsdata(object(), XtceVersion.V1_1)
-
 
 class TestBooleanContextAlarm:
     """Test BooleanContextAlarm model."""
 
-    @pytest.mark.parametrize("version", BASE_VERSIONS)
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
-        """Round-trip a boolean context alarm through XTCE 1.2 and 1.3."""
+        """Round-trip a boolean context alarm through all versions."""
         original = xtce.BooleanContextAlarm(
             context_match=_make_context_match(),
             min_violations=1,
@@ -676,9 +659,9 @@ class TestBooleanContextAlarm:
 class TestEnumerationContextAlarm:
     """Test EnumerationContextAlarm model."""
 
-    @pytest.mark.parametrize("version", BASE_VERSIONS)
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
-        """Round-trip an enumeration context alarm through XTCE 1.2 and 1.3."""
+        """Round-trip an enumeration context alarm through all versions."""
         original = xtce.EnumerationContextAlarm(
             context_match=_make_context_match(),
             alarms=[
@@ -699,9 +682,9 @@ class TestEnumerationContextAlarm:
 class TestTimeContextAlarm:
     """Test TimeContextAlarm model."""
 
-    @pytest.mark.parametrize("version", BASE_VERSIONS)
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip(self, version: XtceVersion) -> None:
-        """Round-trip a time context alarm through XTCE 1.2 and 1.3."""
+        """Round-trip a time context alarm through all versions."""
         original = xtce.TimeContextAlarm(
             context_match=_make_context_match(),
             static_alarm_ranges=xtce.TimeAlarmRanges(
@@ -714,13 +697,3 @@ class TestTimeContextAlarm:
         )
 
         assert round_tripped == original
-
-    def test_v1_1_is_unsupported(self) -> None:
-        """XTCE 1.1 import/export is unsupported for TimeContextAlarm."""
-        with pytest.raises(XtceUnsupportedError):
-            xtce.TimeContextAlarm(context_match=_make_context_match()).to_xsdata(
-                XtceVersion.V1_1
-            )
-
-        with pytest.raises(XtceUnsupportedError):
-            xtce.TimeContextAlarm.from_xsdata(object(), XtceVersion.V1_1)
