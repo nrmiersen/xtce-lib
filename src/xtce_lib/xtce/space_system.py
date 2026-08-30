@@ -2,20 +2,20 @@
 
 from __future__ import annotations
 
-import dataclasses
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Annotated, Any
 
-from pydantic import Field
+from pydantic import AfterValidator, Field
 
 from xtce_lib.common.validation import ValidationReport, XtceSemanticError
-from xtce_lib.common.xtce_path import XtcePath
+from xtce_lib.common.xtce_path import XtcePath, require_regex
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
+from xtce_lib.xtce._pattern import NAME_REF_W_PATH
 
 from ._base import XtceBaseModel
 from .command import CommandMetadata
-from .common import Alias, AncillaryData, NameDescriptionBase
+from .common import NameDescriptionBase
 from .enum import SystemType, ValidationStatus
 from .reference import ContainerRef
 from .telemetry import TelemetryMetadata
@@ -86,39 +86,293 @@ class Header(XtceBaseModel):
     applicable.
     """
 
-    classification_instructions: str | None = Field(default=None)
+    classification_instructions: str | None = None
     """Contains an optional additional instructions attribute to be interpreted by
     programs that use this attribute.
     """
 
-    validation_status: ValidationStatus = Field(default=ValidationStatus.UNKNOWN)
+    validation_status: ValidationStatus = ValidationStatus.UNKNOWN
     """Contains a flag describing the state of this document in the evolution of the
     project using it.
     """
+
+    _v1_1_type = xtce_1_1.HeaderType
+    _v1_2_type = xtce_1_2.HeaderType
+    _v1_3_type = xtce_1_3.HeaderType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.HeaderType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["authors"] = (
+            [a for a in obj.author_set.author] if obj.author_set is not None else []
+        )
+        kwargs["notes"] = (
+            [n for n in obj.note_set.note] if obj.note_set is not None else []
+        )
+        kwargs["history"] = (
+            [h for h in obj.history_set.history] if obj.history_set is not None else []
+        )
+        kwargs["version"] = obj.version
+        kwargs["date"] = obj.date
+        kwargs["classification"] = obj.classification
+        kwargs["classification_instructions"] = obj.classification_instructions
+        kwargs["validation_status"] = ValidationStatus(obj.validation_status.value)
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.HeaderType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["authors"] = (
+            [a for a in obj.author_set.author] if obj.author_set is not None else []
+        )
+        kwargs["notes"] = (
+            [n for n in obj.note_set.note] if obj.note_set is not None else []
+        )
+        kwargs["history"] = (
+            [h for h in obj.history_set.history] if obj.history_set is not None else []
+        )
+        kwargs["version"] = obj.version
+        kwargs["date"] = obj.date
+        kwargs["classification"] = obj.classification
+        kwargs["classification_instructions"] = obj.classification_instructions
+        kwargs["validation_status"] = ValidationStatus(obj.validation_status.value)
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.HeaderType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["authors"] = (
+            [a for a in obj.author_set.author] if obj.author_set is not None else []
+        )
+        kwargs["notes"] = (
+            [n for n in obj.note_set.note] if obj.note_set is not None else []
+        )
+        kwargs["history"] = (
+            [h for h in obj.history_set.history] if obj.history_set is not None else []
+        )
+        kwargs["version"] = obj.version
+        kwargs["date"] = obj.date
+        kwargs["classification"] = obj.classification
+        kwargs["classification_instructions"] = obj.classification_instructions
+        kwargs["validation_status"] = ValidationStatus(obj.validation_status.value)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["author_set"] = xtce_1_1.HeaderType.AuthorSet(
+            author=[a for a in self.authors]
+        )
+        kwargs["note_set"] = xtce_1_1.HeaderType.NoteSet(note=[n for n in self.notes])
+        kwargs["history_set"] = xtce_1_1.HeaderType.HistorySet(
+            history=[h for h in self.history]
+        )
+        kwargs["version"] = self.version
+        kwargs["date"] = self.date
+        kwargs["classification"] = self.classification
+        kwargs["classification_instructions"] = self.classification_instructions
+        kwargs["validation_status"] = xtce_1_1.HeaderTypeValidationStatus(
+            self.validation_status.value
+        )
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["author_set"] = xtce_1_2.AuthorSetType(author=[a for a in self.authors])
+        kwargs["note_set"] = xtce_1_2.NoteSetType(note=[n for n in self.notes])
+        kwargs["history_set"] = xtce_1_2.HistorySetType(
+            history=[h for h in self.history]
+        )
+        kwargs["version"] = self.version
+        kwargs["date"] = self.date
+        kwargs["classification"] = self.classification
+        kwargs["classification_instructions"] = self.classification_instructions
+        kwargs["validation_status"] = xtce_1_2.ValidationStatusType(
+            self.validation_status.value
+        )
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["author_set"] = xtce_1_3.AuthorSetType(author=[a for a in self.authors])
+        kwargs["note_set"] = xtce_1_3.NoteSetType(note=[n for n in self.notes])
+        kwargs["history_set"] = xtce_1_3.HistorySetType(
+            history=[h for h in self.history]
+        )
+        kwargs["version"] = self.version
+        kwargs["date"] = self.date
+        kwargs["classification"] = self.classification
+        kwargs["classification_instructions"] = self.classification_instructions
+        kwargs["validation_status"] = xtce_1_3.ValidationStatusType(
+            self.validation_status.value
+        )
+        return kwargs
 
 
 class MessageRef(XtceBaseModel):
     """Holds a reference to a message."""
 
-    ref: str = Field(
+    ref: Annotated[XtcePath, AfterValidator(require_regex(NAME_REF_W_PATH))] = Field(
         ...,
-        pattern=r"^(?:/?(?:\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+$",
         examples=[
             "/BusMessages/HkSummary",
             "../FlightSoftware/EventMessage",
             "Payload/FrameStatus",
         ],
+        json_schema_extra={"pattern": NAME_REF_W_PATH},
     )
-    """Name of message."""
+    """A Unix-like path to a message."""
+
+    _v1_1_type = xtce_1_1.MessageRefType
+    _v1_2_type = xtce_1_2.MessageRefType
+    _v1_3_type = xtce_1_3.MessageRefType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.MessageRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.message_ref)
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.MessageRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.message_ref)
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.MessageRefType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["ref"] = XtcePath(obj.message_ref)
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["message_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["message_ref"] = str(self.ref)
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["message_ref"] = str(self.ref)
+        return kwargs
 
 
 class Service(NameDescriptionBase):
     """Holds a set of services, logical groups of containers OR messages."""
 
-    refs: list[MessageRef] | list[ContainerRef] = Field(
-        default_factory=list,
-        min_length=1,
-    )
+    refs: list[MessageRef] | list[ContainerRef] = Field(default_factory=list)
+
+    _v1_1_type = xtce_1_1.ServiceType
+    _v1_2_type = xtce_1_2.ServiceType
+    _v1_3_type = xtce_1_3.ServiceType
+
+    @classmethod
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.ServiceType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["refs"] = (
+            [MessageRef._from_v1_1(ref) for ref in obj.choice.message_ref]
+            if isinstance(obj.choice, xtce_1_1.ServiceType.MessageRefSet)
+            else [ContainerRef._from_v1_1(ref) for ref in obj.choice.container_ref]
+            if isinstance(obj.choice, xtce_1_1.ServiceType.ContainerRefSet)
+            else []
+        )
+        return kwargs
+
+    @classmethod
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.ServiceType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["refs"] = (
+            [MessageRef._from_v1_2(ref) for ref in obj.choice.message_ref]
+            if isinstance(obj.choice, xtce_1_2.MessageRefSetType)
+            else [ContainerRef._from_v1_2(ref) for ref in obj.choice.container_ref]
+            if isinstance(obj.choice, xtce_1_2.ContainerRefSetType)
+            else []
+        )
+        return kwargs
+
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.ServiceType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["refs"] = (
+            [MessageRef._from_v1_3(ref) for ref in obj.choice.message_ref]
+            if isinstance(obj.choice, xtce_1_3.MessageRefSetType)
+            else [ContainerRef._from_v1_3(ref) for ref in obj.choice.container_ref]
+            if isinstance(obj.choice, xtce_1_3.ContainerRefSetType)
+            else []
+        )
+        return kwargs
+
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_1.ServiceType.MessageRefSet(
+                message_ref=[
+                    ref._to_v1_1(policy)
+                    for ref in self.refs
+                    if isinstance(ref, MessageRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
+            else xtce_1_1.ServiceType.ContainerRefSet(
+                container_ref=[
+                    ref._to_v1_1(policy)
+                    for ref in self.refs
+                    if isinstance(ref, ContainerRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
+            else None
+        )
+        return kwargs
+
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_2.MessageRefSetType(
+                message_ref=[
+                    ref._to_v1_2(policy)
+                    for ref in self.refs
+                    if isinstance(ref, MessageRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
+            else xtce_1_2.ContainerRefSetType(
+                container_ref=[
+                    ref._to_v1_2(policy)
+                    for ref in self.refs
+                    if isinstance(ref, ContainerRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
+            else None
+        )
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["choice"] = (
+            xtce_1_3.MessageRefSetType(
+                message_ref=[
+                    ref._to_v1_3(policy)
+                    for ref in self.refs
+                    if isinstance(ref, MessageRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
+            else xtce_1_3.ContainerRefSetType(
+                container_ref=[
+                    ref._to_v1_3(policy)
+                    for ref in self.refs
+                    if isinstance(ref, ContainerRef)
+                ]
+            )
+            if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
+            else None
+        )
+        return kwargs
 
 
 class SpaceSystem(NameDescriptionBase):
@@ -131,17 +385,17 @@ class SpaceSystem(NameDescriptionBase):
 
     """
 
-    header: Header | None = Field(default=None)
+    header: Header | None = None
     """The Header element contains optional descriptive information about this
     SpaceSystem or the document as a whole when specified at the root SpaceSystem.
     """
 
-    telemetry_metadata: TelemetryMetadata | None = Field(default=None)
+    telemetry_metadata: TelemetryMetadata | None = None
     """This element contains descriptions of the telemetry created on the space
     asset/device and sent to other data consumers.
     """
 
-    command_metadata: CommandMetadata | None = Field(default=None)
+    command_metadata: CommandMetadata | None = None
     """This element contains descriptions of the commands and their associated
     constraints and verifications that can be sent to the space asset/device.
     """
@@ -155,7 +409,7 @@ class SpaceSystem(NameDescriptionBase):
     product line generic SpaceSystem to a specific asset instance.
     """
 
-    system_type: SystemType = Field(default=SystemType.UNKNOWN)
+    system_type: SystemType = SystemType.UNKNOWN
     """Type of the space system.
 
     Represents what from a space enterprise this SpaceSystem element represents. See the
@@ -181,7 +435,7 @@ class SpaceSystem(NameDescriptionBase):
     )
     """Optional descriptive attribute for document owner convenience."""
 
-    base: str | None = Field(default=None)
+    base: str | None = None
     """Applicable since: XTCE 1.3."""
 
     def validate_semantics(
@@ -194,149 +448,89 @@ class SpaceSystem(NameDescriptionBase):
 
         # TODO call all child validate_semantics methods
 
-    @classmethod
-    def _from_v1_1(cls: type[Self], space_system: xtce_1_1.SpaceSystem) -> Self:
-        version = XtceVersion.V1_1
-
-        kwargs = {
-            f.name: getattr(space_system, f.name)
-            for f in dataclasses.fields(space_system)
-        }
-
-        if space_system.alias_set:
-            kwargs["alias_set"] = [
-                Alias.from_xsdata(alias, version)
-                for alias in space_system.alias_set.alias
-            ]
-        if space_system.ancillary_data_set:
-            kwargs["ancillary_data_set"] = [
-                AncillaryData.from_xsdata(ancillary_data, version)
-                for ancillary_data in space_system.ancillary_data_set.ancillary_data
-            ]
-        if space_system.header:
-            kwargs["header"] = Header.from_xsdata(
-                space_system.header,
-                version,
-            )
-        if space_system.telemetry_meta_data:
-            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
-                space_system.telemetry_meta_data,
-                version,
-            )
-        if space_system.command_meta_data:
-            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
-                space_system.command_meta_data,
-                version,
-            )
-        if space_system.service_set:
-            kwargs["services"] = [
-                Service.from_xsdata(service, version)
-                for service in space_system.service_set.service
-            ]
-        if space_system.space_system:
-            kwargs["space_system"] = [
-                cls._from_v1_1(subsystem) for subsystem in space_system.space_system
-            ]
-
-        return cls(**kwargs)
+    _v1_1_type = xtce_1_1.SpaceSystemType
+    _v1_2_type = xtce_1_2.SpaceSystemType
+    _v1_3_type = xtce_1_3.SpaceSystemType
 
     @classmethod
-    def _from_v1_2(cls: type[Self], space_system: xtce_1_2.SpaceSystem) -> Self:
-        version = XtceVersion.V1_2
-
-        kwargs = {
-            f.name: getattr(space_system, f.name)
-            for f in dataclasses.fields(space_system)
-        }
-
-        if space_system.alias_set:
-            kwargs["alias_set"] = [
-                Alias.from_xsdata(alias, version)
-                for alias in space_system.alias_set.alias
-            ]
-        if space_system.ancillary_data_set:
-            kwargs["ancillary_data_set"] = [
-                AncillaryData.from_xsdata(ancillary_data, version)
-                for ancillary_data in space_system.ancillary_data_set.ancillary_data
-            ]
-        if space_system.header:
-            kwargs["header"] = Header.from_xsdata(
-                space_system.header,
-                version,
-            )
-        if space_system.telemetry_meta_data:
-            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
-                space_system.telemetry_meta_data,
-                version,
-            )
-        if space_system.command_meta_data:
-            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
-                space_system.command_meta_data,
-                version,
-            )
-        if space_system.service_set:
-            kwargs["services"] = [
-                Service.from_xsdata(service, version)
-                for service in space_system.service_set.service
-            ]
-        if space_system.space_system:
-            kwargs["space_system"] = [
-                cls._from_v1_2(subsystem) for subsystem in space_system.space_system
-            ]
-
-        return cls(**kwargs)
+    def _from_v1_1_kwargs(cls, obj: xtce_1_1.SpaceSystemType) -> dict[str, Any]:
+        kwargs = super()._from_v1_1_kwargs(obj)
+        kwargs["header"] = (
+            Header._from_v1_1(obj.header) if obj.header is not None else None
+        )
+        kwargs["telemetry_metadata"] = (
+            TelemetryMetadata._from_v1_1(obj.telemetry_meta_data)
+            if obj.telemetry_meta_data is not None
+            else None
+        )
+        kwargs["command_metadata"] = (
+            CommandMetadata._from_v1_1(obj.command_meta_data)
+            if obj.command_meta_data is not None
+            else None
+        )
+        kwargs["services"] = (
+            [Service._from_v1_1(s) for s in obj.service_set.service]
+            if obj.service_set is not None
+            else []
+        )
+        kwargs["space_systems"] = [SpaceSystem._from_v1_1(s) for s in obj.space_system]
+        kwargs["operational_status"] = obj.operational_status
+        return kwargs
 
     @classmethod
-    def _from_v1_3(cls: type[Self], space_system: xtce_1_3.SpaceSystem) -> Self:
-        version = XtceVersion.V1_3
+    def _from_v1_2_kwargs(cls, obj: xtce_1_2.SpaceSystemType) -> dict[str, Any]:
+        kwargs = super()._from_v1_2_kwargs(obj)
+        kwargs["header"] = (
+            Header._from_v1_2(obj.header) if obj.header is not None else None
+        )
+        kwargs["telemetry_metadata"] = (
+            TelemetryMetadata._from_v1_2(obj.telemetry_meta_data)
+            if obj.telemetry_meta_data is not None
+            else None
+        )
+        kwargs["command_metadata"] = (
+            CommandMetadata._from_v1_2(obj.command_meta_data)
+            if obj.command_meta_data is not None
+            else None
+        )
+        kwargs["services"] = (
+            [Service._from_v1_2(s) for s in obj.service_set.service]
+            if obj.service_set is not None
+            else []
+        )
+        kwargs["space_systems"] = [SpaceSystem._from_v1_2(s) for s in obj.space_system]
+        kwargs["operational_status"] = obj.operational_status
+        return kwargs
 
-        kwargs = {
-            f.name: getattr(space_system, f.name)
-            for f in dataclasses.fields(space_system)
-        }
+    @classmethod
+    def _from_v1_3_kwargs(cls, obj: xtce_1_3.SpaceSystemType) -> dict[str, Any]:
+        kwargs = super()._from_v1_3_kwargs(obj)
+        kwargs["header"] = (
+            Header._from_v1_3(obj.header) if obj.header is not None else None
+        )
+        kwargs["telemetry_metadata"] = (
+            TelemetryMetadata._from_v1_3(obj.telemetry_meta_data)
+            if obj.telemetry_meta_data is not None
+            else None
+        )
+        kwargs["command_metadata"] = (
+            CommandMetadata._from_v1_3(obj.command_meta_data)
+            if obj.command_meta_data is not None
+            else None
+        )
+        kwargs["services"] = (
+            [Service._from_v1_3(s) for s in obj.service_set.service]
+            if obj.service_set is not None
+            else []
+        )
+        kwargs["space_systems"] = [SpaceSystem._from_v1_3(s) for s in obj.space_system]
+        kwargs["system_type"] = SystemType(obj.system_type.value)
+        kwargs["asset_type"] = obj.asset_type
+        kwargs["operational_status"] = obj.operational_status
+        kwargs["base"] = obj.base
+        return kwargs
 
-        if space_system.alias_set:
-            kwargs["alias_set"] = [
-                Alias.from_xsdata(alias, version)
-                for alias in space_system.alias_set.alias
-            ]
-        if space_system.ancillary_data_set:
-            kwargs["ancillary_data_set"] = [
-                AncillaryData.from_xsdata(ancillary_data, version)
-                for ancillary_data in space_system.ancillary_data_set.ancillary_data
-            ]
-        if space_system.header:
-            kwargs["header"] = Header.from_xsdata(
-                space_system.header,
-                version,
-            )
-        if space_system.telemetry_meta_data:
-            kwargs["telemetry_metadata"] = TelemetryMetadata.from_xsdata(
-                space_system.telemetry_meta_data,
-                version,
-            )
-        if space_system.command_meta_data:
-            kwargs["command_metadata"] = CommandMetadata.from_xsdata(
-                space_system.command_meta_data,
-                version,
-            )
-        if space_system.service_set:
-            kwargs["services"] = [
-                Service.from_xsdata(service, version)
-                for service in space_system.service_set.service
-            ]
-        if space_system.space_system:
-            kwargs["space_system"] = [
-                cls._from_v1_3(subsystem) for subsystem in space_system.space_system
-            ]
-        if space_system.system_type:
-            kwargs["system_type"] = SystemType(space_system.system_type.value)
-
-        return cls(**kwargs)
-
-    def _to_v1_1(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_1.SpaceSystem:
+    def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_1
 
         self._enforce_unsupported_field(
@@ -361,46 +555,32 @@ class SpaceSystem(NameDescriptionBase):
             policy=policy,
         )
 
-        return xtce_1_1.SpaceSystem(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=xtce_1_1.AliasSetType(
-                alias=[alias._to_v1_1(policy) for alias in self.aliases]
-            )
-            if self.aliases
-            else None,
-            ancillary_data_set=xtce_1_1.DescriptionType.AncillaryDataSet(
-                ancillary_data=[
-                    ancillary_data._to_v1_1(policy)
-                    for ancillary_data in self.ancillary_data
-                ]
-            )
-            if self.ancillary_data
-            else None,
-            header=self.header.to_xsdata(version=version) if self.header else None,
-            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
-            if self.telemetry_metadata
-            else None,
-            command_meta_data=self.command_metadata.to_xsdata(version=version)
-            if self.command_metadata
-            else None,
-            service_set=xtce_1_1.SpaceSystemType.ServiceSet(
-                service=[
-                    service.to_xsdata(version=version) for service in self.services
-                ]
+        kwargs = super()._to_v1_1_kwargs(policy)
+        kwargs["header"] = (
+            self.header._to_v1_1(policy) if self.header is not None else None
+        )
+        kwargs["telemetry_meta_data"] = (
+            self.telemetry_metadata._to_v1_1(policy)
+            if self.telemetry_metadata is not None
+            else None
+        )
+        kwargs["command_meta_data"] = (
+            self.command_metadata._to_v1_1(policy)
+            if self.command_metadata is not None
+            else None
+        )
+        kwargs["service_set"] = (
+            xtce_1_1.SpaceSystemType.ServiceSet(
+                service=[s._to_v1_1(policy) for s in self.services]
             )
             if self.services
-            else None,
-            space_system=[
-                subsystem._to_v1_1(policy) for subsystem in self.space_systems
-            ],
-            operational_status=self.operational_status,
+            else None
         )
+        kwargs["space_system"] = [s._to_v1_1(policy) for s in self.space_systems]
+        kwargs["operational_status"] = self.operational_status
+        return kwargs
 
-    def _to_v1_2(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_2.SpaceSystem:
+    def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         version = XtceVersion.V1_2
 
         self._enforce_unsupported_field(
@@ -425,84 +605,48 @@ class SpaceSystem(NameDescriptionBase):
             policy=policy,
         )
 
-        return xtce_1_2.SpaceSystem(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=xtce_1_2.AliasSetType(
-                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
-            )
-            if self.aliases
-            else None,
-            ancillary_data_set=xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[
-                    ancillary_data.to_xsdata(version=version)
-                    for ancillary_data in self.ancillary_data
-                ]
-            )
-            if self.ancillary_data
-            else None,
-            header=self.header.to_xsdata(version=version) if self.header else None,
-            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
-            if self.telemetry_metadata
-            else None,
-            command_meta_data=self.command_metadata.to_xsdata(version=version)
-            if self.command_metadata
-            else None,
-            service_set=xtce_1_2.ServiceSetType(
-                service=[
-                    service.to_xsdata(version=version) for service in self.services
-                ]
-            )
-            if self.services
-            else None,
-            space_system=[
-                subsystem._to_v1_2(policy) for subsystem in self.space_systems
-            ],
-            operational_status=self.operational_status,
+        kwargs = super()._to_v1_2_kwargs(policy)
+        kwargs["header"] = (
+            self.header._to_v1_2(policy) if self.header is not None else None
         )
-
-    def _to_v1_3(
-        self, policy: DowngradePolicy = DowngradePolicy.STRICT
-    ) -> xtce_1_3.SpaceSystem:
-        version = XtceVersion.V1_3
-
-        return xtce_1_3.SpaceSystem(
-            name=self.name,
-            short_description=self.short_description,
-            long_description=self.long_description,
-            alias_set=xtce_1_3.AliasSetType(
-                alias=[alias.to_xsdata(version=version) for alias in self.aliases]
-            )
-            if self.aliases
-            else None,
-            ancillary_data_set=xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[
-                    ancillary_data.to_xsdata(version=version)
-                    for ancillary_data in self.ancillary_data
-                ]
-            )
-            if self.ancillary_data
-            else None,
-            header=self.header.to_xsdata(version=version) if self.header else None,
-            telemetry_meta_data=self.telemetry_metadata.to_xsdata(version=version)
-            if self.telemetry_metadata
-            else None,
-            command_meta_data=self.command_metadata.to_xsdata(version=version)
-            if self.command_metadata
-            else None,
-            service_set=xtce_1_3.ServiceSetType(
-                service=[
-                    service.to_xsdata(version=version) for service in self.services
-                ]
-            )
-            if self.services
-            else None,
-            space_system=[
-                subsystem._to_v1_3(policy) for subsystem in self.space_systems
-            ],
-            system_type=xtce_1_3.SystemTypeType(self.system_type.value),
-            asset_type=self.asset_type,
-            operational_status=self.operational_status,
-            base=self.base,
+        kwargs["telemetry_meta_data"] = (
+            self.telemetry_metadata._to_v1_2(policy)
+            if self.telemetry_metadata is not None
+            else None
         )
+        kwargs["command_meta_data"] = (
+            self.command_metadata._to_v1_2(policy)
+            if self.command_metadata is not None
+            else None
+        )
+        kwargs["service_set"] = xtce_1_2.ServiceSetType(
+            service=[s._to_v1_2(policy) for s in self.services]
+        )
+        kwargs["space_system"] = [s._to_v1_2(policy) for s in self.space_systems]
+        kwargs["operational_status"] = self.operational_status
+        return kwargs
+
+    def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
+        kwargs = super()._to_v1_3_kwargs(policy)
+        kwargs["header"] = (
+            self.header._to_v1_3(policy) if self.header is not None else None
+        )
+        kwargs["telemetry_meta_data"] = (
+            self.telemetry_metadata._to_v1_3(policy)
+            if self.telemetry_metadata is not None
+            else None
+        )
+        kwargs["command_meta_data"] = (
+            self.command_metadata._to_v1_3(policy)
+            if self.command_metadata is not None
+            else None
+        )
+        kwargs["service_set"] = xtce_1_3.ServiceSetType(
+            service=[s._to_v1_3(policy) for s in self.services]
+        )
+        kwargs["space_system"] = [s._to_v1_3(policy) for s in self.space_systems]
+        kwargs["system_type"] = xtce_1_3.SystemTypeType(self.system_type.value)
+        kwargs["asset_type"] = self.asset_type
+        kwargs["operational_status"] = self.operational_status
+        kwargs["base"] = self.base
+        return kwargs
