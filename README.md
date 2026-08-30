@@ -125,12 +125,12 @@ True
   - [x] Container models
   - [x] Command models
   - [x] Parameter models
-  - [ ] Telemetry models
-  - [ ] Space system
-  - [ ] Enum models
+  - [x] Telemetry models
+  - [x] Space system
+  - [x] Enum models
 - [x] Refactor translation methods for inherited classes
-- [ ] Implement unified model serialization and deserialization
-- [ ] Release alpha
+- [x] Implement unified model serialization and deserialization
+- [x] Release alpha
 - [ ] Implement full model semantic validation
 - [ ] Write end-to-end tests for generating and parsing XTCE files
 - [ ] Write documentation
