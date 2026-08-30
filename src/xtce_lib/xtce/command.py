@@ -291,38 +291,33 @@ class BaseMetaCommand(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["argument_assignment_list"] = (
-            xtce_1_1.MetaCommandType.BaseMetaCommand.ArgumentAssignmentList(
-                argument_assignment=[
-                    a._to_v1_1(policy) for a in self.argument_assignments
-                ]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_assignment_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_1.MetaCommandType.BaseMetaCommand.ArgumentAssignmentList,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_1(policy),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["argument_assignment_list"] = (
-            xtce_1_2.ArgumentAssignmentListType(
-                argument_assignment=[a._to_v1_2(policy) for a in self.argument_assignments]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_assignment_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_2.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_2(policy),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["argument_assignment_list"] = (
-            xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[a._to_v1_3(policy) for a in self.argument_assignments]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_assignment_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_3.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_3(policy),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
@@ -432,14 +427,11 @@ class TransmissionConstraint(MatchCriteria):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["argument_restriction_list"] = (
-            xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[
-                    a._to_v1_3(policy) for a in self.argument_restrictions
-                ]
-            )
-            if self.argument_restrictions
-            else None
+        kwargs["argument_restriction_list"] = self._build_set(
+            items=self.argument_restrictions,
+            set_class=xtce_1_3.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_3(policy),
         )
         kwargs["time_out"] = (
             timedelta_to_xml_duration(self.timeout)
@@ -528,9 +520,9 @@ class Significance(XtceBaseModel):
             field_name="consequence_level",
             current_value=self.consequence_level,
             allowed_values={
-            ConsequenceLevel.NORMAL,
-            ConsequenceLevel.CRITICAL,
-        },
+                ConsequenceLevel.NORMAL,
+                ConsequenceLevel.CRITICAL,
+            },
             target_version=XtceVersion.V1_1,
             policy=policy,
         )
@@ -1018,9 +1010,7 @@ class MetaCommand(NameDescriptionBase):
             else []
         )
         kwargs["interlock"] = (
-            Interlock._from_v1_1(obj.interlock)
-            if obj.interlock is not None
-            else None
+            Interlock._from_v1_1(obj.interlock) if obj.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             VerifierSet._from_v1_1(obj.verifier_set)
@@ -1087,9 +1077,7 @@ class MetaCommand(NameDescriptionBase):
             else []
         )
         kwargs["interlock"] = (
-            Interlock._from_v1_2(obj.interlock)
-            if obj.interlock is not None
-            else None
+            Interlock._from_v1_2(obj.interlock) if obj.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             VerifierSet._from_v1_2(obj.verifier_set)
@@ -1156,9 +1144,7 @@ class MetaCommand(NameDescriptionBase):
             else []
         )
         kwargs["interlock"] = (
-            Interlock._from_v1_3(obj.interlock)
-            if obj.interlock is not None
-            else None
+            Interlock._from_v1_3(obj.interlock) if obj.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             VerifierSet._from_v1_3(obj.verifier_set)
@@ -1197,62 +1183,48 @@ class MetaCommand(NameDescriptionBase):
             if self.command_container is not None
             else None
         )
-        kwargs["argument_list"] = (
-            xtce_1_1.MetaCommandType.ArgumentList(
-                argument=[arg._to_v1_1(policy) for arg in self.arguments]
-            )
-            if self.arguments
-            else None
+        kwargs["argument_list"] = self._build_set(
+            items=self.arguments,
+            set_class=xtce_1_1.MetaCommandType.ArgumentList,
+            kwarg_name="argument",
+            converter=lambda arg: arg._to_v1_1(policy),
         )
-        kwargs["transmission_constraint_list"] = (
-            xtce_1_1.MetaCommandType.TransmissionConstraintList(
-                transmission_constraint=[
-                    tc._to_v1_1(policy) for tc in self.transmission_constraints
-                ]
-            )
-            if self.transmission_constraints
-            else None
+        kwargs["transmission_constraint_list"] = self._build_set(
+            items=self.transmission_constraints,
+            set_class=xtce_1_1.MetaCommandType.TransmissionConstraintList,
+            kwarg_name="transmission_constraint",
+            converter=lambda tc: tc._to_v1_1(policy),
         )
         kwargs["default_significance"] = (
             self.default_significance._to_v1_1(policy)
             if self.default_significance is not None
             else None
         )
-        kwargs["context_significance_list"] = (
-            xtce_1_1.MetaCommandType.ContextSignificanceList(
-                context_significance=[
-                    cs._to_v1_1(policy) for cs in self.context_significance
-                ]
-            )
-            if self.context_significance
-            else None
+        kwargs["context_significance_list"] = self._build_set(
+            items=self.context_significance,
+            set_class=xtce_1_1.MetaCommandType.ContextSignificanceList,
+            kwarg_name="context_significance",
+            converter=lambda cs: cs._to_v1_1(policy),
         )
         kwargs["interlock"] = (
-            self.interlock._to_v1_1(policy)
-            if self.interlock is not None
-            else None
+            self.interlock._to_v1_1(policy) if self.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             self.verifier_set._to_v1_1(policy)
             if self.verifier_set is not None
             else None
         )
-        kwargs["parameter_to_set_list"] = (
-            xtce_1_1.MetaCommandType.ParameterToSetList(
-                parameter_to_set=[pts._to_v1_1(policy) for pts in self.parameters_to_set]
-            )
-            if self.parameters_to_set
-            else None
+        kwargs["parameter_to_set_list"] = self._build_set(
+            items=self.parameters_to_set,
+            set_class=xtce_1_1.MetaCommandType.ParameterToSetList,
+            kwarg_name="parameter_to_set",
+            converter=lambda pts: pts._to_v1_1(policy),
         )
-        kwargs["parameters_to_suspend_alarms_on_set"] = (
-            xtce_1_1.MetaCommandType.ParametersToSuspendAlarmsOnSet(
-                parameter_to_suspend_alarms_on=[
-                    ptsa._to_v1_1(policy)
-                    for ptsa in self.parameters_to_suspend_alarms_on
-                ]
-            )
-            if self.parameters_to_suspend_alarms_on
-            else None
+        kwargs["parameters_to_suspend_alarms_on_set"] = self._build_set(
+            items=self.parameters_to_suspend_alarms_on,
+            set_class=xtce_1_1.MetaCommandType.ParametersToSuspendAlarmsOnSet,
+            kwarg_name="parameter_to_suspend_alarms_on",
+            converter=lambda ptsa: ptsa._to_v1_1(policy),
         )
         kwargs["abstract"] = self.abstract
         return kwargs
@@ -1270,62 +1242,48 @@ class MetaCommand(NameDescriptionBase):
             if self.command_container is not None
             else None
         )
-        kwargs["argument_list"] = (
-            xtce_1_2.ArgumentListType(
-                argument=[arg._to_v1_2(policy) for arg in self.arguments]
-            )
-            if self.arguments
-            else None
+        kwargs["argument_list"] = self._build_set(
+            items=self.arguments,
+            set_class=xtce_1_2.ArgumentListType,
+            kwarg_name="argument",
+            converter=lambda arg: arg._to_v1_2(policy),
         )
-        kwargs["transmission_constraint_list"] = (
-            xtce_1_2.TransmissionConstraintListType(
-                transmission_constraint=[
-                    tc._to_v1_2(policy) for tc in self.transmission_constraints
-                ]
-            )
-            if self.transmission_constraints
-            else None
+        kwargs["transmission_constraint_list"] = self._build_set(
+            items=self.transmission_constraints,
+            set_class=xtce_1_2.TransmissionConstraintListType,
+            kwarg_name="transmission_constraint",
+            converter=lambda tc: tc._to_v1_2(policy),
         )
         kwargs["default_significance"] = (
             self.default_significance._to_v1_2(policy)
             if self.default_significance is not None
             else None
         )
-        kwargs["context_significance_list"] = (
-            xtce_1_2.ContextSignificanceListType(
-                context_significance=[
-                    cs._to_v1_2(policy) for cs in self.context_significance
-                ]
-            )
-            if self.context_significance
-            else None
+        kwargs["context_significance_list"] = self._build_set(
+            items=self.context_significance,
+            set_class=xtce_1_2.ContextSignificanceListType,
+            kwarg_name="context_significance",
+            converter=lambda cs: cs._to_v1_2(policy),
         )
         kwargs["interlock"] = (
-            self.interlock._to_v1_2(policy)
-            if self.interlock is not None
-            else None
+            self.interlock._to_v1_2(policy) if self.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             self.verifier_set._to_v1_2(policy)
             if self.verifier_set is not None
             else None
         )
-        kwargs["parameter_to_set_list"] = (
-            xtce_1_2.ParameterToSetListType(
-                parameter_to_set=[pts._to_v1_2(policy) for pts in self.parameters_to_set]
-            )
-            if self.parameters_to_set
-            else None
+        kwargs["parameter_to_set_list"] = self._build_set(
+            items=self.parameters_to_set,
+            set_class=xtce_1_2.ParameterToSetListType,
+            kwarg_name="parameter_to_set",
+            converter=lambda pts: pts._to_v1_2(policy),
         )
-        kwargs["parameters_to_suspend_alarms_on_set"] = (
-            xtce_1_2.ParametersToSuspendAlarmsOnSetType(
-                parameter_to_suspend_alarms_on=[
-                    ptsa._to_v1_2(policy)
-                    for ptsa in self.parameters_to_suspend_alarms_on
-                ]
-            )
-            if self.parameters_to_suspend_alarms_on
-            else None
+        kwargs["parameters_to_suspend_alarms_on_set"] = self._build_set(
+            items=self.parameters_to_suspend_alarms_on,
+            set_class=xtce_1_2.ParametersToSuspendAlarmsOnSetType,
+            kwarg_name="parameter_to_suspend_alarms_on",
+            converter=lambda ptsa: ptsa._to_v1_2(policy),
         )
         kwargs["abstract"] = self.abstract
         return kwargs
@@ -1343,62 +1301,48 @@ class MetaCommand(NameDescriptionBase):
             if self.command_container is not None
             else None
         )
-        kwargs["argument_list"] = (
-            xtce_1_3.ArgumentListType(
-                argument=[arg._to_v1_3(policy) for arg in self.arguments]
-            )
-            if self.arguments
-            else None
+        kwargs["argument_list"] = self._build_set(
+            items=self.arguments,
+            set_class=xtce_1_3.ArgumentListType,
+            kwarg_name="argument",
+            converter=lambda arg: arg._to_v1_3(policy),
         )
-        kwargs["transmission_constraint_list"] = (
-            xtce_1_3.TransmissionConstraintListType(
-                transmission_constraint=[
-                    tc._to_v1_3(policy) for tc in self.transmission_constraints
-                ]
-            )
-            if self.transmission_constraints
-            else None
+        kwargs["transmission_constraint_list"] = self._build_set(
+            items=self.transmission_constraints,
+            set_class=xtce_1_3.TransmissionConstraintListType,
+            kwarg_name="transmission_constraint",
+            converter=lambda tc: tc._to_v1_3(policy),
         )
         kwargs["default_significance"] = (
             self.default_significance._to_v1_3(policy)
             if self.default_significance is not None
             else None
         )
-        kwargs["context_significance_list"] = (
-            xtce_1_3.ContextSignificanceListType(
-                context_significance=[
-                    cs._to_v1_3(policy) for cs in self.context_significance
-                ]
-            )
-            if self.context_significance
-            else None
+        kwargs["context_significance_list"] = self._build_set(
+            items=self.context_significance,
+            set_class=xtce_1_3.ContextSignificanceListType,
+            kwarg_name="context_significance",
+            converter=lambda cs: cs._to_v1_3(policy),
         )
         kwargs["interlock"] = (
-            self.interlock._to_v1_3(policy)
-            if self.interlock is not None
-            else None
+            self.interlock._to_v1_3(policy) if self.interlock is not None else None
         )
         kwargs["verifier_set"] = (
             self.verifier_set._to_v1_3(policy)
             if self.verifier_set is not None
             else None
         )
-        kwargs["parameter_to_set_list"] = (
-            xtce_1_3.ParameterToSetListType(
-                parameter_to_set=[pts._to_v1_3(policy) for pts in self.parameters_to_set]
-            )
-            if self.parameters_to_set
-            else None
+        kwargs["parameter_to_set_list"] = self._build_set(
+            items=self.parameters_to_set,
+            set_class=xtce_1_3.ParameterToSetListType,
+            kwarg_name="parameter_to_set",
+            converter=lambda pts: pts._to_v1_3(policy),
         )
-        kwargs["parameters_to_suspend_alarms_on_set"] = (
-            xtce_1_3.ParametersToSuspendAlarmsOnSetType(
-                parameter_to_suspend_alarms_on=[
-                    ptsa._to_v1_3(policy)
-                    for ptsa in self.parameters_to_suspend_alarms_on
-                ]
-            )
-            if self.parameters_to_suspend_alarms_on
-            else None
+        kwargs["parameters_to_suspend_alarms_on_set"] = self._build_set(
+            items=self.parameters_to_suspend_alarms_on,
+            set_class=xtce_1_3.ParametersToSuspendAlarmsOnSetType,
+            kwarg_name="parameter_to_suspend_alarms_on",
+            converter=lambda ptsa: ptsa._to_v1_3(policy),
         )
         kwargs["abstract"] = self.abstract
         return kwargs
@@ -1497,42 +1441,38 @@ class MetaCommandStep(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["argument_list"] = (
-            xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList.MetaCommandStep.ArgumentList(
-                argument=[
-                    xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList.MetaCommandStep.ArgumentList.Argument(
-                        name=str(a.name),
-                        value=uncoerce(a.value),
-                    )
-                    for a in self.argument_assignments
-                ]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList.MetaCommandStep.ArgumentList,
+            kwarg_name="argument",
+            converter=lambda a: (
+                xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList.MetaCommandStep.ArgumentList.Argument(
+                    name=str(a.name),
+                    value=uncoerce(a.value),
+                )
+            ),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["argument_assigment_list"] = (
-            xtce_1_2.ArgumentAssignmentListType(
-                argument_assignment=[a._to_v1_2(policy) for a in self.argument_assignments]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_assigment_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_2.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_2(policy),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["argument_assignment_list"] = (
-            xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[a._to_v1_3(policy) for a in self.argument_assignments]
-            )
-            if self.argument_assignments
-            else None
+        kwargs["argument_assignment_list"] = self._build_set(
+            items=self.argument_assignments,
+            set_class=xtce_1_3.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda a: a._to_v1_3(policy),
         )
         kwargs["meta_command_ref"] = str(self.meta_command_ref)
         return kwargs
@@ -1585,24 +1525,31 @@ class BlockMetaCommand(NameDescriptionBase):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["meta_command_step_list"] = (
-            xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList(
-                meta_command_step=[s._to_v1_1(policy) for s in self.meta_command_steps]
-            )
+        kwargs["meta_command_step_list"] = self._build_set(
+            items=self.meta_command_steps,
+            set_class=xtce_1_1.CommandMetaDataType.MetaCommandSet.BlockMetaCommand.MetaCommandStepList,
+            kwarg_name="meta_command_step",
+            converter=lambda s: s._to_v1_1(policy),
         )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["meta_command_step_list"] = xtce_1_2.MetaCommandStepListType(
-            meta_command_step=[s._to_v1_2(policy) for s in self.meta_command_steps]
+        kwargs["meta_command_step_list"] = self._build_set(
+            items=self.meta_command_steps,
+            set_class=xtce_1_2.MetaCommandStepListType,
+            kwarg_name="meta_command_step",
+            converter=lambda s: s._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["meta_command_step_list"] = xtce_1_3.MetaCommandStepListType(
-            meta_command_step=[s._to_v1_3(policy) for s in self.meta_command_steps]
+        kwargs["meta_command_step_list"] = self._build_set(
+            items=self.meta_command_steps,
+            set_class=xtce_1_3.MetaCommandStepListType,
+            kwarg_name="meta_command_step",
+            converter=lambda s: s._to_v1_3(policy),
         )
         return kwargs
 
@@ -2023,166 +1970,144 @@ class CommandMetadata(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_1.ParameterTypeSetType(
-                choice=[p._to_v1_1(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_1.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_1(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_1.ParameterSetType(
-                choice=[p._to_v1_1(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_1.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_1(policy),
         )
-        kwargs["argument_type_set"] = (
-            xtce_1_1.ArgumentTypeSetType(
-                choice=[a._to_v1_1(policy) for a in self.argument_types]
-            )
-            if self.argument_types
-            else None
+        kwargs["argument_type_set"] = self._build_set(
+            items=self.argument_types,
+            set_class=xtce_1_1.ArgumentTypeSetType,
+            kwarg_name="choice",
+            converter=lambda a: a._to_v1_1(policy),
         )
-        kwargs["meta_command_set"] = (
-            xtce_1_1.CommandMetaDataType.MetaCommandSet(
-                choice=[
-                    str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_1(policy)
-                    for mc in self.meta_commands
-                ]
-            )
+        kwargs["meta_command_set"] = self._build_set(
+            items=self.meta_commands,
+            set_class=xtce_1_1.CommandMetaDataType.MetaCommandSet,
+            kwarg_name="choice",
+            converter=lambda mc: (
+                str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_1(policy)
+            ),
         )
-        kwargs["command_container_set"] = (
-            xtce_1_1.CommandContainerSetType(
-                command_container=[c._to_v1_1(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["command_container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_1.CommandContainerSetType,
+            kwarg_name="command_container",
+            converter=lambda c: c._to_v1_1(policy),
         )
-        kwargs["stream_set"] = (
-            xtce_1_1.StreamSetType(
-                choice=[s._to_v1_1(policy) for s in self.streams]
-            )
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_1.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_1(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_1.AlgorithmSetType(
-                choice=[a._to_v1_1(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_1.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_1(policy),
         )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_2.ParameterTypeSetType(
-                choice=[p._to_v1_2(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_2.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_2(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_2.ParameterSetType(
-                choice=[p._to_v1_2(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_2.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_2(policy),
         )
-        kwargs["argument_type_set"] = (
-            xtce_1_2.ArgumentTypeSetType(
-                choice=[a._to_v1_2(policy) for a in self.argument_types]
-            )
-            if self.argument_types
-            else None
+        kwargs["argument_type_set"] = self._build_set(
+            items=self.argument_types,
+            set_class=xtce_1_2.ArgumentTypeSetType,
+            kwarg_name="choice",
+            converter=lambda a: a._to_v1_2(policy),
         )
-        kwargs["meta_command_set"] = (
-            xtce_1_2.MetaCommandSetType(
-                choice=[
-                    str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_2(policy)
-                    for mc in self.meta_commands
-                ]
-            )
-            if self.meta_commands
-            else None
+        kwargs["meta_command_set"] = self._build_set(
+            items=self.meta_commands,
+            set_class=xtce_1_2.MetaCommandSetType,
+            kwarg_name="choice",
+            converter=lambda mc: (
+                str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_2(policy)
+            ),
         )
-        kwargs["command_container_set"] = (
-            xtce_1_2.CommandContainerSetType(
-                command_container=[c._to_v1_2(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["command_container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_2.CommandContainerSetType,
+            kwarg_name="command_container",
+            converter=lambda c: c._to_v1_2(policy),
         )
-        kwargs["stream_set"] = (
-            xtce_1_2.StreamSetType(
-                choice=[s._to_v1_2(policy) for s in self.streams]
-            )
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_2.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_2(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_2.AlgorithmSetType(
-                choice=[a._to_v1_2(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_2.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_3.ParameterTypeSetType(
-                choice=[p._to_v1_3(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_3.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_3(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_3.ParameterSetType(
-                choice=[p._to_v1_3(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_3.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_3(policy),
         )
-        kwargs["argument_type_set"] = (
-            xtce_1_3.ArgumentTypeSetType(
-                choice=[a._to_v1_3(policy) for a in self.argument_types]
-            )
-            if self.argument_types
-            else None
+        kwargs["argument_type_set"] = self._build_set(
+            items=self.argument_types,
+            set_class=xtce_1_3.ArgumentTypeSetType,
+            kwarg_name="choice",
+            converter=lambda a: a._to_v1_3(policy),
         )
-        kwargs["meta_command_set"] = (
-            xtce_1_3.MetaCommandSetType(
-                choice=[
-                    str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_3(policy)
-                    for mc in self.meta_commands
-                ]
-            )
-            if self.meta_commands
-            else None
+        kwargs["meta_command_set"] = self._build_set(
+            items=self.meta_commands,
+            set_class=xtce_1_3.MetaCommandSetType,
+            kwarg_name="choice",
+            converter=lambda mc: (
+                str(mc.name) if isinstance(mc, MetaCommandRef) else mc._to_v1_3(policy)
+            ),
         )
-        kwargs["command_container_set"] = (
-            xtce_1_3.CommandContainerSetType(
-                command_container=[c._to_v1_3(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["command_container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_3.CommandContainerSetType,
+            kwarg_name="command_container",
+            converter=lambda c: c._to_v1_3(policy),
         )
-        kwargs["stream_set"] = (
-            xtce_1_3.StreamSetType(
-                choice=[s._to_v1_3(policy) for s in self.streams]
-            )
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_3.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_3(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_3.AlgorithmSetType(
-                choice=[a._to_v1_3(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_3.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_3(policy),
         )
         return kwargs

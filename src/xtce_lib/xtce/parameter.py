@@ -124,12 +124,11 @@ class IntegerParameter(IntegerData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.IntegerParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.IntegerParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -140,12 +139,11 @@ class IntegerParameter(IntegerData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.NumericContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.NumericContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -156,12 +154,11 @@ class IntegerParameter(IntegerData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.NumericContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.NumericContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -242,12 +239,11 @@ class FloatParameter(FloatData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.FloatParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.FloatParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -258,12 +254,11 @@ class FloatParameter(FloatData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.NumericContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.NumericContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -274,12 +269,11 @@ class FloatParameter(FloatData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.NumericContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.NumericContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -360,12 +354,11 @@ class StringParameter(StringData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.StringParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.StringParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -376,12 +369,11 @@ class StringParameter(StringData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.StringContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.StringContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -392,12 +384,11 @@ class StringParameter(StringData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.StringContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.StringContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -478,12 +469,11 @@ class BinaryParameter(BinaryData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.BinaryParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.BinaryParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -494,12 +484,11 @@ class BinaryParameter(BinaryData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["binary_context_alarm_list"] = (
-            xtce_1_2.BinaryContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["binary_context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.BinaryContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -510,12 +499,11 @@ class BinaryParameter(BinaryData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.BinaryContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.BinaryContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -596,12 +584,11 @@ class BooleanParameter(BooleanData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.BooleanParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.BooleanParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -612,12 +599,11 @@ class BooleanParameter(BooleanData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.BooleanContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.BooleanContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -628,12 +614,11 @@ class BooleanParameter(BooleanData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.BooleanContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.BooleanContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -723,7 +708,9 @@ class EnumeratedParameter(EnumeratedData):
         )
         kwargs["context_alarm_list"] = (
             xtce_1_1.ParameterTypeSetType.EnumeratedParameterType.ContextAlarmList(
-                context_alarm=self.context_alarms[0]._to_v1_1(policy)
+                context_alarm=self.context_alarms[0]._to_v1_1(
+                    policy
+                )  # TODO make this better
             )
             if self.context_alarms
             else None
@@ -737,12 +724,11 @@ class EnumeratedParameter(EnumeratedData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.EnumerationContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.EnumerationContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -753,12 +739,11 @@ class EnumeratedParameter(EnumeratedData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.EnumerationContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.EnumerationContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -807,15 +792,21 @@ class ArrayParameter(ArrayData):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
-            dimension=[dim._to_v1_2(policy) for dim in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_2.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda dim: dim._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
-            dimension=[dim._to_v1_3(policy) for dim in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_3.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda dim: dim._to_v1_3(policy),
         )
         return kwargs
 
@@ -920,12 +911,11 @@ class RelativeTimeParameter(RelativeTimeData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_1.ParameterTypeSetType.RelativeTimeParameterType.ContextAlarmList(
-                context_alarm=[alarm._to_v1_1(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_1.ParameterTypeSetType.RelativeTimeParameterType.ContextAlarmList,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         return kwargs
 
@@ -936,12 +926,11 @@ class RelativeTimeParameter(RelativeTimeData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_2.TimeContextAlarmListType(
-                context_alarm=[alarm._to_v1_2(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_2.TimeContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         return kwargs
 
@@ -952,12 +941,11 @@ class RelativeTimeParameter(RelativeTimeData):
             if self.default_alarm is not None
             else None
         )
-        kwargs["context_alarm_list"] = (
-            xtce_1_3.TimeContextAlarmListType(
-                context_alarm=[alarm._to_v1_3(policy) for alarm in self.context_alarms]
-            )
-            if self.context_alarms
-            else None
+        kwargs["context_alarm_list"] = self._build_set(
+            items=self.context_alarms,
+            set_class=xtce_1_3.TimeContextAlarmListType,
+            kwarg_name="context_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         return kwargs
 
@@ -1206,12 +1194,11 @@ class ParameterProperties(XtceBaseModel):
             if self.validity_condition is not None
             else None
         )
-        kwargs["physical_address_set"] = (
-            xtce_1_1.ParameterPropertiesType.PhysicalAddressSet(
-                physical_address=[pa._to_v1_1(policy) for pa in self.physical_addresses]
-            )
-            if self.physical_addresses
-            else None
+        kwargs["physical_address_set"] = self._build_set(
+            items=self.physical_addresses,
+            set_class=xtce_1_1.ParameterPropertiesType.PhysicalAddressSet,
+            kwarg_name="physical_address",
+            converter=lambda pa: pa._to_v1_1(policy),
         )
         kwargs["time_association"] = (
             self.time_association._to_v1_1(policy)
@@ -1245,12 +1232,11 @@ class ParameterProperties(XtceBaseModel):
             if self.validity_condition is not None
             else None
         )
-        kwargs["physical_address_set"] = (
-            xtce_1_2.PhysicalAddressSetType(
-                physical_address=[pa._to_v1_2(policy) for pa in self.physical_addresses]
-            )
-            if self.physical_addresses
-            else None
+        kwargs["physical_address_set"] = self._build_set(
+            items=self.physical_addresses,
+            set_class=xtce_1_2.PhysicalAddressSetType,
+            kwarg_name="physical_address",
+            converter=lambda pa: pa._to_v1_2(policy),
         )
         kwargs["time_association"] = (
             self.time_association._to_v1_2(policy)
@@ -1274,12 +1260,11 @@ class ParameterProperties(XtceBaseModel):
             if self.validity_condition is not None
             else None
         )
-        kwargs["physical_address_set"] = (
-            xtce_1_3.PhysicalAddressSetType(
-                physical_address=[pa._to_v1_3(policy) for pa in self.physical_addresses]
-            )
-            if self.physical_addresses
-            else None
+        kwargs["physical_address_set"] = self._build_set(
+            items=self.physical_addresses,
+            set_class=xtce_1_3.PhysicalAddressSetType,
+            kwarg_name="physical_address",
+            converter=lambda pa: pa._to_v1_3(policy),
         )
         kwargs["time_association"] = (
             self.time_association._to_v1_3(policy)

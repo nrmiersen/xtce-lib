@@ -675,7 +675,7 @@ class DataEncoding(XtceBaseModel, ABC):
             error_detect_correct_list[0] if error_detect_correct_list else None
         )
         if error_detect_correct is not None:
-            self._enforce_restricted_type(
+            error_detect_correct = self._enforce_restricted_type(
                 field_name="error_detect_correct",
                 current_value=error_detect_correct,
                 allowed_types=(Checksum, CRC, Parity),
@@ -702,12 +702,11 @@ class DataEncoding(XtceBaseModel, ABC):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["error_detect_correct"] = (
-            xtce_1_3.ErrorDetectCorrectType(
-                choice=[edc._to_v1_3(policy) for edc in self.error_detect_correct]
-            )
-            if self.error_detect_correct is not None
-            else None
+        kwargs["error_detect_correct"] = self._build_set(
+            items=self.error_detect_correct,
+            set_class=xtce_1_3.ErrorDetectCorrectType,
+            kwarg_name="choice",
+            converter=lambda edc: edc._to_v1_3(policy),
         )
         kwargs["bit_order"] = xtce_1_3.BitOrderType(self.bit_order.value)
         kwargs["byte_order"] = (
@@ -838,14 +837,11 @@ class IntegerDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_1.IntegerDataEncodingType.ContextCalibratorList(
-                context_calibrator=[
-                    c._to_v1_1(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_1.IntegerDataEncodingType.ContextCalibratorList,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_1(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_1(policy)
         kwargs["size_in_bits"] = self.size_in_bits
@@ -858,14 +854,11 @@ class IntegerDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_2.ContextCalibratorListType(
-                context_calibrator=[
-                    c._to_v1_2(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_2.ContextCalibratorListType,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_2(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_2(policy)
         kwargs["size_in_bits"] = self.size_in_bits
@@ -879,14 +872,11 @@ class IntegerDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_3.ContextCalibratorListType(
-                context_calibrator=[
-                    c._to_v1_3(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_3.ContextCalibratorListType,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_3(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_3(policy)
         kwargs["size_in_bits"] = self.size_in_bits
@@ -1020,14 +1010,11 @@ class FloatDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_1.FloatDataEncodingType.ContextCalibratorList(
-                context_calibrator=[
-                    c._to_v1_1(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_1.FloatDataEncodingType.ContextCalibratorList,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_1(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_1(policy)
         kwargs["size_in_bits"] = self.size_in_bits
@@ -1040,14 +1027,11 @@ class FloatDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_2.ContextCalibratorListType(
-                context_calibrator=[
-                    c._to_v1_2(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_2.ContextCalibratorListType,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_2(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_2(policy)
         kwargs["size_in_bits"] = self.size_in_bits
@@ -1061,14 +1045,11 @@ class FloatDataEncoding(DataEncoding):
             if self.default_calibrator
             else None
         )
-        kwargs["context_calibrator_list"] = (
-            xtce_1_3.ContextCalibratorListType(
-                context_calibrator=[
-                    c._to_v1_3(policy) for c in self.context_calibrators
-                ]
-            )
-            if self.context_calibrators
-            else None
+        kwargs["context_calibrator_list"] = self._build_set(
+            items=self.context_calibrators,
+            set_class=xtce_1_3.ContextCalibratorListType,
+            kwarg_name="context_calibrator",
+            converter=lambda c: c._to_v1_3(policy),
         )
         kwargs["encoding"] = self.encoding._to_v1_3(policy)
         kwargs["size_in_bits"] = self.size_in_bits

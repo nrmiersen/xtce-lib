@@ -435,120 +435,111 @@ class TelemetryMetadata(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_1.ParameterTypeSetType(
-                choice=[p._to_v1_1(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_1.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_1(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_1.ParameterSetType(
-                choice=[p._to_v1_1(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_1.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_1(policy),
         )
-        kwargs["container_set"] = (
-            xtce_1_1.ContainerSetType(
-                sequence_container=[c._to_v1_1(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_1.ContainerSetType,
+            kwarg_name="sequence_container",
+            converter=lambda c: c._to_v1_1(policy),
         )
         kwargs["message_set"] = (
             self.message_set._to_v1_1(policy) if self.message_set else None
         )
-        kwargs["stream_set"] = (
-            xtce_1_1.StreamSetType(choice=[s._to_v1_1(policy) for s in self.streams])
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_1.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_1(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_1.AlgorithmSetType(
-                choice=[a._to_v1_1(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_1.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_1(policy),
         )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_2.ParameterTypeSetType(
-                choice=[p._to_v1_2(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_2.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_2(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_2.ParameterSetType(
-                choice=[p._to_v1_2(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_2.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_2(policy),
         )
-        kwargs["container_set"] = (
-            xtce_1_2.ContainerSetType(
-                sequence_container=[c._to_v1_2(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_2.ContainerSetType,
+            kwarg_name="sequence_container",
+            converter=lambda c: c._to_v1_2(policy),
         )
         kwargs["message_set"] = (
             self.message_set._to_v1_2(policy) if self.message_set else None
         )
-        kwargs["stream_set"] = (
-            xtce_1_2.StreamSetType(choice=[s._to_v1_2(policy) for s in self.streams])
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_2.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_2(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_2.AlgorithmSetType(
-                choice=[a._to_v1_2(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_2.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["parameter_type_set"] = (
-            xtce_1_3.ParameterTypeSetType(
-                choice=[p._to_v1_3(policy) for p in self.parameter_types]
-            )
-            if self.parameter_types
-            else None
+        kwargs["parameter_type_set"] = self._build_set(
+            items=self.parameter_types,
+            set_class=xtce_1_3.ParameterTypeSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_3(policy),
         )
-        kwargs["parameter_set"] = (
-            xtce_1_3.ParameterSetType(
-                choice=[p._to_v1_3(policy) for p in self.parameters]
-            )
-            if self.parameters
-            else None
+        kwargs["parameter_set"] = self._build_set(
+            items=self.parameters,
+            set_class=xtce_1_3.ParameterSetType,
+            kwarg_name="choice",
+            converter=lambda p: p._to_v1_3(policy),
         )
-        kwargs["container_set"] = (
-            xtce_1_3.ContainerSetType(
-                sequence_container=[c._to_v1_3(policy) for c in self.containers]
-            )
-            if self.containers
-            else None
+        kwargs["container_set"] = self._build_set(
+            items=self.containers,
+            set_class=xtce_1_3.ContainerSetType,
+            kwarg_name="sequence_container",
+            converter=lambda c: c._to_v1_3(policy),
         )
         kwargs["message_set"] = (
             self.message_set._to_v1_3(policy) if self.message_set else None
         )
-        kwargs["stream_set"] = (
-            xtce_1_3.StreamSetType(choice=[s._to_v1_3(policy) for s in self.streams])
-            if self.streams
-            else None
+        kwargs["stream_set"] = self._build_set(
+            items=self.streams,
+            set_class=xtce_1_3.StreamSetType,
+            kwarg_name="stream",
+            converter=lambda s: s._to_v1_3(policy),
         )
-        kwargs["algorithm_set"] = (
-            xtce_1_3.AlgorithmSetType(
-                choice=[a._to_v1_3(policy) for a in self.algorithms]
-            )
-            if self.algorithms
-            else None
+        kwargs["algorithm_set"] = self._build_set(
+            items=self.algorithms,
+            set_class=xtce_1_3.AlgorithmSetType,
+            kwarg_name="algorithm",
+            converter=lambda a: a._to_v1_3(policy),
         )
         return kwargs

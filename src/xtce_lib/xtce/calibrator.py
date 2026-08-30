@@ -135,8 +135,11 @@ class BaseCalibrator(XtceBaseModel, ABC):
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.short_description
-        kwargs["ancillary_data_set"] = xtce_1_2.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_2.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_2(policy),
         )
         return kwargs
 
@@ -144,8 +147,11 @@ class BaseCalibrator(XtceBaseModel, ABC):
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.short_description
-        kwargs["ancillary_data_set"] = xtce_1_3.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_3.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_3(policy),
         )
         return kwargs
 
@@ -854,12 +860,11 @@ class Calibrator(BaseCalibrator):
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["long_description"] = self.long_description
-        kwargs["alias_set"] = (
-            xtce_1_1.AliasSetType(
-                alias=[alias._to_v1_1(policy) for alias in self.aliases]
-            )
-            if self.aliases
-            else None
+        kwargs["alias_set"] = self._build_set(
+            items=self.aliases,
+            set_class=xtce_1_1.AliasSetType,
+            kwarg_name="alias",
+            converter=lambda alias: alias._to_v1_1(policy),
         )
         kwargs["choice"] = self.calibrator_type._to_v1_1(policy)
         return kwargs

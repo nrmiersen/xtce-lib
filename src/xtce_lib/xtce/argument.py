@@ -355,15 +355,21 @@ class ArrayArgument(ArrayData):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
-            dimension=[d._to_v1_2(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_2.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
-            dimension=[d._to_v1_3(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_3.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_3(policy),
         )
         return kwargs
 

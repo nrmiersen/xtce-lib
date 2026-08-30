@@ -482,12 +482,11 @@ class SequenceEntry(XtceBaseModel, ABC):
             if self.time_association is not None
             else None
         )
-        kwargs["ancillary_data_set"] = (
-            xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_2.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda data: data._to_v1_2(policy),
         )
         kwargs["short_description"] = self.short_description
         return kwargs
@@ -514,12 +513,11 @@ class SequenceEntry(XtceBaseModel, ABC):
             if self.time_association is not None
             else None
         )
-        kwargs["ancillary_data_set"] = (
-            xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_3.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda data: data._to_v1_3(policy),
         )
         kwargs["short_description"] = self.short_description
         return kwargs
@@ -684,12 +682,11 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
             if self.include_condition is not None
             else None
         )
-        kwargs["ancillary_data_set"] = (
-            xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_2.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda data: data._to_v1_2(policy),
         )
         kwargs["short_description"] = self.short_description
         return kwargs
@@ -711,12 +708,11 @@ class ArgumentSequenceEntry(XtceBaseModel, ABC):
             if self.include_condition is not None
             else None
         )
-        kwargs["ancillary_data_set"] = (
-            xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_3.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda data: data._to_v1_3(policy),
         )
         kwargs["short_description"] = self.short_description
         return kwargs
@@ -1605,8 +1601,12 @@ class ArrayParameterRefEntry(SequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
-            dimension=[d._to_v1_1(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_1.ArrayParameterRefEntryType.DimensionList,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_1(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         return kwargs
@@ -1617,16 +1617,24 @@ class ArrayParameterRefEntry(SequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
-            dimension=[d._to_v1_2(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_2.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_2(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
-            dimension=[d._to_v1_3(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_3.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_3(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         return kwargs
@@ -1717,8 +1725,12 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
-            dimension=[d._to_v1_1(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_1.ArrayParameterRefEntryType.DimensionList,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_1(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         return kwargs
@@ -1729,8 +1741,12 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
         validator(self.parameter_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_2.DimensionListType(
-            dimension=[d._to_v1_2(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_2.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_2(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         kwargs["last_entry_for_this_array_instance"] = self.last_entry
@@ -1738,8 +1754,12 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_3.DimensionListType(
-            dimension=[d._to_v1_3(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_3.DimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_3(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.parameter_ref)
         kwargs["last_entry_for_this_array_instance"] = self.last_entry
@@ -1902,8 +1922,12 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
         validator(self.argument_ref)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_1.ArrayParameterRefEntryType.DimensionList(
-            dimension=[d._to_v1_1(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_1.ArrayParameterRefEntryType.DimensionList,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_1(policy),
+            required=True,
         )
         kwargs["parameter_ref"] = str(self.argument_ref)
         return kwargs
@@ -1914,8 +1938,12 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
         validator(self.argument_ref)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_2.ArgumentDimensionListType(
-            dimension=[d._to_v1_2(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_2.ArgumentDimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_2(policy),
+            required=True,
         )
         kwargs["argument_ref"] = str(self.argument_ref)
         kwargs["last_entry_for_this_array_instance"] = self.last_entry
@@ -1923,8 +1951,12 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["dimension_list"] = xtce_1_3.ArgumentDimensionListType(
-            dimension=[d._to_v1_3(policy) for d in self.dimensions]
+        kwargs["dimension_list"] = self._build_set(
+            items=self.dimensions,
+            set_class=xtce_1_3.ArgumentDimensionListType,
+            kwarg_name="dimension",
+            converter=lambda d: d._to_v1_3(policy),
+            required=True,
         )
         kwargs["argument_ref"] = str(self.argument_ref)
         kwargs["last_entry_for_this_array_instance"] = self.last_entry
@@ -2230,12 +2262,11 @@ class ContainerBinaryDataEncoding(XtceBaseModel):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["error_detect_correct"] = (
-            xtce_1_3.ErrorDetectCorrectType(
-                choice=[edc._to_v1_3(policy) for edc in self.error_detect_correct]
-            )
-            if self.error_detect_correct is not None
-            else None
+        kwargs["error_detect_correct"] = self._build_set(
+            items=self.error_detect_correct,
+            set_class=xtce_1_3.ErrorDetectCorrectType,
+            kwarg_name="choice",
+            converter=lambda edc: edc._to_v1_3(policy),
         )
         kwargs["size_in_bits"] = pack_integer_value_v1_3(self.size_in_bits, policy)
         kwargs["from_binary_transform_algorithm"] = (
@@ -2345,8 +2376,11 @@ class Container(NameDescriptionBase, ABC):
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_stream_set"] = xtce_1_1.ContainerType.RateInStreamSet(
-            rate_in_stream=[r._to_v1_1(policy) for r in self.rate_in_streams]
+        kwargs["rate_in_stream_set"] = self._build_set(
+            items=self.rate_in_streams,
+            set_class=xtce_1_1.ContainerType.RateInStreamSet,
+            kwarg_name="rate_in_stream",
+            converter=lambda r: r._to_v1_1(policy),
         )
         kwargs["binary_encoding"] = (
             self.binary_encoding._to_v1_1(policy)
@@ -2362,8 +2396,11 @@ class Container(NameDescriptionBase, ABC):
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_stream_set"] = xtce_1_2.RateInStreamSetType(
-            rate_in_stream=[r._to_v1_2(policy) for r in self.rate_in_streams]
+        kwargs["rate_in_stream_set"] = self._build_set(
+            items=self.rate_in_streams,
+            set_class=xtce_1_2.RateInStreamSetType,
+            kwarg_name="rate_in_stream",
+            converter=lambda r: r._to_v1_2(policy),
         )
         kwargs["binary_encoding"] = (
             self.binary_encoding._to_v1_2(policy)
@@ -2379,8 +2416,11 @@ class Container(NameDescriptionBase, ABC):
             if self.default_rate_in_stream is not None
             else None
         )
-        kwargs["rate_in_stream_set"] = xtce_1_3.RateInStreamSetType(
-            rate_in_stream=[r._to_v1_3(policy) for r in self.rate_in_streams]
+        kwargs["rate_in_stream_set"] = self._build_set(
+            items=self.rate_in_streams,
+            set_class=xtce_1_3.RateInStreamSetType,
+            kwarg_name="rate_in_stream",
+            converter=lambda r: r._to_v1_3(policy),
         )
         kwargs["binary_encoding"] = (
             self.binary_encoding._to_v1_3(policy)
@@ -2509,8 +2549,12 @@ class SequenceContainer(Container):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_1.EntryListType(
-            choice=[e._to_v1_1(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_1.EntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_1(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_1(policy)
@@ -2523,8 +2567,12 @@ class SequenceContainer(Container):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_2.EntryListType(
-            choice=[e._to_v1_2(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_2.EntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_2(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_2(policy)
@@ -2537,8 +2585,12 @@ class SequenceContainer(Container):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_3.EntryListType(
-            choice=[e._to_v1_3(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_3.EntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_3(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_3(policy)
@@ -2682,8 +2734,12 @@ class CommandContainer(Container):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_1.CommandContainerEntryListType(
-            choice=[e._to_v1_1(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_1.CommandContainerEntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_1(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_1(policy)
@@ -2694,8 +2750,12 @@ class CommandContainer(Container):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_2.CommandContainerEntryListType(
-            choice=[e._to_v1_2(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_2.CommandContainerEntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_2(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_2(policy)
@@ -2706,8 +2766,12 @@ class CommandContainer(Container):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["entry_list"] = xtce_1_3.CommandContainerEntryListType(
-            choice=[e._to_v1_3(policy) for e in self.entries]
+        kwargs["entry_list"] = self._build_set(
+            items=self.entries,
+            set_class=xtce_1_3.CommandContainerEntryListType,
+            kwarg_name="choice",
+            converter=lambda e: e._to_v1_3(policy),
+            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_3(policy)

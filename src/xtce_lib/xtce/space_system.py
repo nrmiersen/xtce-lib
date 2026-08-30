@@ -159,12 +159,23 @@ class Header(XtceBaseModel):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["author_set"] = xtce_1_1.HeaderType.AuthorSet(
-            author=[a for a in self.authors]
+        kwargs["author_set"] = self._build_set(
+            items=self.authors,
+            set_class=xtce_1_1.HeaderType.AuthorSet,
+            kwarg_name="author",
+            converter=lambda a: a,
         )
-        kwargs["note_set"] = xtce_1_1.HeaderType.NoteSet(note=[n for n in self.notes])
-        kwargs["history_set"] = xtce_1_1.HeaderType.HistorySet(
-            history=[h for h in self.history]
+        kwargs["note_set"] = self._build_set(
+            items=self.notes,
+            set_class=xtce_1_1.HeaderType.NoteSet,
+            kwarg_name="note",
+            converter=lambda n: n,
+        )
+        kwargs["history_set"] = self._build_set(
+            items=self.history,
+            set_class=xtce_1_1.HeaderType.HistorySet,
+            kwarg_name="history",
+            converter=lambda h: h,
         )
         kwargs["version"] = self.version
         kwargs["date"] = self.date
@@ -177,10 +188,23 @@ class Header(XtceBaseModel):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["author_set"] = xtce_1_2.AuthorSetType(author=[a for a in self.authors])
-        kwargs["note_set"] = xtce_1_2.NoteSetType(note=[n for n in self.notes])
-        kwargs["history_set"] = xtce_1_2.HistorySetType(
-            history=[h for h in self.history]
+        kwargs["author_set"] = self._build_set(
+            items=self.authors,
+            set_class=xtce_1_2.AuthorSetType,
+            kwarg_name="author",
+            converter=lambda a: a,
+        )
+        kwargs["note_set"] = self._build_set(
+            items=self.notes,
+            set_class=xtce_1_2.NoteSetType,
+            kwarg_name="note",
+            converter=lambda n: n,
+        )
+        kwargs["history_set"] = self._build_set(
+            items=self.history,
+            set_class=xtce_1_2.HistorySetType,
+            kwarg_name="history",
+            converter=lambda h: h,
         )
         kwargs["version"] = self.version
         kwargs["date"] = self.date
@@ -193,10 +217,23 @@ class Header(XtceBaseModel):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["author_set"] = xtce_1_3.AuthorSetType(author=[a for a in self.authors])
-        kwargs["note_set"] = xtce_1_3.NoteSetType(note=[n for n in self.notes])
-        kwargs["history_set"] = xtce_1_3.HistorySetType(
-            history=[h for h in self.history]
+        kwargs["author_set"] = self._build_set(
+            items=self.authors,
+            set_class=xtce_1_3.AuthorSetType,
+            kwarg_name="author",
+            converter=lambda a: a,
+        )
+        kwargs["note_set"] = self._build_set(
+            items=self.notes,
+            set_class=xtce_1_3.NoteSetType,
+            kwarg_name="note",
+            converter=lambda n: n,
+        )
+        kwargs["history_set"] = self._build_set(
+            items=self.history,
+            set_class=xtce_1_3.HistorySetType,
+            kwarg_name="history",
+            converter=lambda h: h,
         )
         kwargs["version"] = self.version
         kwargs["date"] = self.date
@@ -308,20 +345,18 @@ class Service(NameDescriptionBase):
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
         kwargs["choice"] = (
-            xtce_1_1.ServiceType.MessageRefSet(
-                message_ref=[
-                    ref._to_v1_1(policy)
-                    for ref in self.refs
-                    if isinstance(ref, MessageRef)
-                ]
+            self._build_set(
+                items=self.refs,
+                set_class=xtce_1_1.ServiceType.MessageRefSet,
+                kwarg_name="message_ref",
+                converter=lambda ref: ref._to_v1_1(policy),
             )
             if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
-            else xtce_1_1.ServiceType.ContainerRefSet(
-                container_ref=[
-                    ref._to_v1_1(policy)
-                    for ref in self.refs
-                    if isinstance(ref, ContainerRef)
-                ]
+            else self._build_set(
+                items=self.refs,
+                set_class=xtce_1_1.ServiceType.ContainerRefSet,
+                kwarg_name="container_ref",
+                converter=lambda ref: ref._to_v1_1(policy),
             )
             if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
             else None
@@ -331,20 +366,18 @@ class Service(NameDescriptionBase):
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["choice"] = (
-            xtce_1_2.MessageRefSetType(
-                message_ref=[
-                    ref._to_v1_2(policy)
-                    for ref in self.refs
-                    if isinstance(ref, MessageRef)
-                ]
+            self._build_set(
+                items=self.refs,
+                set_class=xtce_1_2.MessageRefSetType,
+                kwarg_name="message_ref",
+                converter=lambda ref: ref._to_v1_2(policy),
             )
             if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
-            else xtce_1_2.ContainerRefSetType(
-                container_ref=[
-                    ref._to_v1_2(policy)
-                    for ref in self.refs
-                    if isinstance(ref, ContainerRef)
-                ]
+            else self._build_set(
+                items=self.refs,
+                set_class=xtce_1_2.ContainerRefSetType,
+                kwarg_name="container_ref",
+                converter=lambda ref: ref._to_v1_2(policy),
             )
             if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
             else None
@@ -354,20 +387,18 @@ class Service(NameDescriptionBase):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["choice"] = (
-            xtce_1_3.MessageRefSetType(
-                message_ref=[
-                    ref._to_v1_3(policy)
-                    for ref in self.refs
-                    if isinstance(ref, MessageRef)
-                ]
+            self._build_set(
+                items=self.refs,
+                set_class=xtce_1_3.MessageRefSetType,
+                kwarg_name="message_ref",
+                converter=lambda ref: ref._to_v1_3(policy),
             )
             if self.refs and all(isinstance(ref, MessageRef) for ref in self.refs)
-            else xtce_1_3.ContainerRefSetType(
-                container_ref=[
-                    ref._to_v1_3(policy)
-                    for ref in self.refs
-                    if isinstance(ref, ContainerRef)
-                ]
+            else self._build_set(
+                items=self.refs,
+                set_class=xtce_1_3.ContainerRefSetType,
+                kwarg_name="container_ref",
+                converter=lambda ref: ref._to_v1_3(policy),
             )
             if self.refs and all(isinstance(ref, ContainerRef) for ref in self.refs)
             else None
@@ -569,12 +600,11 @@ class SpaceSystem(NameDescriptionBase):
             if self.command_metadata is not None
             else None
         )
-        kwargs["service_set"] = (
-            xtce_1_1.SpaceSystemType.ServiceSet(
-                service=[s._to_v1_1(policy) for s in self.services]
-            )
-            if self.services
-            else None
+        kwargs["service_set"] = self._build_set(
+            items=self.services,
+            set_class=xtce_1_1.SpaceSystemType.ServiceSet,
+            kwarg_name="service",
+            converter=lambda s: s._to_v1_1(policy),
         )
         kwargs["space_system"] = [s._to_v1_1(policy) for s in self.space_systems]
         kwargs["operational_status"] = self.operational_status
@@ -619,8 +649,11 @@ class SpaceSystem(NameDescriptionBase):
             if self.command_metadata is not None
             else None
         )
-        kwargs["service_set"] = xtce_1_2.ServiceSetType(
-            service=[s._to_v1_2(policy) for s in self.services]
+        kwargs["service_set"] = self._build_set(
+            items=self.services,
+            set_class=xtce_1_2.ServiceSetType,
+            kwarg_name="service",
+            converter=lambda s: s._to_v1_2(policy),
         )
         kwargs["space_system"] = [s._to_v1_2(policy) for s in self.space_systems]
         kwargs["operational_status"] = self.operational_status
@@ -641,8 +674,11 @@ class SpaceSystem(NameDescriptionBase):
             if self.command_metadata is not None
             else None
         )
-        kwargs["service_set"] = xtce_1_3.ServiceSetType(
-            service=[s._to_v1_3(policy) for s in self.services]
+        kwargs["service_set"] = self._build_set(
+            items=self.services,
+            set_class=xtce_1_3.ServiceSetType,
+            kwarg_name="service",
+            converter=lambda s: s._to_v1_3(policy),
         )
         kwargs["space_system"] = [s._to_v1_3(policy) for s in self.space_systems]
         kwargs["system_type"] = xtce_1_3.SystemTypeType(self.system_type.value)

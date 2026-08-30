@@ -263,14 +263,11 @@ class SimpleAlgorithm(NameDescriptionBase, ABC):
         kwargs["algorithm_text"] = (
             self.algorithm_text._to_v1_1(policy) if self.algorithm_text else None
         )
-        kwargs["external_algorithm_set"] = (
-            xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet(
-                external_algorithm=[
-                    algo._to_v1_1(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None
+        kwargs["external_algorithm_set"] = self._build_set(
+            items=self.external_algorithms,
+            set_class=xtce_1_1.SimpleAlgorithmType.ExternalAlgorithmSet,
+            kwarg_name="external_algorithm",
+            converter=lambda algo: algo._to_v1_1(policy),
         )
         return kwargs
 
@@ -279,14 +276,11 @@ class SimpleAlgorithm(NameDescriptionBase, ABC):
         kwargs["algorithm_text"] = (
             self.algorithm_text._to_v1_2(policy) if self.algorithm_text else None
         )
-        kwargs["external_algorithm_set"] = (
-            xtce_1_2.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_2(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None
+        kwargs["external_algorithm_set"] = self._build_set(
+            items=self.external_algorithms,
+            set_class=xtce_1_2.ExternalAlgorithmSetType,
+            kwarg_name="external_algorithm",
+            converter=lambda algo: algo._to_v1_2(policy),
         )
         return kwargs
 
@@ -295,14 +289,11 @@ class SimpleAlgorithm(NameDescriptionBase, ABC):
         kwargs["algorithm_text"] = (
             self.algorithm_text._to_v1_3(policy) if self.algorithm_text else None
         )
-        kwargs["external_algorithm_set"] = (
-            xtce_1_3.ExternalAlgorithmSetType(
-                external_algorithm=[
-                    algo._to_v1_3(policy) for algo in self.external_algorithms
-                ]
-            )
-            if self.external_algorithms
-            else None
+        kwargs["external_algorithm_set"] = self._build_set(
+            items=self.external_algorithms,
+            set_class=xtce_1_3.ExternalAlgorithmSetType,
+            kwarg_name="external_algorithm",
+            converter=lambda algo: algo._to_v1_3(policy),
         )
         return kwargs
 
@@ -368,30 +359,31 @@ class InputAlgorithm(SimpleAlgorithm):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_1.InputAlgorithmType.InputSet(
-                choice=[inp._to_v1_1(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=self.inputs,
+            set_class=xtce_1_1.InputAlgorithmType.InputSet,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_1(policy),
         )
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_2.InputSetType(choice=[inp._to_v1_2(policy) for inp in self.inputs])
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=self.inputs,
+            set_class=xtce_1_2.InputSetType,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_3.InputSetType(choice=[inp._to_v1_3(policy) for inp in self.inputs])
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=self.inputs,
+            set_class=xtce_1_3.InputSetType,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_3(policy),
         )
         return kwargs
 
@@ -477,12 +469,11 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
         ]
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_1.InputAlgorithmType.InputSet(
-                choice=[inp._to_v1_1(policy) for inp in inputs]
-            )
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=inputs,
+            set_class=xtce_1_1.InputAlgorithmType.InputSet,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_1(policy),
         )
         return kwargs
 
@@ -500,23 +491,21 @@ class ArgumentInputAlgorithm(SimpleAlgorithm):
         ]
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_2.ArgumentInputSetType(
-                choice=[inp._to_v1_2(policy) for inp in inputs]
-            )
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=inputs,
+            set_class=xtce_1_2.ArgumentInputSetType,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_2(policy),
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["input_set"] = (
-            xtce_1_3.ArgumentInputSetType(
-                choice=[inp._to_v1_3(policy) for inp in self.inputs]
-            )
-            if self.inputs
-            else None
+        kwargs["input_set"] = self._build_set(
+            items=self.inputs,
+            set_class=xtce_1_3.ArgumentInputSetType,
+            kwarg_name="choice",
+            converter=lambda inp: inp._to_v1_3(policy),
         )
         return kwargs
 
@@ -621,8 +610,11 @@ class TriggeredMathOperation(MathOperation):
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.short_description
-        kwargs["ancillary_data_set"] = xtce_1_2.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_2(policy) for data in self.ancillary_data]
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_2.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_2(policy),
         )
         kwargs["choice"] = [
             xtce_1_2.MathOperationCalibratorType.ValueOperand(value=str(item.value))
@@ -646,8 +638,11 @@ class TriggeredMathOperation(MathOperation):
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.short_description
-        kwargs["ancillary_data_set"] = xtce_1_3.AncillaryDataSetType(
-            ancillary_data=[data._to_v1_3(policy) for data in self.ancillary_data]
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_3.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_3(policy),
         )
         kwargs["choice"] = [
             xtce_1_3.MathOperationCalibratorType.ValueOperand(value=str(item.value))
@@ -775,36 +770,33 @@ class InputOutputAlgorithm(InputAlgorithm):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["output_set"] = (
-            xtce_1_1.InputOutputAlgorithmType.OutputSet(
-                output_parameter_ref=[out._to_v1_1(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None
+        kwargs["output_set"] = self._build_set(
+            items=self.outputs,
+            set_class=xtce_1_1.InputOutputAlgorithmType.OutputSet,
+            kwarg_name="output_parameter_ref",
+            converter=lambda out: out._to_v1_1(policy),
         )
         kwargs["thread"] = self.thread
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["output_set"] = (
-            xtce_1_2.OutputSetType(
-                output_parameter_ref=[out._to_v1_2(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None
+        kwargs["output_set"] = self._build_set(
+            items=self.outputs,
+            set_class=xtce_1_2.OutputSetType,
+            kwarg_name="output_parameter_ref",
+            converter=lambda out: out._to_v1_2(policy),
         )
         kwargs["thread"] = self.thread
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["output_set"] = (
-            xtce_1_3.OutputSetType(
-                output_parameter_ref=[out._to_v1_3(policy) for out in self.outputs]
-            )
-            if self.outputs
-            else None
+        kwargs["output_set"] = self._build_set(
+            items=self.outputs,
+            set_class=xtce_1_3.OutputSetType,
+            kwarg_name="output_parameter_ref",
+            converter=lambda out: out._to_v1_3(policy),
         )
         kwargs["thread"] = self.thread
         return kwargs

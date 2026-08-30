@@ -8,9 +8,11 @@ from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     ClassVar,
     Literal,
     Self,
+    Sequence,
     TypeVar,
     assert_never,
     overload,
@@ -33,6 +35,8 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 T = TypeVar("T")
+ItemT = TypeVar("ItemT")
+SetT = TypeVar("SetT")
 
 
 class XtceBaseModel(BaseModel, ABC):
@@ -146,6 +150,21 @@ class XtceBaseModel(BaseModel, ABC):
         if target_class is None:
             raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
         return target_class(**self._to_v1_3_kwargs(policy))
+
+    @staticmethod
+    def _build_set(
+        items: Sequence[ItemT] | None,
+        set_class: type[SetT],
+        kwarg_name: str,
+        converter: Callable[[ItemT], Any] | None = None,
+        required: bool = False,
+    ) -> SetT | None:
+        """Build an xsdata wrapper set, or None when there is nothing to wrap."""
+        if (not items and not required) or items is None:
+            return None
+
+        values = [converter(item) for item in items] if converter else list(items)
+        return set_class(**{kwarg_name: values})
 
     @staticmethod
     def _extract_mixed_field(content: list[Any]) -> str:

@@ -375,8 +375,12 @@ class BaseData(NameDescriptionBase, ABC):
             validator(self.base_type)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_1.BaseDataType.UnitSet(
-            unit=[u._to_v1_1(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_1.BaseDataType.UnitSet,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_1(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_1(policy)
@@ -395,8 +399,12 @@ class BaseData(NameDescriptionBase, ABC):
             validator(self.base_type)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_2.UnitSetType(
-            unit=[u._to_v1_2(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_2.UnitSetType,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_2(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_2(policy)
@@ -410,8 +418,12 @@ class BaseData(NameDescriptionBase, ABC):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_3.UnitSetType(
-            unit=[u._to_v1_3(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_3.UnitSetType,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_3(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_3(policy)
@@ -534,8 +546,12 @@ class ArgumentBaseData(NameDescriptionBase, ABC):
             validator(self.base_type)
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_1.BaseDataType.UnitSet(
-            unit=[u._to_v1_1(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_1.BaseDataType.UnitSet,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_1(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_1(policy)
@@ -554,8 +570,12 @@ class ArgumentBaseData(NameDescriptionBase, ABC):
             validator(self.base_type)
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_2.UnitSetType(
-            unit=[u._to_v1_2(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_2.UnitSetType,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_2(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_2(policy)
@@ -569,8 +589,12 @@ class ArgumentBaseData(NameDescriptionBase, ABC):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["unit_set"] = xtce_1_3.UnitSetType(
-            unit=[u._to_v1_3(policy) for u in self.units]
+        kwargs["unit_set"] = self._build_set(
+            items=self.units,
+            set_class=xtce_1_3.UnitSetType,
+            kwarg_name="unit",
+            converter=lambda u: u._to_v1_3(policy),
+            required=True,
         )
         kwargs["choice"] = (
             self.encoding_type._to_v1_3(policy)
@@ -1794,24 +1818,36 @@ class EnumeratedData(BaseData, ABC):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_1.EnumeratedDataType.EnumerationList(
-            enumeration=[e._to_v1_1(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_1.EnumeratedDataType.EnumerationList,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_1(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_2.EnumerationListType(
-            enumeration=[e._to_v1_2(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_2.EnumerationListType,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_2(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_3.EnumerationListType(
-            enumeration=[e._to_v1_3(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_3.EnumerationListType,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_3(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
@@ -1863,24 +1899,36 @@ class ArgumentEnumeratedData(ArgumentBaseData, ABC):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_1.EnumeratedDataType.EnumerationList(
-            enumeration=[e._to_v1_1(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_1.EnumeratedDataType.EnumerationList,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_1(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_2.EnumerationListType(
-            enumeration=[e._to_v1_2(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_2.EnumerationListType,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_2(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["enumeration_list"] = xtce_1_3.EnumerationListType(
-            enumeration=[e._to_v1_3(policy) for e in self.enumerations]
+        kwargs["enumeration_list"] = self._build_set(
+            items=self.enumerations,
+            set_class=xtce_1_3.EnumerationListType,
+            kwarg_name="enumeration",
+            converter=lambda e: e._to_v1_3(policy),
+            required=True,
         )
         kwargs["initial_value"] = self.initial_value
         return kwargs
@@ -2168,8 +2216,12 @@ class AggregateData(NameDescriptionBase, ABC):
         )
 
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["member_list"] = xtce_1_1.AggregateDataType.MemberList(
-            member=[m._to_v1_1(policy) for m in self.members]
+        kwargs["member_list"] = self._build_set(
+            items=self.members,
+            set_class=xtce_1_1.AggregateDataType.MemberList,
+            kwarg_name="member",
+            converter=lambda m: m._to_v1_1(policy),
+            required=True,
         )
         return kwargs
 
@@ -2183,15 +2235,23 @@ class AggregateData(NameDescriptionBase, ABC):
         )
 
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["member_list"] = xtce_1_2.MemberListType(
-            member=[m._to_v1_2(policy) for m in self.members]
+        kwargs["member_list"] = self._build_set(
+            items=self.members,
+            set_class=xtce_1_2.MemberListType,
+            kwarg_name="member",
+            converter=lambda m: m._to_v1_2(policy),
+            required=True,
         )
         return kwargs
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["member_list"] = xtce_1_3.MemberListType(
-            member=[m._to_v1_3(policy) for m in self.members]
+        kwargs["member_list"] = self._build_set(
+            items=self.members,
+            set_class=xtce_1_3.MemberListType,
+            kwarg_name="member",
+            converter=lambda m: m._to_v1_3(policy),
+            required=True,
         )
         kwargs["initial_value"] = (
             json.dumps({k: uncoerce(v) for k, v in self.initial_value.items()})

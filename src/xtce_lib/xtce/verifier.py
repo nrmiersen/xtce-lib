@@ -360,15 +360,11 @@ class CommandVerifier(OptionalNameDescriptionBase, ABC):
             else self.verifier._to_v1_3(policy)
         )
         kwargs["choice_1"] = self.check_window._to_v1_3(policy)
-        kwargs["argument_restriction_list"] = (
-            xtce_1_3.ArgumentAssignmentListType(
-                argument_assignment=[
-                    assignment._to_v1_3(policy)
-                    for assignment in self.argument_restrictions
-                ]
-            )
-            if self.argument_restrictions
-            else None
+        kwargs["argument_restriction_list"] = self._build_set(
+            items=self.argument_restrictions,
+            set_class=xtce_1_3.ArgumentAssignmentListType,
+            kwarg_name="argument_assignment",
+            converter=lambda assignment: assignment._to_v1_3(policy),
         )
         return kwargs
 

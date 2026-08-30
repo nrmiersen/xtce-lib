@@ -105,12 +105,11 @@ class BaseAlarm(XtceBaseModel, ABC):
         kwargs = super()._to_v1_2_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.description
-        kwargs["ancillary_data_set"] = (
-            xtce_1_2.AncillaryDataSetType(
-                ancillary_data=[ad._to_v1_2(policy) for ad in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_2.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_2(policy),
         )
         return kwargs
 
@@ -118,12 +117,11 @@ class BaseAlarm(XtceBaseModel, ABC):
         kwargs = super()._to_v1_3_kwargs(policy)
         kwargs["name"] = self.name
         kwargs["short_description"] = self.description
-        kwargs["ancillary_data_set"] = (
-            xtce_1_3.AncillaryDataSetType(
-                ancillary_data=[ad._to_v1_3(policy) for ad in self.ancillary_data]
-            )
-            if self.ancillary_data
-            else None
+        kwargs["ancillary_data_set"] = self._build_set(
+            items=self.ancillary_data,
+            set_class=xtce_1_3.AncillaryDataSetType,
+            kwarg_name="ancillary_data",
+            converter=lambda ad: ad._to_v1_3(policy),
         )
         return kwargs
 
@@ -1104,16 +1102,22 @@ class StringAlarm(Alarm):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["string_alarm_list"] = xtce_1_1.StringAlarmType.StringAlarmList(
-            string_alarm=[a._to_v1_1(policy) for a in self.alarms]
+        kwargs["string_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_1.StringAlarmType.StringAlarmList,
+            kwarg_name="string_alarm",
+            converter=lambda a: a._to_v1_1(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_1.AlarmLevels(self.default_level.value)
         return kwargs
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["string_alarm_list"] = xtce_1_2.StringAlarmListType(
-            string_alarm=[a._to_v1_2(policy) for a in self.alarms]
+        kwargs["string_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_2.StringAlarmListType,
+            kwarg_name="string_alarm",
+            converter=lambda a: a._to_v1_2(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_2.ConcernLevelsType(
             self.default_level.value
@@ -1122,8 +1126,11 @@ class StringAlarm(Alarm):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["string_alarm_list"] = xtce_1_3.StringAlarmListType(
-            string_alarm=[a._to_v1_3(policy) for a in self.alarms]
+        kwargs["string_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_3.StringAlarmListType,
+            kwarg_name="string_alarm",
+            converter=lambda a: a._to_v1_3(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_3.ConcernLevelsType(
             self.default_level.value
@@ -1248,10 +1255,11 @@ class EnumerationAlarm(Alarm):
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_1_kwargs(policy)
-        kwargs["enumeration_alarm_list"] = (
-            xtce_1_1.EnumerationAlarmType.EnumerationAlarmList(
-                enumeration_alarm=[alarm._to_v1_1(policy) for alarm in self.alarms]
-            )
+        kwargs["enumeration_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_1.EnumerationAlarmType.EnumerationAlarmList,
+            kwarg_name="enumeration_alarm",
+            converter=lambda alarm: alarm._to_v1_1(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_1.AlarmLevels(
             self.default_alarm_level.value
@@ -1260,8 +1268,11 @@ class EnumerationAlarm(Alarm):
 
     def _to_v1_2_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_2_kwargs(policy)
-        kwargs["enumeration_alarm_list"] = xtce_1_2.EnumerationAlarmListType(
-            enumeration_alarm=[alarm._to_v1_2(policy) for alarm in self.alarms]
+        kwargs["enumeration_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_2.EnumerationAlarmListType,
+            kwarg_name="enumeration_alarm",
+            converter=lambda alarm: alarm._to_v1_2(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_2.ConcernLevelsType(
             self.default_alarm_level.value
@@ -1270,8 +1281,11 @@ class EnumerationAlarm(Alarm):
 
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         kwargs = super()._to_v1_3_kwargs(policy)
-        kwargs["enumeration_alarm_list"] = xtce_1_3.EnumerationAlarmListType(
-            enumeration_alarm=[alarm._to_v1_3(policy) for alarm in self.alarms]
+        kwargs["enumeration_alarm_list"] = self._build_set(
+            items=self.alarms,
+            set_class=xtce_1_3.EnumerationAlarmListType,
+            kwarg_name="enumeration_alarm",
+            converter=lambda alarm: alarm._to_v1_3(policy),
         )
         kwargs["default_alarm_level"] = xtce_1_3.ConcernLevelsType(
             self.default_alarm_level.value
@@ -1619,9 +1633,7 @@ class EnumerationContextAlarm(EnumerationAlarm):
     context_match: ContextMatch
     """The match condition that determines when this alarm is active."""
 
-    _v1_1_type = (
-        xtce_1_1.ParameterTypeSetType.EnumeratedParameterType.ContextAlarmList.ContextAlarm
-    )
+    _v1_1_type = xtce_1_1.ParameterTypeSetType.EnumeratedParameterType.ContextAlarmList.ContextAlarm
     _v1_2_type = xtce_1_2.EnumerationContextAlarmType
     _v1_3_type = xtce_1_3.EnumerationContextAlarmType
 
