@@ -9,7 +9,7 @@ EXPD_NAME_REF_NO_PATH = (
 )
 
 # xtce:NameReferenceWithPathType
-NAME_REF_W_PATH = r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+"
+NAME_REF_W_PATH = r"/?(?:(?:\.{1,2}|[^.\[\]:/ \t]+)/)*[^.\[\]:/ \t]+"
 
 # xtce:ExpandedNameReferenceWithPathType
-EXPD_NAME_REF_W_PATH = r"(/?(|\.{1,2}/|[^.\[\]:/ \t]+))*[^.\[\]:/ \t]+([^\.\[\]:/ \t]+(\[[0-9]+\])*(\.[^\.\[\]:/ \t]+(\[[0-9]+\])*)*)*"
+EXPD_NAME_REF_W_PATH = r"/?(?:(?:\.{1,2}|[^.\[\]:/ \t]+)/)*" + EXPD_NAME_REF_NO_PATH

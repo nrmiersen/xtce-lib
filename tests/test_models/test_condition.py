@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import datetime
+import subprocess
+import sys
 
 import pytest
 from pydantic import ValidationError
@@ -46,6 +48,29 @@ def _make_argument_comparison(value: object) -> xtce.ArgumentComparison:
 
 class TestComparison:
     """Test Comparison model."""
+
+    def test_accepts_relative_parameter_reference_with_path(self) -> None:
+        """Construct relative references without excessive regex backtracking."""
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                (
+                    "from xtce_lib import XtcePath, xtce; "
+                    "comparison = xtce.Comparison("
+                    "ref=XtcePath('Super_Long_Relative_Base_Path/Relative_Element'), "
+                    "instance=1, use_calibrated_value=True, "
+                    "comparison_operator=xtce.ComparisonOperator.GT, value=1); "
+                    "print(comparison.ref)"
+                ),
+            ],
+            capture_output=True,
+            check=True,
+            text=True,
+            timeout=2,
+        )
+
+        assert result.stdout.strip() == "Super_Long_Relative_Base_Path/Relative_Element"
 
     @pytest.mark.parametrize(
         "value",
