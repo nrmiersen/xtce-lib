@@ -835,7 +835,7 @@ class IntegerData(BaseData, ABC):
     initial_value: XtceHexOrInt | None = None
     """The initial value for this integer data type."""
 
-    size_in_bits: int = Field(default=32, ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)] = 32
     """The size of the integer data type in bits."""
 
     signed: bool = True
@@ -976,7 +976,7 @@ class ArgumentIntegerData(ArgumentBaseData, ABC):
     initial_value: XtceHexOrInt | None = None
     """The initial value for this integer data type."""
 
-    size_in_bits: int = 32
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)] = 32
     """The size of the integer data type in bits."""
 
     signed: bool = True

@@ -412,6 +412,17 @@ class TestIntegerData:
     """Test IntegerData model (instantiated directly)."""
 
     @pytest.mark.parametrize("version", ALL_VERSIONS)
+    def test_round_trip_with_external_dynamic_size(self, version: XtceVersion) -> None:
+        """Round-trip the external dynamic-size sentinel."""
+        original = xtce.IntegerData(name="MyInt", encoding_type=None, size_in_bits=-1)
+
+        round_tripped = xtce.IntegerData.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
+
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip_minimal(self, version: XtceVersion) -> None:
         """Round-trip a minimal integer data with only defaults."""
         original = xtce.IntegerData(name="MyInt", encoding_type=None)
@@ -466,6 +477,19 @@ class TestIntegerData:
 
 class TestArgumentIntegerData:
     """Test ArgumentIntegerData model (instantiated directly)."""
+
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
+    def test_round_trip_with_external_dynamic_size(self, version: XtceVersion) -> None:
+        """Round-trip the external dynamic-size sentinel."""
+        original = xtce.ArgumentIntegerData(
+            name="MyInt", encoding_type=None, size_in_bits=-1
+        )
+
+        round_tripped = xtce.ArgumentIntegerData.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
 
     @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip_minimal(self, version: XtceVersion) -> None:

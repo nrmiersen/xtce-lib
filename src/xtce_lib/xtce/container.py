@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import TYPE_CHECKING, Annotated, Any, Literal
 
 from pydantic import AfterValidator, Field
 
@@ -853,7 +853,7 @@ class ParameterSegmentRefEntry(SequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the parameter segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the parameter segment in bits."""
 
     _v1_1_type = xtce_1_1.ParameterSegmentRefEntryType
@@ -935,7 +935,7 @@ class ArgumentParameterSegmentRefEntry(ArgumentSequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the parameter segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the parameter segment in bits."""
 
     _v1_1_type = xtce_1_1.ParameterSegmentRefEntryType
@@ -1121,7 +1121,7 @@ class ContainerSegmentRefEntry(SequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the segment in bits."""
 
     _v1_1_type = xtce_1_1.ContainerSegmentRefEntryType
@@ -1195,7 +1195,7 @@ class ArgumentContainerSegmentRefEntry(ArgumentSequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the segment in bits."""
 
     _v1_1_type = xtce_1_1.ContainerSegmentRefEntryType
@@ -1269,7 +1269,7 @@ class StreamSegmentEntry(SequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the stream segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the stream segment in bits."""
 
     _v1_1_type = xtce_1_1.StreamSegmentEntryType
@@ -1337,7 +1337,7 @@ class ArgumentStreamSegmentEntry(ArgumentSequenceEntry):
     order: int | None = Field(default=None, ge=1)
     """The order of the stream segment within the container."""
 
-    size_in_bits: int = Field(..., ge=1)
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)]
     """The size of the stream segment in bits."""
 
     _v1_1_type = xtce_1_1.StreamSegmentEntryType
@@ -2208,7 +2208,13 @@ class ContainerBinaryDataEncoding(XtceBaseModel):
     data.
     """
 
-    size_in_bits: int | DynamicValue | DiscreteLookupList | None = None
+    size_in_bits: (
+        Literal[-1]
+        | Annotated[int, Field(ge=1)]
+        | DynamicValue
+        | DiscreteLookupList
+        | None
+    ) = None
     """Size of the container binary data in bits."""
 
     from_binary_transform_algorithm: InputAlgorithm | None = None
@@ -2441,7 +2447,7 @@ class SequenceContainer(Container):
         | StreamSegmentEntry
         | IndirectParameterRefEntry
         | ArrayParameterRefEntry
-    ]
+    ] = Field(default_factory=list)
     """The list of entries that define the sequence container."""
 
     base_container: BaseContainer | None = None
@@ -2554,7 +2560,6 @@ class SequenceContainer(Container):
             set_class=xtce_1_1.EntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_1(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_1(policy)
@@ -2572,7 +2577,6 @@ class SequenceContainer(Container):
             set_class=xtce_1_2.EntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_2(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_2(policy)
@@ -2590,7 +2594,6 @@ class SequenceContainer(Container):
             set_class=xtce_1_3.EntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_3(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_3(policy)
@@ -2616,7 +2619,7 @@ class CommandContainer(Container):
         | ArgumentArgumentRefEntry
         | ArgumentArrayArgumentRefEntry
         | ArgumentFixedValueEntry
-    ]
+    ] = Field(default_factory=list)
     """List of entries in the command container."""
 
     base_container: BaseContainer | None = None
@@ -2739,7 +2742,6 @@ class CommandContainer(Container):
             set_class=xtce_1_1.CommandContainerEntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_1(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_1(policy)
@@ -2755,7 +2757,6 @@ class CommandContainer(Container):
             set_class=xtce_1_2.CommandContainerEntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_2(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_2(policy)
@@ -2771,7 +2772,6 @@ class CommandContainer(Container):
             set_class=xtce_1_3.CommandContainerEntryListType,
             kwarg_name="choice",
             converter=lambda e: e._to_v1_3(policy),
-            required=True,
         )
         kwargs["base_container"] = (
             self.base_container._to_v1_3(policy)

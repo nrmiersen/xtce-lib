@@ -737,7 +737,10 @@ class IntegerDataEncoding(DataEncoding):
     encoding: IntegerEncoding = IntegerEncoding.UNSIGNED
     """The raw encoding of the integer value."""
 
-    size_in_bits: int = Field(default=8, ge=1, examples=[8, 16, 32, 64])
+    size_in_bits: Literal[-1] | Annotated[int, Field(ge=1)] = Field(
+        default=8,
+        examples=[-1, 8, 16, 32, 64],
+    )
     """Number of bits to use for the raw encoding."""
 
     # TODO add valid bit sizes and associated encodings in docstring
@@ -1713,9 +1716,9 @@ class ArgumentStringDataEncoding(DataEncoding):
 class BinaryDataEncoding(DataEncoding):
     """Describes how a binary value is sent or received from some device."""
 
-    size_in_bits: Annotated[int, Field(ge=1)] | DynamicValue | DiscreteLookupList = (
-        Field(...)
-    )
+    size_in_bits: (
+        Literal[-1] | Annotated[int, Field(ge=1)] | DynamicValue | DiscreteLookupList
+    ) = Field(...)
     """Number of bits to use for the raw encoding."""
 
     from_binary_transform_algorithm: InputAlgorithm | None = None
@@ -1826,7 +1829,10 @@ class ArgumentBinaryDataEncoding(DataEncoding):
     """Describes how a binary value is sent to some device."""
 
     size_in_bits: (
-        Annotated[int, Field(ge=1)] | ArgumentDynamicValue | ArgumentDiscreteLookupList
+        Literal[-1]
+        | Annotated[int, Field(ge=1)]
+        | ArgumentDynamicValue
+        | ArgumentDiscreteLookupList
     ) = Field(...)
     """Number of bits to use for the raw encoding."""
 

@@ -323,6 +323,17 @@ class TestIntegerDataEncoding:
     """Test IntegerDataEncoding model."""
 
     @pytest.mark.parametrize("version", VERSIONS)
+    def test_round_trip_with_external_dynamic_size(self, version: XtceVersion) -> None:
+        """Round-trip the external dynamic-size sentinel."""
+        original = xtce.IntegerDataEncoding(size_in_bits=-1)
+
+        round_tripped = xtce.IntegerDataEncoding.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped.size_in_bits == -1
+
+    @pytest.mark.parametrize("version", VERSIONS)
     def test_round_trip_minimal(self, version: XtceVersion) -> None:
         """Round-trip a minimal integer data encoding.
 
@@ -821,6 +832,17 @@ class TestBinaryDataEncoding:
     """Test BinaryDataEncoding model."""
 
     @pytest.mark.parametrize("version", VERSIONS)
+    def test_round_trip_with_external_dynamic_size(self, version: XtceVersion) -> None:
+        """Round-trip the external dynamic-size sentinel."""
+        original = xtce.BinaryDataEncoding(size_in_bits=-1)
+
+        round_tripped = xtce.BinaryDataEncoding.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
+
+    @pytest.mark.parametrize("version", VERSIONS)
     def test_round_trip_fixed_size(self, version: XtceVersion) -> None:
         """Round-trip a fixed-size binary data encoding."""
         original = xtce.BinaryDataEncoding(size_in_bits=64)
@@ -862,6 +884,17 @@ class TestBinaryDataEncoding:
 
 class TestArgumentBinaryDataEncoding:
     """Test ArgumentBinaryDataEncoding model."""
+
+    @pytest.mark.parametrize("version", VERSIONS)
+    def test_round_trip_with_external_dynamic_size(self, version: XtceVersion) -> None:
+        """Round-trip the external dynamic-size sentinel."""
+        original = xtce.ArgumentBinaryDataEncoding(size_in_bits=-1)
+
+        round_tripped = xtce.ArgumentBinaryDataEncoding.from_xsdata(
+            original.to_xsdata(version), version
+        )
+
+        assert round_tripped == original
 
     @pytest.mark.parametrize("version", VERSIONS)
     def test_round_trip_fixed_size(self, version: XtceVersion) -> None:

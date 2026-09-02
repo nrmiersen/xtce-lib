@@ -149,6 +149,31 @@ def test_round_trip_simple_models(
     assert round_tripped == original
 
 
+@pytest.mark.parametrize("version", ALL_VERSIONS)
+@pytest.mark.parametrize(
+    "original",
+    [
+        xtce.ParameterSegmentRefEntry(parameter_ref=_parameter_ref(), size_in_bits=-1),
+        xtce.ArgumentParameterSegmentRefEntry(
+            parameter_ref=_parameter_ref(), size_in_bits=-1
+        ),
+        xtce.ContainerSegmentRefEntry(container_ref=_container_ref(), size_in_bits=-1),
+        xtce.ArgumentContainerSegmentRefEntry(
+            container_ref=_container_ref(), size_in_bits=-1
+        ),
+        xtce.StreamSegmentEntry(stream_ref=_stream_ref(), size_in_bits=-1),
+        xtce.ArgumentStreamSegmentEntry(stream_ref=_stream_ref(), size_in_bits=-1),
+    ],
+)
+def test_round_trip_segment_entries_with_external_dynamic_size(
+    original: XtceBaseModel, version: XtceVersion
+) -> None:
+    """Round-trip the external dynamic-size sentinel on segment entries."""
+    round_tripped = type(original).from_xsdata(original.to_xsdata(version), version)
+
+    assert round_tripped == original
+
+
 class TestSequenceEntry:
     """Test shared telemetry sequence-entry properties."""
 
