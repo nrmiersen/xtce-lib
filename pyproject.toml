@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "xtce-lib"
-version = "0.1.0a2"
+version = "0.1.0a3"
 description = "Python tools for working with XTCE databases"
 authors = [{ name = "Nathan Miersen", email = "nrmiersen@gmail.com" }]
 readme = "README.md"
