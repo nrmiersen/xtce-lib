@@ -479,9 +479,9 @@ class SpaceSystem(NameDescriptionBase):
 
         # TODO call all child validate_semantics methods
 
-    _v1_1_type = xtce_1_1.SpaceSystemType
-    _v1_2_type = xtce_1_2.SpaceSystemType
-    _v1_3_type = xtce_1_3.SpaceSystemType
+    _v1_1_type = xtce_1_1.SpaceSystem
+    _v1_2_type = xtce_1_2.SpaceSystem
+    _v1_3_type = xtce_1_3.SpaceSystem
 
     @classmethod
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.SpaceSystemType) -> dict[str, Any]:
