@@ -55,6 +55,9 @@ def test_register_overwrite_logs_warning_and_replaces_definition(
         registry.register(path, as_referenceable(second))
 
     assert registry.get_by_path(path) is second
+    with pytest.raises(KeyError, match="object not registered: DummyXtceObject"):
+        registry.get_path(as_referenceable(first))
+    assert registry.get_path(as_referenceable(second)) == path
     assert "Overwriting definition for '/A/B'" in caplog.text
 
 

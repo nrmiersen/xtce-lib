@@ -25,7 +25,7 @@ class ResolvedReference:
 class XtceRegistry:
     """A registry for managing XTCE definitions by their full absolute paths."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize an empty registry."""
         self._definitions: dict[XtcePath, ReferenceableXtceObject] = {}
         self._object_paths: dict[int, XtcePath] = {}
@@ -35,8 +35,11 @@ class XtceRegistry:
         if not path.is_absolute():
             raise ValueError(f"cannot register non-absolute path '{path}'")
 
-        if path in self._definitions:
+        existing_obj = self._definitions.get(path)
+        if existing_obj is not None:
             log.warning("Overwriting definition for '%s'", path)
+            if self._object_paths.get(id(existing_obj)) == path:
+                del self._object_paths[id(existing_obj)]
 
         self._definitions[path] = xtce_obj
         self._object_paths[id(xtce_obj)] = path

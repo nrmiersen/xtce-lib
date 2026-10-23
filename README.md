@@ -24,7 +24,7 @@ It focuses on three pieces of functionality:
 
 From PyPI:
 ```bash
-pip install xtce-lib
+pip install xtce-lib==0.1.0a5
 ```
 
 ## Quick Start
@@ -106,31 +106,32 @@ True
 - [x] Write a class to represent an XTCE file (`XtceFile`)
 - [x] Write a class to represent the unified XTCE model (`XtceDatabase`)
 - [x] Scaffold the structure of the unified XTCE model
-- [ ] Implement all base subclasses in the unified model, including translation methods
-  - [x] Algorithm models
-  - [x] Array models
-  - [x] Calibrator models
-  - [x] Common models
-  - [x] Condition models
-  - [x] Range models
-  - [x] Reference models
-  - [x] Stream models
-  - [x] Time models
-  - [x] Trigger models
-  - [x] Verifier models
-  - [x] Alarm models
-  - [x] Codec models
-  - [x] Datatype models
-  - [x] Argument models
-  - [x] Container models
-  - [x] Command models
-  - [x] Parameter models
-  - [x] Telemetry models
-  - [x] Space system
-  - [x] Enum models
+- [x] Implement all base subclasses in the unified model, including translation methods
 - [x] Refactor translation methods for inherited classes
 - [x] Implement unified model serialization and deserialization
 - [x] Release alpha
+- [ ] Update models (better docstrings and better validation)
+  - [ ] Algorithm models
+  - [ ] Array models
+  - [ ] Calibrator models
+  - [ ] Common models
+  - [ ] Condition models
+  - [ ] Range models
+  - [ ] Reference models
+  - [ ] Stream models
+  - [ ] Time models
+  - [ ] Trigger models
+  - [ ] Verifier models
+  - [ ] Alarm models
+  - [ ] Codec models
+  - [ ] Datatype models
+  - [ ] Argument models
+  - [ ] Container models
+  - [ ] Command models
+  - [ ] Parameter models
+  - [ ] Telemetry models
+  - [ ] Space system
+  - [ ] Enum models
 - [ ] Fix the many things I messed up in the alpha
 - [ ] Fix unit tests
 - [ ] Implement full model semantic validation

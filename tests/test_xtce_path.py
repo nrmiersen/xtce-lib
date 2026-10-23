@@ -464,6 +464,11 @@ class TestXtcePath:
 
         assert path.normalize() == XtcePath("A/C")
 
+    @pytest.mark.parametrize("raw_path", ["A/..", "A/B/../.."])
+    def test_normalize_relative_paths_to_current_directory(self, raw_path: str) -> None:
+        """Relative paths that cancel all components should normalize to '.'."""
+        assert XtcePath(raw_path).normalize() == XtcePath(".")
+
     def test_normalize_mixed_dot_and_parent_references(self) -> None:
         """Normalize should handle mixed '.' and '..' segments."""
         path = XtcePath("/A/./B/../C/./D")
@@ -498,4 +503,4 @@ class TestXtcePath:
         """Normalize should handle complex relative paths with mixed segments."""
         path = XtcePath("A/./B/../C/../../D/../E")
 
-        assert path.normalize() == XtcePath("../E")
+        assert path.normalize() == XtcePath("E")

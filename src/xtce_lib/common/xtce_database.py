@@ -212,6 +212,7 @@ class XtceDatabase:
         """Write the database to an XTCE XML file.
 
         Any keyword arguments override the default serializer configuration.
+
         """
         # Translate the SpaceSystem
         space_system = self._root_system.to_xsdata(
