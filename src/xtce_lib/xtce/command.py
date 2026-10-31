@@ -8,7 +8,9 @@ from typing import Annotated, Any
 
 from pydantic import AfterValidator, Field
 
+from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath, require_regex
+from xtce_lib.common.xtce_registry import XtceRegistry
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
 from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
@@ -1629,13 +1631,19 @@ class CommandMetadata(XtceBaseModel):
     )
     """Contains an unordered set of algorithms."""
 
-    def validate_semantics(self):
-        """Perform semantic validation of this CommandMetadata."""
-        # TODO make sure there are no duplicate parameter names
-
     _v1_1_type = xtce_1_1.CommandMetaDataType
     _v1_2_type = xtce_1_2.CommandMetaDataType
     _v1_3_type = xtce_1_3.CommandMetaDataType
+
+    def _validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
+        super()._validate_semantics(report, registry, scope)
+
+        # report.add_error(XtceSemanticError(scope=scope, message="Test error"))
 
     @classmethod
     def _from_v1_1_kwargs(cls, obj: xtce_1_1.CommandMetaDataType) -> dict[str, Any]:

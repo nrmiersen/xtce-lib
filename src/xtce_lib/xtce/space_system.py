@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Annotated, Any
+from typing import Annotated, Any
 
 from pydantic import AfterValidator, Field
 
-from xtce_lib.common.validation import ValidationReport, XtceSemanticError
 from xtce_lib.common.xtce_path import XtcePath, require_regex
 from xtce_lib.common.xtce_version import XtceVersion
 from xtce_lib.exceptions import DowngradePolicy
@@ -19,9 +18,6 @@ from .common import NameDescriptionBase
 from .enum import SystemType, ValidationStatus
 from .reference import ContainerRef
 from .telemetry import TelemetryMetadata
-
-if TYPE_CHECKING:
-    from xtce_lib.common.xtce_registry import XtceRegistry
 
 
 class Header(XtceBaseModel):
@@ -469,15 +465,10 @@ class SpaceSystem(NameDescriptionBase):
     base: str | None = None
     """Applicable since: XTCE 1.3."""
 
-    def validate_semantics(
-        self,
-        report: ValidationReport[XtceSemanticError],
-        registry: XtceRegistry,
-        scope: XtcePath,
-    ) -> None:
-        """Validate this object's semantics."""
-
-        # TODO call all child validate_semantics methods
+    def _child_scope(self, child: XtceBaseModel, scope: XtcePath) -> XtcePath:
+        if isinstance(child, SpaceSystem):
+            return scope / child.name
+        return scope
 
     _v1_1_type = xtce_1_1.SpaceSystem
     _v1_2_type = xtce_1_2.SpaceSystem

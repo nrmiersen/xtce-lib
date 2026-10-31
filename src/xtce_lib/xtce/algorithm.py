@@ -1,5 +1,6 @@
 """Algorithm models."""
 
+import datetime
 from abc import ABC
 from typing import Annotated, Any
 
@@ -12,7 +13,6 @@ from xtce_lib.generated import xtce_1_1, xtce_1_2, xtce_1_3
 
 from ._base import XtceBaseModel
 from ._pattern import EXPD_NAME_REF_W_PATH, NAME_REF_W_PATH
-from ._util import XtceValue
 from .calibrator import MathOperation, ThisParameterOperand, ValueOperand
 from .common import NameDescriptionBase
 from .enum import BitOrder, ChecksumType, MathOperator, ParityForm, ReferencePoint
@@ -30,7 +30,7 @@ class Constant(XtceBaseModel):
     constant_name: str
     """The name of the constant."""
 
-    value: XtceValue
+    value: int | float | str | bool | bytes | datetime.timedelta | datetime.datetime
     """The value of the constant."""
 
     _v1_1_type = xtce_1_1.InputAlgorithmType.InputSet.Constant

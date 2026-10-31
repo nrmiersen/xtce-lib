@@ -48,7 +48,7 @@ class OnParameterUpdateTrigger(BaseTrigger):
 
     """
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -159,7 +159,7 @@ class OnContainerUpdateTrigger(BaseTrigger):
 
     """
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -323,21 +323,6 @@ class TriggerSet(XtceBaseModel):
     Default is once per second. Setting to 0 means no limit.
 
     """
-
-    def validate_semantics(
-        self,
-        report: ValidationReport[XtceSemanticError],
-        registry: XtceRegistry,
-        scope: XtcePath,
-    ) -> None:
-        """Validate this object's semantics.
-
-        Rules:
-            - All triggers in the set must be semantically valid.
-
-        """
-        for trigger in self.triggers:
-            trigger.validate_semantics(report, registry, scope)
 
     _v1_1_type = xtce_1_1.TriggerSetType
     _v1_2_type = xtce_1_2.TriggerSetType

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import logging
 from abc import ABC
+from dataclasses import asdict, replace
 from enum import Enum
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     ClassVar,
+    Iterator,
     Literal,
     Self,
     Sequence,
@@ -34,9 +36,22 @@ if TYPE_CHECKING:
 
 
 log = logging.getLogger(__name__)
+
 T = TypeVar("T")
 ItemT = TypeVar("ItemT")
 SetT = TypeVar("SetT")
+
+
+def _iter_models(value: Any) -> Iterator[XtceBaseModel]:
+    """Yield XtceBaseModel instances from a value, descending into containers."""
+    if isinstance(value, XtceBaseModel):
+        yield value
+    elif isinstance(value, (list, tuple, set, frozenset)):
+        for item in value:  # type: ignore[reportUnknownVariableType]
+            yield from _iter_models(item)
+    elif isinstance(value, dict):
+        for item in value.values():  # type: ignore[reportUnknownVariableType]
+            yield from _iter_models(item)
 
 
 class XtceBaseModel(BaseModel, ABC):
@@ -49,24 +64,51 @@ class XtceBaseModel(BaseModel, ABC):
         extra="forbid",
     )
 
+    # These define the corresponding xsdata types for each XTCE version
+    # If None, the XTCE version is not supported for this model
     _v1_1_type: ClassVar[type | None] = None
     _v1_2_type: ClassVar[type | None] = None
     _v1_3_type: ClassVar[type | None] = None
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
         scope: XtcePath,
     ) -> None:
         """Validate this object's semantics."""
-        pass
+        for child in self._iter_child_models():
+            child._run_semantic_validation(
+                report, registry, self._child_scope(child, scope)
+            )
+
+    def _run_semantic_validation(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
+        """Run `_validate_semantics`, prefixing new errors' source with this model."""
+        start = len(report.errors)
+        self._validate_semantics(report, registry, scope)
+        for i in range(start, len(report.errors)):
+            error = report.errors[i]
+            report.errors[i] = replace(
+                error, source=(type(self).__name__, *error.source)
+            )
+
+    def _iter_child_models(self) -> Iterator[XtceBaseModel]:
+        """Yield every model nested in this model's fields, including in containers."""
+        for name in type(self).model_fields:
+            yield from _iter_models(getattr(self, name))
+
+    def _child_scope(self, child: XtceBaseModel, scope: XtcePath) -> XtcePath:
+        """Get the scope used to validate a child model. Defaults to this scope."""
+        return scope
 
     @classmethod
     def from_xsdata(cls: type[Self], raw_obj: Any, version: XtceVersion) -> Self:
-        """Factory method to create this model from an xsdata-generated object of any
-        version.
-        """
+        """Create this model from an xsdata-generated object."""
         match version:
             case XtceVersion.V1_1:
                 return cls._from_v1_1(raw_obj)
@@ -78,7 +120,9 @@ class XtceBaseModel(BaseModel, ABC):
                 assert_never(version)
 
     def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+        self,
+        version: XtceVersion,
+        policy: DowngradePolicy = DowngradePolicy.STRICT,
     ) -> Any:
         """Convert this model to the xsdata equivalent."""
         match version:
@@ -104,25 +148,63 @@ class XtceBaseModel(BaseModel, ABC):
         return {}
 
     @classmethod
+    def _from_versioned(
+        cls: type[Self],
+        obj: Any,
+        version: XtceVersion,
+        version_type: type[Any] | None,
+        kwargs_builder: Callable[[Any], dict[str, Any]],
+    ) -> dict[str, Any]:
+        if version_type is None:
+            raise XtceUnsupportedError(version, cls.__name__)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(
+                "Starting XTCE %s import for %s; source=%r",
+                version.value.version,
+                cls.__name__,
+                asdict(obj),
+            )
+        kwargs = kwargs_builder(obj)
+        log.debug(
+            "Completed XTCE %s import for %s; kwargs=%r",
+            version.value.version,
+            cls.__name__,
+            kwargs,
+        )
+        return kwargs
+
+    @classmethod
     def _from_v1_1(cls: type[Self], obj: Any) -> Self:
-        if cls._v1_1_type is None:
-            raise XtceUnsupportedError(XtceVersion.V1_1, cls.__name__)
-        kwargs = cls._from_v1_1_kwargs(obj)
-        return cls(**kwargs)
+        return cls(
+            **cls._from_versioned(
+                obj,
+                XtceVersion.V1_1,
+                cls._v1_1_type,
+                cls._from_v1_1_kwargs,
+            )
+        )
 
     @classmethod
     def _from_v1_2(cls: type[Self], obj: Any) -> Self:
-        if cls._v1_2_type is None:
-            raise XtceUnsupportedError(XtceVersion.V1_2, cls.__name__)
-        kwargs = cls._from_v1_2_kwargs(obj)
-        return cls(**kwargs)
+        return cls(
+            **cls._from_versioned(
+                obj,
+                XtceVersion.V1_2,
+                cls._v1_2_type,
+                cls._from_v1_2_kwargs,
+            )
+        )
 
     @classmethod
     def _from_v1_3(cls: type[Self], obj: Any) -> Self:
-        if cls._v1_3_type is None:
-            raise XtceUnsupportedError(XtceVersion.V1_3, cls.__name__)
-        kwargs = cls._from_v1_3_kwargs(obj)
-        return cls(**kwargs)
+        return cls(
+            **cls._from_versioned(
+                obj,
+                XtceVersion.V1_3,
+                cls._v1_3_type,
+                cls._from_v1_3_kwargs,
+            )
+        )
 
     def _to_v1_1_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         return {}
@@ -133,23 +215,54 @@ class XtceBaseModel(BaseModel, ABC):
     def _to_v1_3_kwargs(self, policy: DowngradePolicy) -> dict[str, Any]:
         return {}
 
+    def _to_versioned(
+        self,
+        version: XtceVersion,
+        version_type: type[Any] | None,
+        kwargs_builder: Callable[[DowngradePolicy], dict[str, Any]],
+        policy: DowngradePolicy,
+    ) -> Any:
+        if version_type is None:
+            raise XtceUnsupportedError(version, self.__class__.__name__)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug(
+                "Starting XTCE %s export for %s; source=%r",
+                version.value.version,
+                self.__class__.__name__,
+                self.model_dump(),
+            )
+        kwargs = kwargs_builder(policy)
+        log.debug(
+            "Completed XTCE %s export for %s; kwargs=%r",
+            version.value.version,
+            self.__class__.__name__,
+            kwargs,
+        )
+        return version_type(**kwargs)
+
     def _to_v1_1(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        target_class = self._v1_1_type
-        if target_class is None:
-            raise XtceUnsupportedError(XtceVersion.V1_1, self.__class__.__name__)
-        return target_class(**self._to_v1_1_kwargs(policy))
+        return self._to_versioned(
+            XtceVersion.V1_1,
+            self._v1_1_type,
+            self._to_v1_1_kwargs,
+            policy,
+        )
 
     def _to_v1_2(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        target_class = self._v1_2_type
-        if target_class is None:
-            raise XtceUnsupportedError(XtceVersion.V1_2, self.__class__.__name__)
-        return target_class(**self._to_v1_2_kwargs(policy))
+        return self._to_versioned(
+            XtceVersion.V1_2,
+            self._v1_2_type,
+            self._to_v1_2_kwargs,
+            policy,
+        )
 
     def _to_v1_3(self, policy: DowngradePolicy = DowngradePolicy.STRICT) -> Any:
-        target_class = self._v1_3_type
-        if target_class is None:
-            raise XtceUnsupportedError(XtceVersion.V1_3, self.__class__.__name__)
-        return target_class(**self._to_v1_3_kwargs(policy))
+        return self._to_versioned(
+            XtceVersion.V1_3,
+            self._v1_3_type,
+            self._to_v1_3_kwargs,
+            policy,
+        )
 
     @staticmethod
     def _build_set(
@@ -378,7 +491,9 @@ class XtceBaseEnum(str, Enum):
                 assert_never(version)
 
     def to_xsdata(
-        self, version: XtceVersion, policy: DowngradePolicy = DowngradePolicy.STRICT
+        self,
+        version: XtceVersion,
+        policy: DowngradePolicy = DowngradePolicy.STRICT,
     ) -> Any:
         """Convert this model to the xsdata equivalent."""
         match version:

@@ -69,7 +69,7 @@ def validate_semantics(
     """Run semantic validation and return the collected report."""
     db, scope = db_and_scope
     report = ValidationReport[XtceSemanticError](title="Semantic Validation")
-    model.validate_semantics(report, db.registry, scope)  # type: ignore[attr-defined]
+    model._validate_semantics(report, db.registry, scope)  # type: ignore[attr-defined]
     return report
 
 

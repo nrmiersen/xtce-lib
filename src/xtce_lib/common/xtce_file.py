@@ -1,9 +1,7 @@
 """XTCE file object."""
 
-import importlib.resources
+import importlib
 import re
-import tempfile
-from importlib.abc import Traversable
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -12,7 +10,7 @@ from xsdata.formats.dataclass.parsers import XmlParser
 
 from xtce_lib.xtce.space_system import SpaceSystem
 
-from .validation import ValidationReport, XtceSchemaError
+from .validation import ValidationReport, XtceSchemaError, validate_xml
 from .xtce_version import XtceVersion
 
 if TYPE_CHECKING:
@@ -32,8 +30,6 @@ class XtceFile:
 
     # TODO add unified model
 
-    # Cache at class level
-    _schema_cache: ClassVar[dict[XtceVersion, etree.XMLSchema]] = {}
     _NAMESPACE_PATTERN: ClassVar[re.Pattern[str]] = re.compile(r"^\{([^}]+)\}")
 
     def __init__(self, file_path: str | Path) -> None:
@@ -43,8 +39,6 @@ class XtceFile:
         self._namespace = self.get_namespace(self._file_path)
         self._version = XtceVersion.from_namespace(self._namespace)
         self._raw_model: AnySpaceSystem | None = None
-
-        self._schema_resource, self._xml_resource = self._get_xsd_resources()
 
     @property
     def file_path(self) -> Path:
@@ -117,30 +111,7 @@ class XtceFile:
             ValueError: If the XML file is invalid or if validation fails.
 
         """
-        validator = self._get_validator()
-        report = ValidationReport[XtceSchemaError](title="XSD Validation")
-
-        try:
-            xml_doc = etree.parse(self._file_path)
-            is_valid = validator.validate(xml_doc)
-
-            if is_valid:
-                return report
-
-            for error in validator.error_log:
-                # Strip the namespace
-                clean_message = re.sub(r"\{(?:http|urn)[^}]+\}", "", error.message)
-
-                report.add_error(
-                    XtceSchemaError(line=error.line, message=clean_message)
-                )
-
-            return report
-
-        except etree.XMLSyntaxError as e:
-            # Catastrophic syntax error
-            report.add_error(XtceSchemaError(line=e.lineno or 0, message=str(e)))
-            return report
+        return validate_xml(self._file_path, self._version)
 
     def parse_raw(self, strict: bool = False) -> None:
         """Parse the XML file into the version-specific xsdata dataclasses.
@@ -169,39 +140,3 @@ class XtceFile:
         self._raw_model = parser.parse(str(self._file_path), root_class)
 
         # TODO catch exceptions?
-
-    def _get_validator(self) -> etree.XMLSchema:
-        """Get the XMLSchema validator for the XTCE version of this file."""
-        if self._version in self._schema_cache:
-            return self._schema_cache[self._version]
-
-        try:
-            # Write the XSD resources to a temporary directory so that relative paths
-            # like xml.xsd are resolved correctly
-            with tempfile.TemporaryDirectory() as temp_dir:
-                temp_path = Path(temp_dir)
-
-                schema_path = temp_path / self._schema_resource.name
-                xml_xsd_path = temp_path / self._xml_resource.name
-
-                schema_path.write_bytes(self._schema_resource.read_bytes())
-                xml_xsd_path.write_bytes(self._xml_resource.read_bytes())
-
-                schema_doc = etree.parse(schema_path)
-                xmlschema = etree.XMLSchema(schema_doc)
-
-                self.__class__._schema_cache[self._version] = xmlschema
-                return xmlschema
-
-        except etree.XMLSchemaParseError as e:
-            raise ValueError(
-                f"Failed to compile XSD schema for version {self._version}: {e}"
-            )
-
-    def _get_xsd_resources(self) -> tuple[Traversable, Traversable]:
-        """Get schema resources for the XTCE version of this file."""
-        files = importlib.resources.files("xtce_lib.xsd")
-        schema_file = files / self._version.value.xsd_name
-        xsd_file = files / "xml.xsd"
-
-        return schema_file, xsd_file

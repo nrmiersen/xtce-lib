@@ -55,7 +55,7 @@ class TimeAssociation(ParameterInstanceRef):
 
     """
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -69,7 +69,7 @@ class TimeAssociation(ParameterInstanceRef):
 
         """
         # Verify ref is exists and is a Parameter
-        super().validate_semantics(report, registry, scope)
+        super()._validate_semantics(report, registry, scope)
 
         # Verify Parameter.type_ref is a AbsoluteTimeParameter
         # TODO need parameter type classes to be defined before semantic validation can be implemented
@@ -207,7 +207,7 @@ class ReferenceTime(XtceBaseModel):
             raise ValueError("only one of 'offset_from' and 'epoch' can be provided")
         return self
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,

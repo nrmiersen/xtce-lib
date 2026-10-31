@@ -1,6 +1,7 @@
 """XTCE database object."""
 
 import itertools
+import logging
 from pathlib import Path
 from typing import Any, Iterable, Self
 
@@ -18,10 +19,17 @@ from xtce_lib.xtce.reference import ParameterRef
 from xtce_lib.xtce.space_system import Header, Service, SpaceSystem
 from xtce_lib.xtce.telemetry import TelemetryMetadata
 
-from .validation import ValidationReport, XtceSemanticError
+from .validation import (
+    ValidationReport,
+    XtceSchemaError,
+    XtceSemanticError,
+    validate_xml,
+)
 from .xtce_file import XtceFile
 from .xtce_path import XtcePath
 from .xtce_registry import XtceRegistry
+
+log = logging.getLogger(__name__)
 
 
 class XtceDatabase:
@@ -183,21 +191,60 @@ class XtceDatabase:
     def registry(self) -> XtceRegistry:
         """Get the registry of all XTCE objects in this database."""
         if self._registry is None:
-            self._registry = XtceRegistry()
-            self._index_space_system(self.root_system, XtcePath("/"), self._registry)
+            log.info("No registry found, creating a new one")
+            self._build_registry()
+        assert self._registry is not None
         return self._registry
 
     def rebuild_registry(self) -> None:
         """Force a rebuild of the registry."""
-        new_registry = XtceRegistry()
-        self._index_space_system(self.root_system, XtcePath("/"), new_registry)
-        self._registry = new_registry
+        self._build_registry()
 
-    def validate(self) -> ValidationReport[XtceSemanticError]:
+    @validate_call
+    def validate_schema(
+        self,
+        xtce_version: XtceVersion,
+        *,
+        downgrade_policy: DowngradePolicy = DowngradePolicy.STRICT,
+        **kwargs: Any,
+    ) -> ValidationReport[XtceSchemaError]:
+        """Validate this database against the XSD schema."""
+        xml = self._render_xml(xtce_version, downgrade_policy, **kwargs)
+        return validate_xml(xml.encode("utf-8"), xtce_version)
+
+    def validate_semantics(self) -> ValidationReport[XtceSemanticError]:
         """Perform semantic validation of this database."""
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
         self.rebuild_registry()  # Ensure registry is up to date before validation
-        self.root_system.validate_semantics(report, self.registry, XtcePath("/"))
+        self.root_system._run_semantic_validation(
+            report,
+            self.registry,
+            XtcePath("/") / self.root_system.name,
+        )
+        return report
+
+    @validate_call
+    def validate(
+        self,
+        xtce_version: XtceVersion,
+        *,
+        semantic: bool = True,
+        downgrade_policy: DowngradePolicy = DowngradePolicy.STRICT,
+        **kwargs: Any,
+    ) -> ValidationReport[XtceSchemaError | XtceSemanticError]:
+        """Validate this database against the XSD schema and, optionally, semantics."""
+        report = ValidationReport[XtceSchemaError | XtceSemanticError](
+            title="Validation"
+        )
+
+        schema_report = self.validate_schema(
+            xtce_version, downgrade_policy=downgrade_policy, **kwargs
+        )
+        report.errors.extend(schema_report.errors)
+
+        if semantic:
+            report.errors.extend(self.validate_semantics().errors)
+
         return report
 
     @validate_call
@@ -214,28 +261,24 @@ class XtceDatabase:
         Any keyword arguments override the default serializer configuration.
 
         """
-        # Translate the SpaceSystem
-        space_system = self._root_system.to_xsdata(
-            version=xtce_version,
-            policy=downgrade_policy,
-        )
-
-        # Serialize to file
-        config_kwargs: dict[str, Any] = {
-            "indent": "    ",
-        }
-        config_kwargs.update(kwargs)
-        config = SerializerConfig(**config_kwargs)
-        serializer = XmlSerializer(config=config)
-
-        with path.open("w", encoding="utf-8") as f:
-            serializer.write(  # type: ignore[reportUnknownMemberType]
-                f,
-                space_system,
-                ns_map={"xtce": xtce_version.value.namespace},
-            )
+        xml = self._render_xml(xtce_version, downgrade_policy, **kwargs)
+        path.write_text(xml, encoding="utf-8")
 
         return XtceFile(path)
+
+    def to_xsdata(
+        self,
+        version: XtceVersion,
+        policy: DowngradePolicy = DowngradePolicy.STRICT,
+    ) -> Any:
+        """Convert this model to the xsdata equivalent."""
+        return self._root_system.to_xsdata(version=version, policy=policy)
+
+    def _build_registry(self) -> None:
+        log.info("Building the registry")
+        self._registry = XtceRegistry()
+        self._index_space_system(self.root_system, XtcePath("/"), self._registry)
+        log.info("Registry build complete")
 
     def _index_space_system(
         self,
@@ -285,3 +328,26 @@ class XtceDatabase:
         # Recurse into child SpaceSystems
         for child in space_system.space_systems:
             self._index_space_system(child, current_path, registry)
+
+    def _render_xml(
+        self,
+        xtce_version: XtceVersion,
+        downgrade_policy: DowngradePolicy,
+        **kwargs: Any,
+    ) -> str:
+        """Translate and serialize the database to an XML string."""
+        space_system = self._root_system.to_xsdata(
+            version=xtce_version,
+            policy=downgrade_policy,
+        )
+
+        config_kwargs: dict[str, Any] = {
+            "indent": "    ",
+        }
+        config_kwargs.update(kwargs)
+        serializer = XmlSerializer(config=SerializerConfig(**config_kwargs))
+
+        return serializer.render(  # type: ignore[reportUnknownMemberType]
+            space_system,
+            ns_map={"xtce": xtce_version.value.namespace},
+        )

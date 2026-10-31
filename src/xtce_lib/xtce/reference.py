@@ -39,7 +39,7 @@ class ParameterRef(XtceBaseModel):
 
     """
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -130,7 +130,7 @@ class OutputParameterRef(ParameterRef):
     output_name: str | None = Field(default=None)
     """An optional 'friendly' name for the output parameter."""
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -324,13 +324,19 @@ class ArgumentInstanceRef(XtceBaseModel):
 
     """
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
             - The reference must exist in the metacommand's argument list.
 
         """
+        super()._validate_semantics(report, registry, scope)
         # TODO maybe need to pass in metacommand or argument list
         # TODO need argument type classes to be defined before semantic validation can be implemented
 
@@ -376,7 +382,12 @@ class InputParameterInstanceRef(ParameterInstanceRef):
     input_name: str | None = Field(default=None)
     """An optional 'friendly' name for the input parameter."""
 
-    def validate_semantics(self, registry: XtceRegistry, scope: XtcePath) -> None:
+    def validate_semantics(
+        self,
+        report: ValidationReport[XtceSemanticError],
+        registry: XtceRegistry,
+        scope: XtcePath,
+    ) -> None:
         """Validate this object's semantics.
 
         Rules:
@@ -385,6 +396,7 @@ class InputParameterInstanceRef(ParameterInstanceRef):
             - The reference must be an instance of Parameter.
 
         """
+        super()._validate_semantics(report, registry, scope)
         # TODO need parameter type classes to be defined before semantic validation can be implemented
 
     _v1_1_type = xtce_1_1.InputAlgorithmType.InputSet.ParameterInstanceRef
@@ -446,7 +458,7 @@ class ContainerRef(XtceBaseModel):
     )
     """A Unix-like path to a sequence container."""
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -545,7 +557,7 @@ class ServiceRef(XtceBaseModel):
     )
     """A Unix-like path to a service."""
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,
@@ -640,7 +652,7 @@ class StreamRef(XtceBaseModel):
     )
     """A Unix-like path to a stream."""
 
-    def validate_semantics(
+    def _validate_semantics(
         self,
         report: ValidationReport[XtceSemanticError],
         registry: XtceRegistry,

@@ -16,6 +16,7 @@ from xtce_lib import (
     XtceVersion,
     xtce,
 )
+from xtce_lib.common.validation import XtceSchemaError, XtceSemanticError
 
 
 def _make_sample_database() -> XtceDatabase:
@@ -272,12 +273,78 @@ class TestXtceDatabase:
             == "SolarArrayCurrent"
         )
 
-    def test_validate_returns_report(self) -> None:
-        """Test validate returns a ValidationReport."""
+    def test_validate_semantics_returns_report(self) -> None:
+        """Test validate_semantics returns a ValidationReport."""
         db = _make_sample_database()
-        report = db.validate()
+        report = db.validate_semantics()
         assert report.title == "Semantic Validation"
         assert report.is_valid
+
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
+    def test_validate_combined_valid(self, version: XtceVersion) -> None:
+        """Test validate passes schema and semantic checks for a valid database."""
+        db = _make_sample_database()
+        report = db.validate(version)
+        assert report.title == "Validation"
+        assert report.is_valid
+
+    def test_validate_reports_schema_errors(self) -> None:
+        """Test validate always reports XSD errors, even with semantic=False."""
+        db = _make_sample_database()
+        db.command_metadata = xtce.CommandMetadata()
+        db.telemetry_metadata = xtce.TelemetryMetadata()
+        for metadata in (db.command_metadata, db.telemetry_metadata):
+            metadata.parameters.append(
+                xtce.Parameter(name="Dup", parameter_type_ref=XtcePath("VoltageType"))
+            )
+
+        report = db.validate(XtceVersion.V1_3, semantic=False)
+        assert not report.is_valid
+        assert all(isinstance(e, XtceSchemaError) for e in report.errors)
+
+    def test_validate_semantic_flag(self) -> None:
+        """Test semantic errors are only reported when semantic=True."""
+        db = _make_sample_database()
+        db.telemetry_metadata.parameters.append(  # type: ignore[union-attr]
+            xtce.ParameterRef(ref=XtcePath("Missing"))
+        )
+
+        without = db.validate(XtceVersion.V1_3, semantic=False)
+        with_semantic = db.validate(XtceVersion.V1_3)
+
+        assert without.is_valid
+        assert any(isinstance(e, XtceSemanticError) for e in with_semantic.errors)
+
+    def test_validate_semantics_error_source_identifies_metadata(self) -> None:
+        """Test errors record the chain of models leading to them."""
+        db = XtceDatabase("Sat")
+        db.telemetry_metadata = xtce.TelemetryMetadata(
+            parameters=[xtce.ParameterRef(ref=XtcePath("MissingTm"))]
+        )
+
+        report = db.validate_semantics()
+
+        assert [e.source for e in report.errors] == [
+            ("SpaceSystem", "TelemetryMetadata", "ParameterRef")
+        ]
+        assert "SpaceSystem > TelemetryMetadata > ParameterRef:" in report.summary()
+
+    def test_validate_semantics_visits_child_space_systems(self) -> None:
+        """Test semantic validation recurses into child SpaceSystems."""
+        db = _make_sample_database()
+        child = xtce.SpaceSystem(
+            name="Child",
+            telemetry_metadata=xtce.TelemetryMetadata(
+                parameters=[xtce.ParameterRef(ref=XtcePath("Missing"))]
+            ),
+        )
+        db.space_systems = [child]
+
+        report = db.validate_semantics()
+
+        assert [str(e.scope) for e in report.errors] == ["/Sat1/Child"]
 
     @pytest.mark.parametrize(
         "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]

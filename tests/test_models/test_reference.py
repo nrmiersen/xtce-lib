@@ -74,7 +74,7 @@ def validate_reference_semantics(
     """Run semantic validation and return the collected report."""
     db, scope = db_and_scope
     report = ValidationReport[XtceSemanticError](title="Semantic Validation")
-    model.validate_semantics(report, db.registry, scope)  # type: ignore[attr-defined]
+    model._validate_semantics(report, db.registry, scope)  # type: ignore[attr-defined]
     return report
 
 
@@ -206,7 +206,7 @@ class TestParameterRef:
         model = xtce.ParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
-        model.validate_semantics(report, db.registry, scope)
+        model._validate_semantics(report, db.registry, scope)
 
         assert report.is_valid
 
@@ -430,7 +430,7 @@ class TestOutputParameterRef:
         model = xtce.OutputParameterRef(ref=XtcePath("/TestSystem/TestParam1"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
-        model.validate_semantics(report, db.registry, scope)
+        model._validate_semantics(report, db.registry, scope)
 
         assert report.is_valid
 
@@ -952,7 +952,7 @@ class TestContainerRef:
         model = xtce.ContainerRef(ref=XtcePath("/TestSystem/TestContainer"))
 
         report = ValidationReport[XtceSemanticError](title="Semantic Validation")
-        model.validate_semantics(report, db.registry, scope)
+        model._validate_semantics(report, db.registry, scope)
 
         assert report.is_valid
 
