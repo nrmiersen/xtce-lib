@@ -66,6 +66,10 @@ def _make_sample_database() -> XtceDatabase:
     )
 
     # Command metadata
+    cmd_param_type = xtce.IntegerParameter(name="CommandStatusType", encoding_type=None)
+    cmd_param = xtce.Parameter(
+        name="CommandStatus", parameter_type_ref=XtcePath("CommandStatusType")
+    )
     arg_type = xtce.IntegerArgument(name="PowerLevelType", encoding_type=None)
     cmd = xtce.MetaCommand(
         name="SetPower",
@@ -81,6 +85,8 @@ def _make_sample_database() -> XtceDatabase:
     )
 
     db.command_metadata = xtce.CommandMetadata(
+        parameter_types=[cmd_param_type],
+        parameters=[cmd_param],
         argument_types=[arg_type],
         meta_commands=[cmd, block_cmd, xtce.MetaCommandRef(name=XtcePath("SetPower"))],
     )
@@ -243,6 +249,14 @@ class TestXtceDatabase:
             registry.get_by_path(XtcePath("/Sat1/PowerLevelType")).name
             == "PowerLevelType"
         )
+        assert (
+            registry.get_by_path(XtcePath("/Sat1/CommandStatusType")).name
+            == "CommandStatusType"
+        )
+        assert (
+            registry.get_by_path(XtcePath("/Sat1/CommandStatus")).name
+            == "CommandStatus"
+        )
         assert registry.get_by_path(XtcePath("/Sat1/SetPower")).name == "SetPower"
         assert (
             registry.get_by_path(XtcePath("/Sat1/PowerSequence")).name
@@ -272,6 +286,27 @@ class TestXtceDatabase:
             db.registry.get_by_path(XtcePath("/Sat1/SolarArrayCurrent")).name
             == "SolarArrayCurrent"
         )
+
+    @pytest.mark.parametrize(
+        "metadata_name", ["command_metadata", "telemetry_metadata"]
+    )
+    def test_registry_skips_parameter_refs(self, metadata_name: str) -> None:
+        """Parameter references are not definitions and must not be indexed."""
+        db = _make_sample_database()
+        parameter_ref = xtce.ParameterRef(ref=XtcePath("BatteryVoltage"))
+        metadata = getattr(db, metadata_name)
+        metadata.parameters.append(parameter_ref)
+
+        registry = db.registry
+
+        assert (
+            registry.get_by_path(XtcePath("/Sat1/BatteryVoltage"))
+            is (
+                db.telemetry_metadata.parameters[0]  # type: ignore[union-attr]
+            )
+        )
+        with pytest.raises(KeyError, match="object not registered"):
+            registry.get_path(parameter_ref)
 
     def test_validate_semantics_returns_report(self) -> None:
         """Test validate_semantics returns a ValidationReport."""

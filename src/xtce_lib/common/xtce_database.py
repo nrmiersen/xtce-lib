@@ -296,6 +296,12 @@ class XtceDatabase:
             cmd = space_system.command_metadata
             collections_to_index.extend(
                 [
+                    cmd.parameter_types,
+                    [
+                        parameter
+                        for parameter in cmd.parameters
+                        if not isinstance(parameter, ParameterRef)
+                    ],
                     cmd.argument_types,
                     [
                         meta_command
