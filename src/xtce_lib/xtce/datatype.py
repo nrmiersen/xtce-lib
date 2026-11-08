@@ -595,7 +595,7 @@ class ArgumentBaseData(NameDescriptionBase, ABC):
             kwarg_name="unit",
             converter=lambda u: u._to_v1_3(policy),
             required=True,
-        )
+        )  # TODO is this really required?
         kwargs["choice"] = (
             self.encoding_type._to_v1_3(policy)
             if self.encoding_type is not None

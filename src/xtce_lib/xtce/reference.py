@@ -50,7 +50,7 @@ class ParameterRef(XtceBaseModel):
         Rules:
             - The reference must not contain an array index or aggregate member.
             - The reference must exist.
-            - The reference must be an instance of Parameter.
+            - The reference must be an instance of :class:`Parameter`.
 
         """
         if self.ref.contains_array or self.ref.contains_aggregate:
@@ -65,6 +65,7 @@ class ParameterRef(XtceBaseModel):
 
         from .parameter import Parameter
 
+        # Check the type of the object the reference resolves to
         try:
             result = registry.resolve(self.ref, scope)
             if not isinstance(result.target, Parameter):
@@ -81,8 +82,8 @@ class ParameterRef(XtceBaseModel):
             report.add_error(
                 XtceSemanticError(
                     scope=scope,
-                    message=f"reference '{self.ref}' does not resolve to a valid object "
-                    f"from scope '{scope}'",
+                    message=f"reference '{self.ref}' does not resolve to a valid "
+                    f"object from scope '{scope}'",
                 )
             )
 

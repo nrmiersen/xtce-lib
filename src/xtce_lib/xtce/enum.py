@@ -625,25 +625,25 @@ class ReferencePoint(StrEnum):
 
 
 class ChecksumType(StrEnum):
-    """The available checksum types.
+    """The available checksum types."""
 
-    Attributes:
-        UNIX_SUM
-        SUM8
-        SUM16
-        SUM24
-        SUM32
-        FLETCHER4
-        FLETCHER8
-        FLETCHER16
-        FLETCHER32
-        ADLER32
-        LUHN
-        VERHOEFF
-        DAMM
-        CUSTOM
+    # Attributes:
+    #     UNIX_SUM
+    #     SUM8
+    #     SUM16
+    #     SUM24
+    #     SUM32
+    #     FLETCHER4
+    #     FLETCHER8
+    #     FLETCHER16
+    #     FLETCHER32
+    #     ADLER32
+    #     LUHN
+    #     VERHOEFF
+    #     DAMM
+    #     CUSTOM
 
-    """
+    # """
 
     UNIX_SUM = "unix_sum"
     SUM8 = "sum8"

@@ -111,21 +111,21 @@ class XtceDatabase:
         self._root_system.header = value
 
     @property
-    def telemetry_metadata(self) -> TelemetryMetadata | None:
+    def telemetry_metadata(self) -> TelemetryMetadata:
         """The telemetry metadata of the SpaceSystem."""
         return self._root_system.telemetry_metadata
 
     @telemetry_metadata.setter
-    def telemetry_metadata(self, value: TelemetryMetadata | None) -> None:
+    def telemetry_metadata(self, value: TelemetryMetadata) -> None:
         self._root_system.telemetry_metadata = value
 
     @property
-    def command_metadata(self) -> CommandMetadata | None:
+    def command_metadata(self) -> CommandMetadata:
         """The command metadata of the SpaceSystem."""
         return self._root_system.command_metadata
 
     @command_metadata.setter
-    def command_metadata(self, value: CommandMetadata | None) -> None:
+    def command_metadata(self, value: CommandMetadata) -> None:
         self._root_system.command_metadata = value
 
     @property
@@ -250,7 +250,7 @@ class XtceDatabase:
     @validate_call
     def to_file(
         self,
-        path: Path,
+        path: str | Path,
         xtce_version: XtceVersion,
         *,
         downgrade_policy: DowngradePolicy = DowngradePolicy.STRICT,
@@ -261,6 +261,7 @@ class XtceDatabase:
         Any keyword arguments override the default serializer configuration.
 
         """
+        path = Path(path)
         xml = self._render_xml(xtce_version, downgrade_policy, **kwargs)
         path.write_text(xml, encoding="utf-8")
 

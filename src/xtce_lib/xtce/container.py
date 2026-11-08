@@ -1534,7 +1534,7 @@ class ArrayParameterRefEntry(SequenceEntry):
     dimensions: list[Dimension] = Field(default_factory=list)
     """List of dimensions for the array parameter.
 
-    In the form: [1st][2nd]...[Nth].
+    In the form: `[1st][2nd]...[Nth]`.
 
     """
 
@@ -1646,7 +1646,7 @@ class ArgumentArrayParameterRefEntry(ArgumentSequenceEntry):
     dimensions: list[Dimension] = Field(default_factory=list)
     """List of dimensions for the array parameter.
 
-    In the form: [1st][2nd]...[Nth].
+    In the form: `[1st][2nd]...[Nth]`.
 
     """
 
@@ -1836,7 +1836,7 @@ class ArgumentArrayArgumentRefEntry(ArgumentSequenceEntry):
     dimensions: list[ArgumentDimension] = Field(default_factory=list)
     """List of dimensions for the array parameter.
 
-    In the form: [1st][2nd]...[Nth].
+    In the form: `[1st][2nd]...[Nth]`.
 
     """
 

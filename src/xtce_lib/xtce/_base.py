@@ -93,6 +93,8 @@ class XtceBaseModel(BaseModel, ABC):
         self._validate_semantics(report, registry, scope)
         for i in range(start, len(report.errors)):
             error = report.errors[i]
+            # TODO revisit this, still think this is a good idea but not sure if a tuple
+            # is the best way to represent this
             report.errors[i] = replace(
                 error, source=(type(self).__name__, *error.source)
             )

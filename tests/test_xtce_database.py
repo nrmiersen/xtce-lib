@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from xml.etree import ElementTree
 
 import pytest
 from pydantic import ValidationError
@@ -115,6 +116,27 @@ def _make_sample_database() -> XtceDatabase:
 class TestXtceDatabase:
     """Unit tests for the XtceDatabase class."""
 
+    @pytest.mark.parametrize(
+        "version", [XtceVersion.V1_1, XtceVersion.V1_2, XtceVersion.V1_3]
+    )
+    def test_metadata_xml_serialization(
+        self, version: XtceVersion, tmp_path: Path
+    ) -> None:
+        db = XtceDatabase(name="Sat1")
+        output = tmp_path / "database.xml"
+
+        db.to_file(output, xtce_version=version)
+        root = ElementTree.parse(output).getroot()
+        assert root.find("{*}CommandMetaData") is None
+        assert root.find("{*}TelemetryMetaData") is None
+        assert db.validate_schema(version).is_valid
+
+        db.telemetry_metadata.message_set = xtce.MessageSet(name="Messages")
+        db.to_file(output, xtce_version=version)
+        root = ElementTree.parse(output).getroot()
+        assert root.find("{*}TelemetryMetaData/{*}MessageSet") is not None
+        assert root.find("{*}CommandMetaData") is None
+
     def test_init_and_name_property(self) -> None:
         """Test constructor and name property getters/setters."""
         db = XtceDatabase(name="MySystem")
@@ -174,14 +196,14 @@ class TestXtceDatabase:
         assert db.root_system.header == header
 
         # telemetry_metadata
-        assert db.telemetry_metadata is None
+        assert db.telemetry_metadata == xtce.TelemetryMetadata()
         tlm = xtce.TelemetryMetadata()
         db.telemetry_metadata = tlm
         assert db.telemetry_metadata == tlm
         assert db.root_system.telemetry_metadata == tlm
 
         # command_metadata
-        assert db.command_metadata is None
+        assert db.command_metadata == xtce.CommandMetadata()
         cmd = xtce.CommandMetadata()
         db.command_metadata = cmd
         assert db.command_metadata == cmd

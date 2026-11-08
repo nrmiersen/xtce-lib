@@ -123,6 +123,40 @@ class TestService:
 class TestSpaceSystem:
     """Test SpaceSystem model."""
 
+    def test_metadata_defaults_are_independent(self) -> None:
+        first = xtce.SpaceSystem(name="First")
+        second = xtce.SpaceSystem(name="Second")
+        first.command_metadata.meta_commands.append(xtce.MetaCommand(name="Command"))
+        first.telemetry_metadata.message_set = xtce.MessageSet(name="Messages")
+
+        assert second.command_metadata == xtce.CommandMetadata()
+        assert second.telemetry_metadata == xtce.TelemetryMetadata()
+
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
+    def test_default_metadata_is_omitted_and_restored(
+        self, version: XtceVersion
+    ) -> None:
+        system = xtce.SpaceSystem(
+            name="Sat1", space_systems=[xtce.SpaceSystem(name="Child")]
+        )
+
+        exported = system.to_xsdata(version)
+        assert exported.command_meta_data is None
+        assert exported.telemetry_meta_data is None
+        assert exported.space_system[0].command_meta_data is None
+        assert exported.space_system[0].telemetry_meta_data is None
+        assert xtce.SpaceSystem.from_xsdata(exported, version) == system
+
+    @pytest.mark.parametrize("version", ALL_VERSIONS)
+    def test_empty_message_set_is_preserved(self, version: XtceVersion) -> None:
+        system = xtce.SpaceSystem(name="Sat1")
+        system.telemetry_metadata.message_set = xtce.MessageSet(name="Messages")
+
+        exported = system.to_xsdata(version)
+        assert exported.telemetry_meta_data is not None
+        assert exported.telemetry_meta_data.message_set is not None
+        assert xtce.SpaceSystem.from_xsdata(exported, version) == system
+
     @pytest.mark.parametrize("version", ALL_VERSIONS)
     def test_round_trip_minimal(self, version: XtceVersion) -> None:
         """Round-trip minimal SpaceSystem."""

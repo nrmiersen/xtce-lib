@@ -417,12 +417,12 @@ class SpaceSystem(NameDescriptionBase):
     SpaceSystem or the document as a whole when specified at the root SpaceSystem.
     """
 
-    telemetry_metadata: TelemetryMetadata | None = None
+    telemetry_metadata: TelemetryMetadata = Field(default_factory=TelemetryMetadata)
     """This element contains descriptions of the telemetry created on the space
     asset/device and sent to other data consumers.
     """
 
-    command_metadata: CommandMetadata | None = None
+    command_metadata: CommandMetadata = Field(default_factory=CommandMetadata)
     """This element contains descriptions of the commands and their associated
     constraints and verifications that can be sent to the space asset/device.
     """
@@ -483,12 +483,12 @@ class SpaceSystem(NameDescriptionBase):
         kwargs["telemetry_metadata"] = (
             TelemetryMetadata._from_v1_1(obj.telemetry_meta_data)
             if obj.telemetry_meta_data is not None
-            else None
+            else TelemetryMetadata()
         )
         kwargs["command_metadata"] = (
             CommandMetadata._from_v1_1(obj.command_meta_data)
             if obj.command_meta_data is not None
-            else None
+            else CommandMetadata()
         )
         kwargs["services"] = (
             [Service._from_v1_1(s) for s in obj.service_set.service]
@@ -508,12 +508,12 @@ class SpaceSystem(NameDescriptionBase):
         kwargs["telemetry_metadata"] = (
             TelemetryMetadata._from_v1_2(obj.telemetry_meta_data)
             if obj.telemetry_meta_data is not None
-            else None
+            else TelemetryMetadata()
         )
         kwargs["command_metadata"] = (
             CommandMetadata._from_v1_2(obj.command_meta_data)
             if obj.command_meta_data is not None
-            else None
+            else CommandMetadata()
         )
         kwargs["services"] = (
             [Service._from_v1_2(s) for s in obj.service_set.service]
@@ -533,12 +533,12 @@ class SpaceSystem(NameDescriptionBase):
         kwargs["telemetry_metadata"] = (
             TelemetryMetadata._from_v1_3(obj.telemetry_meta_data)
             if obj.telemetry_meta_data is not None
-            else None
+            else TelemetryMetadata()
         )
         kwargs["command_metadata"] = (
             CommandMetadata._from_v1_3(obj.command_meta_data)
             if obj.command_meta_data is not None
-            else None
+            else CommandMetadata()
         )
         kwargs["services"] = (
             [Service._from_v1_3(s) for s in obj.service_set.service]
@@ -583,12 +583,12 @@ class SpaceSystem(NameDescriptionBase):
         )
         kwargs["telemetry_meta_data"] = (
             self.telemetry_metadata._to_v1_1(policy)
-            if self.telemetry_metadata is not None
+            if self.telemetry_metadata != TelemetryMetadata()
             else None
         )
         kwargs["command_meta_data"] = (
             self.command_metadata._to_v1_1(policy)
-            if self.command_metadata is not None
+            if self.command_metadata != CommandMetadata()
             else None
         )
         kwargs["service_set"] = self._build_set(
@@ -632,12 +632,12 @@ class SpaceSystem(NameDescriptionBase):
         )
         kwargs["telemetry_meta_data"] = (
             self.telemetry_metadata._to_v1_2(policy)
-            if self.telemetry_metadata is not None
+            if self.telemetry_metadata != TelemetryMetadata()
             else None
         )
         kwargs["command_meta_data"] = (
             self.command_metadata._to_v1_2(policy)
-            if self.command_metadata is not None
+            if self.command_metadata != CommandMetadata()
             else None
         )
         kwargs["service_set"] = self._build_set(
@@ -657,12 +657,12 @@ class SpaceSystem(NameDescriptionBase):
         )
         kwargs["telemetry_meta_data"] = (
             self.telemetry_metadata._to_v1_3(policy)
-            if self.telemetry_metadata is not None
+            if self.telemetry_metadata != TelemetryMetadata()
             else None
         )
         kwargs["command_meta_data"] = (
             self.command_metadata._to_v1_3(policy)
-            if self.command_metadata is not None
+            if self.command_metadata != CommandMetadata()
             else None
         )
         kwargs["service_set"] = self._build_set(
