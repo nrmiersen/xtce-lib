@@ -30,12 +30,15 @@ from .condition import ArgumentDiscreteLookupList, DiscreteLookupList
 
 
 class Dimension(XtceBaseModel):
-    """Used to define a subset of an array."""
+    """Define a subset of an array."""
 
     start_index: int | DynamicValue | DiscreteLookupList
     """The start index of the array.
 
     Must be less than or equal to the end index.
+
+    Raises:
+        ValueError: If the start index is negative or greater than the end index.
 
     """
 
@@ -43,6 +46,9 @@ class Dimension(XtceBaseModel):
     """The end index of the array.
 
     Must be greater than or equal to the start index.
+
+    Raises:
+        ValueError: If the end index is negative or less than the start index.
 
     """
 
@@ -60,7 +66,7 @@ class Dimension(XtceBaseModel):
         return None
 
     @model_validator(mode="after")
-    def validate_indices(self) -> Self:
+    def _validate_indices(self) -> Self:
         """Validate that the start index is less than or equal to the end index."""
         start_index = self._resolve_index(self.start_index)
         end_index = self._resolve_index(self.end_index)

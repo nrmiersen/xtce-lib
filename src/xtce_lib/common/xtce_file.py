@@ -33,7 +33,6 @@ class XtceFile:
     _NAMESPACE_PATTERN: ClassVar[re.Pattern[str]] = re.compile(r"^\{([^}]+)\}")
 
     def __init__(self, file_path: str | Path) -> None:
-        """Initialize the XTCE file object."""
         self._file_path = Path(file_path).resolve()
 
         self._namespace = self.get_namespace(self._file_path)

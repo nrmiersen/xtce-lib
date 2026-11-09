@@ -1368,6 +1368,10 @@ class MetaCommandRef(XtceBaseModel):
     )
     """A Unix-like path to a meta command."""
 
+    _v1_1_type = str
+    _v1_2_type = str
+    _v1_3_type = str
+
     def __str__(self) -> str:
         """Return the reference as a string."""
         return str(self.name)

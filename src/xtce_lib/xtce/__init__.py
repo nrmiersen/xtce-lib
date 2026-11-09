@@ -1,4 +1,4 @@
-"""Unified XTCE model module."""
+"""The unified XTCE model module."""
 
 from typing import Any
 

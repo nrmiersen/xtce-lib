@@ -1,0 +1,183 @@
+[project]
+site_url = "https://www.example.com/"
+site_name = "xtce-lib"
+site_description = "Documentation for the xtce-lib Python package"
+site_author = "Nathan Miersen"
+
+# copyright = "Copyright &copy; 2026 Your name"
+
+repo_url = "https://github.com/nrmiersen/xtce-lib"
+repo_name = "nrmiersen/xtce-lib"
+# edit_uri = "edit/main/docs/"
+
+nav = [
+    { "xtce-lib" = "xtce-lib.md" },
+    { "Validation" = "validation.md" },
+    { "Reading XTCE" = "reading-xtce.md" },
+    { "XTCE Version Compatibility" = "xtce-version-compatibility.md" },
+    { "Index" = "index.md" },
+    { "Markdown" = "markdown.md" },
+    { "API Reference" = [
+        { "Core" = "api/core.md" },
+        { "Exceptions" = "api/exceptions.md" },
+        { "XTCE Model" = [
+            { "Space System" = "api/xtce.md" },
+            { "Commands and Arguments" = "api/xtce/commands.md" },
+            { "Parameters" = "api/xtce/parameters.md" },
+            { "Command Verification" = "api/xtce/verification.md" },
+            { "Containers" = "api/xtce/containers.md" },
+            { "Data Types" = "api/xtce/data-types.md" },
+            { "Data Encodings" = "api/xtce/encodings.md" },
+            { "Calibration" = "api/xtce/calibration.md" },
+            { "Alarms" = "api/xtce/alarms.md" },
+            { "Conditions and Ranges" = "api/xtce/conditions.md" },
+            { "Algorithms and Triggers" = "api/xtce/algorithms.md" },
+            { "Streams and Messages" = "api/xtce/streams.md" },
+            { "References and Time" = "api/xtce/references.md" },
+            { "Common Utilities" = "api/xtce/common.md" },
+            { "Enumerations" = "api/xtce/enums.md" },
+        ] },
+        { "Generated Schema Models" = "api/generated.md" },
+    ] },
+]
+
+extra_css = ["stylesheets/xtce-versions.css"]
+extra_javascript = ["javascripts/api-class-collapse.js"]
+
+[project.plugins.mkdocstrings]
+default_handler = "python"
+custom_templates = "overrides/mkdocstrings"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+inventories = ["https://docs.python.org/3/objects.inv"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "google"
+extensions = ["griffe_pydantic"]
+heading_level = 2
+show_root_heading = true
+show_root_full_path = false
+show_root_toc_entry = true
+show_symbol_type_heading = true
+show_symbol_type_toc = true
+show_source = false
+show_if_no_docstring = true
+members_order = "source"
+group_by_category = true
+separate_signature = true
+show_signature_annotations = true
+signature_crossrefs = true
+unwrap_annotated = true
+merge_init_into_class = true
+docstring_section_style = "table"
+filters = ["!^_", "!^model_config$"]
+show_bases = false
+show_submodules = false
+summary = false
+inherited_members = true
+
+[project.theme]
+variant = "modern"
+# custom_dir = "overrides"
+# favicon = "images/favicon.png"
+language = "en"
+features = [
+    "announce.dismiss",
+    # "content.action.edit",
+    # "content.action.view",
+    "content.code.annotate",
+    "content.code.copy",
+    "content.code.select",
+    "content.footnote.tooltips",
+    "content.tabs.link",
+    "content.tooltips",
+    # "header.autohide",
+    # "navigation.expand",
+    "navigation.footer",
+    "navigation.indexes",
+    "navigation.instant",
+    "navigation.instant.prefetch",
+    # "navigation.instant.progress",
+    "navigation.path",
+    # "navigation.prune",
+    "navigation.sections",
+    # "navigation.tabs",
+    # "navigation.tabs.sticky",
+    "navigation.top",
+    "navigation.tracking",
+    "search.highlight",
+    # "toc.follow",
+    # "toc.integrate",
+]
+
+# logo = "assets/logo.png"
+
+# [project.theme.icon]
+# logo = "lucide/smile"
+
+# [project.theme.font]
+# text = "Inter"
+# code = "Jetbrains Mono"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+primary = "blue"
+accent = "yellow"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+primary = "blue"
+accent = "yellow"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+primary = "blue"
+accent = "yellow"
+
+# [[project.extra.social]]
+# icon = "fontawesome/brands/github"
+# link = "https://github.com/user/repo"
+
+# [[project.extra.social]]
+# icon = "fontawesome/brands/mastodon"
+# link = "https://fosstodon.org/@user"
+
+[project.markdown_extensions]
+abbr = {}
+admonition = {}
+attr_list = {}
+def_list = {}
+footnotes = {}
+md_in_html = {}
+toc.permalink = true
+pymdownx.arithmatex.generic = true
+pymdownx.betterem = {}
+pymdownx.caret = {}
+pymdownx.details = {}
+pymdownx.emoji.emoji_generator = "zensical.extensions.emoji.to_svg"
+pymdownx.emoji.emoji_index = "zensical.extensions.emoji.twemoji"
+pymdownx.highlight.anchor_linenums = true
+pymdownx.highlight.line_spans = "__span"
+pymdownx.highlight.pygments_lang_class = true
+pymdownx.inlinehilite = {}
+pymdownx.keys = {}
+pymdownx.magiclink = {}
+pymdownx.mark = {}
+pymdownx.smartsymbols = {}
+# pymdownx.snippets.base_path = "includes"
+pymdownx.superfences.custom_fences = [
+    { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+pymdownx.tabbed.alternate_style = true
+pymdownx.tabbed.combine_header_slug = true
+pymdownx.tasklist.custom_checkbox = true
+pymdownx.tilde = {}

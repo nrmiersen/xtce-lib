@@ -37,7 +37,6 @@ class XtceDatabase:
 
     @validate_call
     def __init__(self, name: str) -> None:
-        """Initialize a new XTCE database."""
         self._root_system = SpaceSystem(name=name)
         self._registry: XtceRegistry | None = None
 

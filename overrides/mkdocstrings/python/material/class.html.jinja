@@ -1,0 +1,20 @@
+{% extends "_base/class.html.jinja" %}
+
+{% block labels scoped %}
+  {{ super() }}
+  {% if class.path.startswith("xtce_lib.xtce.") and "_v1_1_type" in all_members %}
+    {% for version in ("1.1", "1.2", "1.3") %}
+      {% set attribute = "_v" ~ version|replace(".", "_") ~ "_type" %}
+      {% set supported = attribute in all_members and all_members[attribute].value|string != "None" %}
+      {% set status = "supported" if supported else "unsupported" %}
+      {% set tooltip_id = class.path ~ ".xtce-version-" ~ version %}
+      <span class="xtce-version-badge xtce-version-badge--{{ status }}" tabindex="0" aria-label="XTCE {{ version }}: direct conversion {{ status }}" aria-describedby="{{ tooltip_id }}">
+        <span class="xtce-version-label">{{ version }}</span>
+        <span class="xtce-version-tooltip" id="{{ tooltip_id }}">
+          {% if supported %}Direct conversion to XTCE {{ version }} is available. Fields and nested models may have additional restrictions.{% else %}Direct conversion to XTCE {{ version }} raises XtceUnsupportedError.{% endif %}
+          <autoref identifier="xtce-version-compatibility">Version compatibility guide</autoref>
+        </span>
+      </span>
+    {% endfor %}
+  {% endif %}
+{% endblock labels %}

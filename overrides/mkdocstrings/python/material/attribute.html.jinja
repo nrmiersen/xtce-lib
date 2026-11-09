@@ -1,0 +1,64 @@
+{% extends "_base/attribute.html.jinja" %}
+
+{% macro annotated_constraints(expression) %}
+  {% if expression.operator is defined and expression.operator == "|" %}
+    {{ annotated_constraints(expression.left) }}
+    {{ annotated_constraints(expression.right) }}
+  {% elif expression.canonical_path is defined and expression.canonical_path == "typing.Annotated" and expression.slice.elements is defined %}
+    {% set elements = expression.slice.elements %}
+    {% for metadata in elements[1:] if metadata.function is defined and metadata.function.canonical_path == "pydantic.Field" %}
+      {% for argument in metadata.arguments if argument.name is defined and argument.name in ("gt", "ge", "lt", "le", "multiple_of", "min_length", "max_length", "pattern") %}
+        {% set operators = {"gt": ">", "ge": ">=", "lt": "<", "le": "<="} %}
+        <p class="api-field-metadata"><strong>Constraint ({{ elements[0] }}):</strong> <code>{{ operators.get(argument.name, argument.name ~ "=") }} {{ argument.value }}</code></p>
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+
+{% block labels scoped %}
+  {% with labels = attribute.labels|reject("equalto", "pydantic-field")|list %}
+    {% include "labels.html.jinja" with context %}
+  {% endwith %}
+{% endblock labels %}
+
+{% block contents scoped %}
+  {{ super() }}
+  {% if config.extra.enum_member_descriptions and not attribute.docstring and attribute.parent.docstring %}
+    {% for section in attribute.parent.docstring.parsed if section.kind.value == "attributes" %}
+      {% for documented in section.value if documented.name == attribute.name %}
+        {{ documented.description|convert_markdown(heading_level, html_id, autoref_hook=AutorefsHook(attribute, config)) }}
+      {% endfor %}
+    {% endfor %}
+  {% endif %}
+  {% if "pydantic-field" in attribute.labels %}
+    {% set metadata = attribute.extra.griffe_pydantic.constraints %}
+    {% if attribute.value is none and "default_factory" not in metadata %}
+      <p class="api-field-metadata"><strong>Required</strong></p>
+    {% elif "default_factory" in metadata %}
+      <p class="api-field-metadata"><strong>Default factory:</strong> <code>{{ metadata.default_factory }}</code></p>
+    {% endif %}
+    {% for key, label in (("gt", "Greater than"), ("ge", "Minimum"), ("lt", "Less than"), ("le", "Maximum"), ("multiple_of", "Multiple of"), ("min_length", "Minimum length"), ("max_length", "Maximum length"), ("pattern", "Pattern")) %}
+      {% if key in metadata %}
+        <p class="api-field-metadata"><strong>{{ label }}:</strong> <code>{{ metadata[key] }}</code></p>
+      {% endif %}
+    {% endfor %}
+    {% if "default_factory" in metadata and ("min_length" in metadata or "max_length" in metadata or "ge" in metadata or "gt" in metadata or "le" in metadata or "lt" in metadata) %}
+      <p class="api-field-metadata">Factory defaults may not be validated.</p>
+    {% endif %}
+    {{ annotated_constraints(attribute.annotation) }}
+    {% if "examples" in metadata and metadata.examples.elements is defined and metadata.examples.elements %}
+      <p class="api-field-metadata"><strong>Examples:</strong>
+        {% for example in metadata.examples.elements %}<code>{{ example }}</code>{% if not loop.last %}, {% endif %}{% endfor %}
+      </p>
+    {% elif "examples" in metadata and metadata.examples.elements is not defined %}
+      <p class="api-field-metadata"><strong>Examples:</strong> <code>{{ metadata.examples }}</code></p>
+    {% endif %}
+    {% if "json_schema_extra" in metadata %}
+      <details class="api-field-extra"><summary>Schema metadata</summary><code>{{ metadata.json_schema_extra }}</code></details>
+    {% endif %}
+    {% set displayed = ("default_factory", "gt", "ge", "lt", "le", "multiple_of", "min_length", "max_length", "pattern", "examples", "json_schema_extra") %}
+    {% for key, value in metadata.items() if key not in displayed %}
+      <p class="api-field-metadata"><strong>{{ key }}:</strong> <code>{{ value }}</code></p>
+    {% endfor %}
+  {% endif %}
+{% endblock contents %}

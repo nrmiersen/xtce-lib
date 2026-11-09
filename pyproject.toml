@@ -31,11 +31,14 @@ Repository = "https://github.com/nrmiersen/xtce-lib"
 [dependency-groups]
 dev = [
     "docformatter>=1.7.8",
+    "griffe-pydantic>=1.3.2",
     "lxml-stubs>=0.5.1",
+    "mkdocstrings-python>=2.0.10",
     "pyright>=1.1.414",
     "pytest>=9.0.3",
     "types-lxml>=2026.2.16",
     "xsdata[cli]>=26.2",
+    "zensical>=0.0.74",
 ]
 
 [tool.docformatter]
@@ -75,6 +78,7 @@ select = [
     "F", # pyflakes
 ]
 ignore = [
+    "D107", # Causes duplicate descriptions in docs, not needed anyways
     "D203", # Conflicts with D211
     "D205",
     "D213", # Conflicts with D212

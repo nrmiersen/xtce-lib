@@ -26,7 +26,6 @@ class XtceRegistry:
     """A registry for managing XTCE definitions by their full absolute paths."""
 
     def __init__(self) -> None:
-        """Initialize an empty registry."""
         self._definitions: dict[XtcePath, ReferenceableXtceObject] = {}
         self._object_paths: dict[int, XtcePath] = {}
 
