@@ -1,0 +1,18 @@
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+# Required
+version: 2
+
+# Set the OS, Python version, and other tools you might need
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.13"
+
+  commands:
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - $HOME/.local/bin/uv sync --locked --group dev
+    - $HOME/.local/bin/uv run zensical build
+    - mkdir -p "$READTHEDOCS_OUTPUT/html"
+    - cp -a site/. "$READTHEDOCS_OUTPUT/html/"
