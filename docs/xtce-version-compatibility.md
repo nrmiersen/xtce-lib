@@ -1,5 +1,5 @@
 ---
-icon: lucide/cable
+icon: lucide/arrow-left-right
 ---
 
 # XTCE Version Compatibility

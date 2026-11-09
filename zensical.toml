@@ -11,12 +11,12 @@ repo_name = "nrmiersen/xtce-lib"
 # edit_uri = "edit/main/docs/"
 
 nav = [
-    { "xtce-lib" = "xtce-lib.md" },
+    { "xtce-lib" = "index.md" },
     { "Validation" = "validation.md" },
     { "Reading XTCE" = "reading-xtce.md" },
     { "XTCE Version Compatibility" = "xtce-version-compatibility.md" },
-    { "Index" = "index.md" },
-    { "Markdown" = "markdown.md" },
+    # { "Index" = "index.md" },
+    # { "Markdown" = "markdown.md" },
     { "API Reference" = [
         { "Core" = "api/core.md" },
         { "Exceptions" = "api/exceptions.md" },
@@ -113,8 +113,8 @@ features = [
 
 # logo = "assets/logo.png"
 
-# [project.theme.icon]
-# logo = "lucide/smile"
+[project.theme.icon]
+logo = "lucide/satellite"
 
 # [project.theme.font]
 # text = "Inter"

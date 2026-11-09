@@ -1,3 +1,44 @@
+[data-md-color-scheme="default"] {
+    --md-primary-fg-color: #11114f;
+    --md-primary-fg-color--light: #282875;
+    --md-primary-fg-color--dark: #090936;
+    --md-accent-fg-color: #805c00;
+    --md-accent-fg-color--transparent: rgba(128, 92, 0, 0.12);
+    --md-typeset-a-color: #174b78;
+    --md-default-fg-color: #202630;
+    --md-default-fg-color--light: #424c59;
+    --md-default-fg-color--lighter: #66717f;
+    --md-default-bg-color: #ffffff;
+    --md-code-bg-color: #f1f3f6;
+}
+
+[data-md-color-scheme="slate"] {
+    --md-primary-fg-color: #17165f;
+    --md-primary-fg-color--light: #292877;
+    --md-primary-fg-color--dark: #0c0b42;
+    --md-accent-fg-color: #ffd447;
+    --md-accent-fg-color--transparent: rgba(255, 212, 71, 0.12);
+    --md-typeset-a-color: #ffd447;
+}
+
+.md-header {
+    border-bottom: 2px solid #d5a900;
+    background-color: #11114f;
+    color: #ffffff;
+}
+
+.md-header .md-header__button,
+.md-header .md-header__title,
+.md-header .md-header__topic,
+.md-header .md-source {
+    color: #ffffff;
+}
+
+.md-header .md-search__button {
+    background-color: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
 .xtce-version-badge {
     position: relative;
     display: inline-flex;
